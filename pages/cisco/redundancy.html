@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Gateway-Redundanz mit HSRP und VRRP sowie Link-Redundanz."><title>Cisco Redundancy | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Cisco / Cisco Redundancy</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a><div class="sectionhead"><h1>Cisco Redundancy</h1><p>HSRP · VRRP · Gateway High Availability</p></div>
+<article class="article searchable"><span class="tag">HSRP</span><h3>Hot Standby Router Protocol</h3><p>HSRP stellt eine virtuelle Gateway-IP bereit. Ein Gerät ist Active, das andere Standby.</p><pre><code>! Gerät A
+interface vlan 10
+ ip address 192.168.10.2 255.255.255.0
+ standby version 2
+ standby 10 ip 192.168.10.1
+ standby 10 priority 110
+ standby 10 preempt
+
+! Gerät B
+interface vlan 10
+ ip address 192.168.10.3 255.255.255.0
+ standby version 2
+ standby 10 ip 192.168.10.1
+ standby 10 priority 100
+ standby 10 preempt
+
+show standby brief
+show standby</code></pre><p>Clients verwenden 192.168.10.1 als Default Gateway. Preempt erlaubt dem Gerät mit höherer Priorität, nach Wiederherstellung wieder Active zu werden.</p></article>
+<article class="article searchable"><span class="tag">HSRP Tracking</span><h3>Uplink überwachen</h3><pre><code>configure terminal
+track 1 interface gigabitEthernet 1/0/48 line-protocol
+interface vlan 10
+ standby 10 track 1 decrement 30
+end
+show track
+show standby brief</code></pre><p>Bei Ausfall des überwachten Uplinks sinkt die HSRP-Priorität. Tracking-Objekt und Interface passend zum eigenen Design wählen.</p></article>
+<article class="article searchable"><span class="tag">VRRP</span><h3>Virtual Router Redundancy Protocol</h3><pre><code>! Gerät A
+interface vlan 20
+ ip address 192.168.20.2 255.255.255.0
+ vrrp 20 ip 192.168.20.1
+ vrrp 20 priority 120
+ vrrp 20 preempt
+
+! Gerät B
+interface vlan 20
+ ip address 192.168.20.3 255.255.255.0
+ vrrp 20 ip 192.168.20.1
+ vrrp 20 priority 100
+ vrrp 20 preempt
+
+show vrrp brief
+show vrrp</code></pre><p>VRRP ist ein standardisiertes Redundanzprotokoll. Plattform und IOS-XE-Version müssen die benötigten Funktionen unterstützen.</p></article>
+<article class="article searchable"><span class="tag">Design & Troubleshooting</span><h3>Redundanz prüfen</h3><pre><code>show standby brief
+show standby vlan 10
+show vrrp brief
+show track
+show etherchannel summary
+show spanning-tree root
+show ip route</code></pre><ul><li>Virtuelle IP darf nicht mit einer realen Interface-IP kollidieren.</li><li>Beide Geräte benötigen passende VLANs und Layer-2-Erreichbarkeit.</li><li>Priorität, Preempt und Tracking bewusst planen.</li><li>Failover kontrolliert testen und Client-Erreichbarkeit prüfen.</li></ul></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
