@@ -2,7 +2,7 @@
 
 **A practical and structured IT knowledge base for system administrators, network engineers, and IT enthusiasts.**
 
-🌐 **Website:** https://speakwithmeaf.github.io/
+🌐 **Website:** https://itbz.github.io/
 
 ## 📖 About the Project
 
