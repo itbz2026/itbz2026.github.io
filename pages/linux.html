@@ -1,17 +1,80 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Debian, Shell, Dienste, SSH und Rechte."><title>Linux | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
-<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Linux</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Linux</h1><p>Debian, Shell und Systemverwaltung</p></div>
-<article class="article searchable"><span class="tag">Administration</span><h3>System und Dienste verwalten</h3><pre><code>sudo apt update && sudo apt upgrade
-systemctl status ssh
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Linux-Administration mit Shell, Debian, systemd, Netzwerk, Storage, SSH und Sicherheit."><title>Linux | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html" aria-current="page">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main>
+<div class="top"><span>IT Knowledge Base / Linux</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Linux</h1><p>Linux-Administration · Debian · Shell · Dienste</p></div>
+
+<article class="article searchable"><span class="tag">Grundlagen</span><h3>Dateisystem und Verzeichnisse</h3><div class="tablewrap"><table><tr><th>Pfad</th><th>Zweck</th></tr><tr><td><code>/</code></td><td>Wurzel des Dateisystems</td></tr><tr><td><code>/etc</code></td><td>Systemweite Konfiguration</td></tr><tr><td><code>/var</code></td><td>Variable Daten und Logs</td></tr><tr><td><code>/home</code></td><td>Benutzerverzeichnisse</td></tr><tr><td><code>/root</code></td><td>Home-Verzeichnis von root</td></tr><tr><td><code>/tmp</code></td><td>Temporäre Dateien</td></tr><tr><td><code>/usr</code></td><td>Programme und gemeinsam genutzte Daten</td></tr><tr><td><code>/opt</code></td><td>Optionale Zusatzsoftware</td></tr></table></div><pre><code>pwd
+ls -lah
+cd /etc
+find /var/log -type f
+du -sh /var/*</code></pre></article>
+<article class="article searchable"><span class="tag">Paketverwaltung</span><h3>Debian / Ubuntu mit APT</h3><pre><code>sudo apt update
+apt list --upgradable
+sudo apt upgrade
+sudo apt install PACKAGE
+sudo apt remove PACKAGE
+sudo apt autoremove
+apt show PACKAGE
+dpkg -l</code></pre><p>apt update aktualisiert Paketlisten; apt upgrade installiert verfügbare Updates. Vor größeren Versions-Upgrades Release Notes und Backup prüfen.</p></article>
+<article class="article searchable"><span class="tag">Benutzer & Rechte</span><h3>Konten, Gruppen und Dateirechte</h3><pre><code>id USER
+getent passwd USER
+sudo adduser USER
+sudo usermod -aG sudo USER
+groups USER
+ls -l FILE
+chmod 640 FILE
+chown USER:GROUP FILE
+umask</code></pre><p>Rechte: r = lesen, w = schreiben, x = ausführen beziehungsweise Verzeichnis betreten. Numerisch: 4 = Lesen, 2 = Schreiben, 1 = Ausführen. 640 bedeutet Eigentümer lesen/schreiben, Gruppe lesen, andere keine Rechte.</p><div class="warn">chmod -R 777 ist keine sichere Standardlösung. Rechte gezielt auf Eigentümer, Gruppe und notwendige Zugriffe begrenzen.</div></article>
+<article class="article searchable"><span class="tag">systemd</span><h3>Dienste und Logs verwalten</h3><pre><code>systemctl status ssh
+sudo systemctl start ssh
+sudo systemctl stop ssh
 sudo systemctl restart ssh
 sudo systemctl enable ssh
+sudo systemctl disable ssh
+systemctl list-units --type=service
+journalctl -u ssh
+journalctl -p err -b
+journalctl -f</code></pre><p>enable aktiviert den automatischen Start beim Booten; start startet den Dienst sofort. Das sind unterschiedliche Aktionen.</p></article>
+<article class="article searchable"><span class="tag">Netzwerk</span><h3>Interfaces, Routing und Ports</h3><pre><code>ip addr
+ip link
+ip route
+ip neigh
+resolvectl status
+getent hosts example.com
+ping -c 4 192.168.1.1
+ss -tulpn
+curl -I https://example.com</code></pre><p>Für persistente Netzwerkkonfiguration das verwendete Verfahren prüfen, z. B. NetworkManager, systemd-networkd oder ifupdown. Nicht mehrere Manager dieselbe Schnittstelle verwalten lassen.</p></article>
+<article class="article searchable"><span class="tag">Storage</span><h3>Datenträger und Dateisysteme</h3><pre><code>lsblk -f
+blkid
+df -hT
+du -sh /var/log
+findmnt
+sudo fdisk -l
+sudo mount /dev/DEVICE /mnt
+sudo umount /mnt</code></pre><p>Vor Partitionierung oder Formatierung Gerät und Daten sorgfältig identifizieren. Für dauerhafte Mounts UUID verwenden und /etc/fstab vor Neustart mit mount -a testen.</p></article>
+<article class="article searchable"><span class="tag">SSH</span><h3>SSH sicher betreiben</h3><pre><code>ssh-keygen -t ed25519
+ssh-copy-id USER@SERVER
+sudo sshd -t
+sudo systemctl reload ssh</code></pre><ul><li>Schlüsselbasierte Anmeldung bevorzugen.</li><li>Root-Login nur nach geprüftem Alternativzugang deaktivieren.</li><li>SSH-Zugriff per Firewall auf notwendige Netze begrenzen.</li><li>Private Schlüssel schützen und bei Verdacht rotieren.</li></ul><div class="warn">Vor Änderungen an sshd eine bestehende Sitzung offen lassen und zweiten Login testen, damit du dich nicht aussperrst.</div></article>
+<article class="article searchable"><span class="tag">Prozesse</span><h3>Prozesse und Ressourcen</h3><pre><code>ps aux
+top
+free -h
+uptime
+lsof -i
+pgrep -a PROCESS
+kill PID
+nice -n 10 COMMAND</code></pre><p>Prozesse zuerst sauber über Dienst oder Anwendung beenden. SIGKILL nur als letzte Möglichkeit nutzen.</p></article>
+<article class="article searchable"><span class="tag">Firewall</span><h3>Firewall mit UFW</h3><pre><code>sudo ufw status verbose
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow from 192.168.1.0/24 to any port 22 proto tcp
+sudo ufw enable</code></pre><div class="warn">Vor Aktivierung die SSH-Regel passend zum Admin-Netz anlegen. Firewallregeln auf benötigte Dienste beschränken.</div></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Diagnosebefehle</h3><pre><code>systemctl --failed
+journalctl -xe
+dmesg -T | tail -n 50
 df -h
 free -h
-lsblk
-ip addr
+ss -tulpn
 ip route
-ss -tulpn</code></pre></article>
-<article class="article searchable"><span class="tag">Rechte</span><h3>Dateiberechtigungen</h3><p>Linux-Rechte gelten für Eigentümer, Gruppe und andere. Die Rechte sind Lesen (r), Schreiben (w) und Ausführen (x).</p><pre><code>ls -l datei.txt
-chmod 640 datei.txt
-chown user:gruppe datei.txt</code></pre><p><code>640</code> bedeutet: Eigentümer lesen/schreiben, Gruppe lesen, andere keine Rechte.</p></article>
-<article class="article searchable"><span class="tag">SSH</span><h3>SSH absichern</h3><ul><li>SSH-Schlüssel bevorzugen und sicher verwahren.</li><li>Root-Login deaktivieren, wenn ein getesteter Admin-Zugang besteht.</li><li>Zugriff per Firewall auf notwendige Quellnetze begrenzen.</li><li>Konfiguration vor Neustart mit <code>sshd -t</code> prüfen.</li></ul></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Linux · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
+getent hosts example.com
+sudo apt --fix-broken install</code></pre><p>Status und Logs erfassen, dann eine Ursache testen. Vor Änderungen Konfiguration sichern und Funktion erneut prüfen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Linux · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
