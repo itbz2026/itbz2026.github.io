@@ -105,3 +105,8 @@ nav a.branch-active{color:#fff;background:#203653}
 .command-links a:hover{text-decoration:underline}
 @media(max-width:900px){.command-list{grid-template-columns:1fr}.syntax-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.command-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.command-hero{padding:21px 18px}.command-filters{grid-template-columns:1fr}.command-results-line{flex-direction:column}.syntax-grid{grid-template-columns:1fr}.command-links{grid-template-columns:1fr}.command-stats{gap:20px}.command-card{padding:14px}}
+
+/* Plain-language command explanations */
+.command-explanation{margin:10px 0 13px;padding:11px 12px;border-left:3px solid #6c9bc9;border-radius:7px;background:var(--surface,#f3f6fa)}
+.command-explanation strong{display:block;margin-bottom:4px;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:#35638f}
+.command-explanation p{margin:0;font-size:11px;line-height:1.65;color:var(--text,#334155)}
