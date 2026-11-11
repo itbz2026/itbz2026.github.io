@@ -3,53 +3,84 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Technische IT Knowledge Base für Administration, Infrastruktur, Netzwerk und Troubleshooting.">
-  <title>IT Knowledge Base</title>
+  <meta name="description" content="IT Knowledge Base für Windows Server, Active Directory, Cisco, Proxmox, Linux, Docker und praktische IT-Administration.">
+  <meta name="theme-color" content="#14263d">
+  <title>IT Knowledge Base | IT Admin Portal</title>
   <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body class="home-page">
 <div class="layout">
   <aside>
-    <div class="brand">IT Knowledge Base<small>Technical documentation</small></div>
+    <div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div>
     <div class="navtitle">Navigation</div>
     <nav><a href="index.html" aria-current="page">Übersicht</a></nav>
   </aside>
+
   <main>
     <div class="top">
-      <span>Knowledge Base / Übersicht</span>
+      <span>IT Knowledge Base <span aria-hidden="true">/</span> Workspace</span>
       <span class="muted">IT Administration · Technical Reference</span>
     </div>
-    <header class="hero">
-      <small>Infrastructure · Networking · Systems · Operations</small>
-      <h1>IT Knowledge Base</h1>
-      <p>Technische Anleitungen, Admin-Befehle und Troubleshooting – kompakt nach Themen sortiert.</p>
+
+    <header class="home-hero">
+      <div class="home-hero-copy">
+        <span class="home-eyebrow">YOUR IT ADMIN WORKSPACE</span>
+        <h1>IT Administration,<br><span>simplified.</span></h1>
+        <p>Technische Referenzen, Admin-Befehle und praktische Lösungen – klar strukturiert an einem Ort.</p>
+      </div>
+      <div class="home-search-area">
+        <label for="home-search-placeholder">WAS SUCHST DU?</label>
+        <div id="home-search-slot" aria-label="Gesamte Knowledge Base durchsuchen">
+          <span class="home-search-fallback">Suche wird geladen …</span>
+        </div>
+        <small>Suche über Dokumentationsseiten und technische Themen</small>
+      </div>
+      <div class="home-hero-decoration" aria-hidden="true"><span>CLI</span><i></i></div>
     </header>
 
-    <div class="sectionhead">
-      <h1>Kategorien</h1>
-      <p>Thema öffnen. Befehlsreferenzen und Unterseiten findest du in der Navigation.</p>
-    </div>
+    <section class="home-section" aria-labelledby="categories-title">
+      <div class="home-section-heading">
+        <div>
+          <span class="home-kicker">KNOWLEDGE AREAS</span>
+          <h2 id="categories-title">Themen entdecken</h2>
+          <p>Wähle einen Bereich und springe direkt zur passenden Dokumentation.</p>
+        </div>
+        <span class="home-section-count">12 Bereiche</span>
+      </div>
 
-    <div class="grid">
-      <a class="category" href="pages/windows-server.html">🖥️<b>Windows Server</b><span>Rollen, Dienste, PowerShell und Administration.</span></a>
-      <a class="category" href="pages/active-directory.html">👥<b>Active Directory</b><span>Benutzer, Gruppen, GPO, DNS und Replikation.</span></a>
-      <a class="category" href="pages/networking.html">🌐<b>Networking</b><span>IP, Subnetting, DNS, DHCP, Routing und VLANs.</span></a>
-      <a class="category" href="pages/cisco-networking.html">🔧<b>Cisco Networking</b><span>Switching, Routing, Wireless und Cisco CLI.</span></a>
-      <a class="category" href="pages/linux.html">🐧<b>Linux & Debian</b><span>Shell, systemd, Netzwerk, Storage und SSH.</span></a>
-      <a class="category" href="pages/virtualisierung.html">▣<b>Virtualisierung</b><span>Hypervisor, virtuelle Maschinen und Netzwerk.</span></a>
-      <a class="category" href="pages/proxmox.html">🖥️<b>Proxmox VE & PBS</b><span>VMs, LXC, Cluster, Storage, Backup und HA.</span></a>
-      <a class="category" href="pages/docker.html">🐳<b>Docker & Containers</b><span>Images, Compose, Volumes und Betrieb.</span></a>
-      <a class="category" href="pages/it-security.html">🔐<b>IT Security</b><span>Hardening, Firewall, MFA und Zugriffsmanagement.</span></a>
-      <a class="category" href="pages/backup-recovery.html">💾<b>Backup & Recovery</b><span>Backup-Strategien, Restore und Notfallplanung.</span></a>
-      <a class="category" href="pages/troubleshooting.html">🛠️<b>Troubleshooting</b><span>Fehler strukturiert eingrenzen und beheben.</span></a>
-      <a class="category" href="pages/command-reference.html">⌨️<b>Command Reference</b><span>Plattformübergreifende Admin-Befehle.</span></a>
-    </div>
+      <div class="home-category-grid">
+        <a class="home-category" href="pages/windows-server.html"><span class="home-category-icon">WS</span><span class="home-category-text"><b>Windows Server</b><small>Rollen, Dienste und PowerShell</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/active-directory.html"><span class="home-category-icon">AD</span><span class="home-category-text"><b>Active Directory</b><small>Benutzer, Gruppen, GPO und DNS</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/networking.html"><span class="home-category-icon">IP</span><span class="home-category-text"><b>Networking</b><small>Subnetting, Routing, DNS und DHCP</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/cisco-networking.html"><span class="home-category-icon">CS</span><span class="home-category-text"><b>Cisco Networking</b><small>Switching, Routing und Wireless</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/linux.html"><span class="home-category-icon">LX</span><span class="home-category-text"><b>Linux &amp; Debian</b><small>Shell, systemd, Netzwerk und Storage</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/virtualisierung.html"><span class="home-category-icon">VM</span><span class="home-category-text"><b>Virtualisierung</b><small>Hypervisor und virtuelle Maschinen</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/proxmox.html"><span class="home-category-icon">PX</span><span class="home-category-text"><b>Proxmox VE &amp; PBS</b><small>VMs, LXC, Cluster, Ceph und HA</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/docker.html"><span class="home-category-icon">DK</span><span class="home-category-text"><b>Docker &amp; Containers</b><small>Images, Compose und Volumes</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/it-security.html"><span class="home-category-icon">SEC</span><span class="home-category-text"><b>IT Security</b><small>Hardening, Firewall und Zugriffe</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/backup-recovery.html"><span class="home-category-icon">B/R</span><span class="home-category-text"><b>Backup &amp; Recovery</b><small>Backup-Strategien und Restore</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category" href="pages/troubleshooting.html"><span class="home-category-icon">FIX</span><span class="home-category-text"><b>Troubleshooting</b><small>Fehler systematisch eingrenzen</small></span><span class="home-arrow">↗</span></a>
+        <a class="home-category home-category-featured" href="pages/command-reference.html"><span class="home-category-icon">CLI</span><span class="home-category-text"><b>Command Reference</b><small>Admin-Befehle für alle Plattformen</small></span><span class="home-arrow">↗</span></a>
+      </div>
+    </section>
 
-    <div class="sectionhead">
-      <h2>Aufbau</h2>
-      <p>Übersichtsseiten führen in ein Thema ein. Die verlinkten Referenzseiten enthalten zusätzliche Befehle, Parameter und Diagnosebeispiele.</p>
-    </div>
-    <footer>IT Knowledge Base · Bestehende Themen- und Referenzseiten bleiben über die Navigation erreichbar.</footer>
+    <section class="home-section" aria-labelledby="quick-title">
+      <div class="home-section-heading">
+        <div>
+          <span class="home-kicker">QUICK ACCESS</span>
+          <h2 id="quick-title">Direkt zum Ziel</h2>
+          <p>Häufig benötigte Bereiche ohne Umwege öffnen.</p>
+        </div>
+      </div>
+      <div class="home-quick-grid">
+        <a href="pages/command-reference.html"><span class="home-quick-symbol">&gt;_</span><span><b>Command Center</b><small>Befehle suchen und kopieren</small></span><span class="home-arrow">↗</span></a>
+        <a href="pages/troubleshooting.html"><span class="home-quick-symbol">01</span><span><b>Troubleshooting</b><small>Diagnose und Fehlerbehebung</small></span><span class="home-arrow">↗</span></a>
+        <a href="pages/proxmox.html"><span class="home-quick-symbol">PX</span><span><b>Proxmox Advanced</b><small>Cluster, HA, Ceph und SDN</small></span><span class="home-arrow">↗</span></a>
+        <a href="pages/cisco-networking.html"><span class="home-quick-symbol">CS</span><span><b>Cisco Advanced</b><small>Switching, Routing und Wireless</small></span><span class="home-arrow">↗</span></a>
+      </div>
+    </section>
+
+    <footer>IT Knowledge Base · Praktische IT-Dokumentation für Administration, Infrastruktur und Betrieb.</footer>
   </main>
 </div>
 <script src="/assets/js/navigation.js" defer></script>
