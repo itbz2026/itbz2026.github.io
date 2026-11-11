@@ -1,12 +1,16 @@
-name: Build Markdown articles
+name: Build Markdown articles and search index
 
 on:
   push:
     branches: [main]
     paths:
       - "content/**/*.md"
+      - "pages/**/*.html"
+      - "!pages/generated/**"
+      - "index.html"
       - "scripts/build.py"
       - ".github/workflows/build-markdown.yml"
+      - "data/navigation.json"
   workflow_dispatch:
 
 permissions:
@@ -29,18 +33,18 @@ jobs:
       - name: Install Markdown renderer
         run: pip install Markdown
 
-      - name: Build HTML pages
+      - name: Build HTML pages and global search index
         run: python scripts/build.py
 
-      - name: Commit generated pages
+      - name: Commit generated pages and search index
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pages/generated/
+          git add pages/generated/ data/search-index.json
           if git diff --cached --quiet; then
             echo "No generated changes."
           else
-            git commit -m "Build HTML pages from Markdown sources"
+            git commit -m "Build HTML pages and global search index"
             git pull --rebase origin main
             git push
           fi
