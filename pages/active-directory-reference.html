@@ -46,5 +46,14 @@ nltest /dsgetdc:example.local</code></pre><p><b>Parameter und Hinweise:</b> DNS-
 <article class="article searchable"><span class="tag">10 · Referenz</span><h3>AD-Sicherheit und Audit</h3><p>Least Privilege, Tiering, geschützte Admin-Konten, LAPS und Überwachung privilegierter Gruppen reduzieren Risiken.</p><pre><code>Get-ADGroupMember 'Domain Admins'
 Get-ADGroupMember 'Enterprise Admins'
 Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00
-Get-ADUser -Filter * -Properties PasswordLastSet,LastLogonDate</code></pre><p><b>Parameter und Hinweise:</b> LastLogonDate ist repliziert und verzögert; für exakte letzte Anmeldung die nicht replizierten lastLogon-Werte aller DCs auswerten.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Active Directory · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
+Get-ADUser -Filter * -Properties PasswordLastSet,LastLogonDate</code></pre><p><b>Parameter und Hinweise:</b> LastLogonDate ist repliziert und verzögert; für exakte letzte Anmeldung die nicht replizierten lastLogon-Werte aller DCs auswerten.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><article class="article searchable"><span class="tag">Diagnose</span><h3>Replikation systematisch prüfen</h3><p>Erst Gesamtstatus, dann betroffene Partner und Naming Contexts untersuchen. DNS, Zeit, RPC-Erreichbarkeit und Sites/Subnets gehören zur Ursachenanalyse.</p><pre><code>repadmin /replsummary
+repadmin /showrepl *
+Get-ADReplicationFailure -Target * -Scope Forest
+dcdiag /test:dns /v
+nltest /dsgetdc:example.local</code></pre><div class="note">Domänennamen anpassen. Replikationsfehler nicht durch erzwungene Synchronisation überdecken, bevor die Ursache geklärt ist.</div></article>
+<article class="article searchable"><span class="tag">Diagnose</span><h3>FSMO-Rollen und Global Catalog prüfen</h3><p>Rolleninhaber und erreichbare Domänencontroller dokumentieren.</p><pre><code>netdom query fsmo
+Get-ADForest | Select-Object SchemaMaster,DomainNamingMaster
+Get-ADDomain | Select-Object PDCEmulator,RIDMaster,InfrastructureMaster
+Get-ADDomainController -Filter * | Select-Object HostName,Site,IsGlobalCatalog</code></pre><div class="note">FSMO-Rollen nur nach geplantem Verfahren übertragen oder übernehmen. Seize ist ein Notfallverfahren und kein normaler Failover.</div></article>
+<footer>IT Knowledge Base · Active Directory · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
