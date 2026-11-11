@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Cisco Switching: VLAN, VTP, Trunking, STP, EtherChannel und Layer-2-Sicherheit."><title>Cisco Switching | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Cisco / Cisco Switching</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a><div class="sectionhead"><h1>Cisco Switching</h1><p>VLAN · VTP · Trunk · STP · EtherChannel</p></div>
+<article class="article searchable"><span class="tag">VLAN</span><h3>VLAN erstellen und Access-Port zuweisen</h3><p>VLANs trennen ein Layer-2-Netz in eigene Broadcast-Domänen.</p><pre><code>show vlan brief
+configure terminal
+vlan 10
+ name CLIENTS
+vlan 20
+ name SERVERS
+interface gigabitEthernet 1/0/10
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+end
+show vlan brief</code></pre><p>Prüfen: <code>show interfaces gi1/0/10 switchport</code>. Ein VLAN muss vorhanden und der Port dem richtigen VLAN zugeordnet sein.</p></article>
+<article class="article searchable"><span class="tag">VTP</span><h3>VTP Version 1, 2 und 3</h3><div class="tablewrap"><table><tr><th>Version</th><th>Merkmale</th></tr><tr><td>VTP v1</td><td>Grundlegende VLAN-Verteilung zwischen Switches derselben Domain.</td></tr><tr><td>VTP v2</td><td>Erweiterte Behandlung bestimmter VLAN-Informationen und Konsistenzprüfungen.</td></tr><tr><td>VTP v3</td><td>Unterstützt u. a. Extended VLANs und Private VLANs; Primary-Server-Konzept.</td></tr></table></div><p>Modi: Server, Client, Transparent; VTP Off ist plattformabhängig. Domain, Version, Passwort und Trunk-Verbindungen müssen zusammenpassen.</p><pre><code>show vtp status
+show vtp counters
+show vlan brief
+
+! Lab-Beispiel VTP v3
+configure terminal
+vtp domain LABNET
+vtp version 3
+vtp mode server
+vtp password CHANGE-ME
+end
+vtp primary vlan
+show vtp status</code></pre><div class="warn">VTP kann VLAN-Datenbanken unerwartet verändern. Gebrauchte Switches vor dem Anschluss isolieren und Domain sowie Configuration Revision prüfen. VTP v3 Primary nur bewusst vergeben. Syntax und Interoperabilität sind releaseabhängig.</div></article>
+<article class="article searchable"><span class="tag">Trunking</span><h3>802.1Q Trunk konfigurieren</h3><pre><code>configure terminal
+interface gigabitEthernet 1/0/48
+ description Uplink-to-SW2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+ switchport trunk native vlan 999
+ no shutdown
+end
+show interfaces trunk
+show interfaces gi1/0/48 switchport</code></pre><p>Native VLAN und erlaubte VLANs auf beiden Enden abstimmen. VLAN 999 ist hier nur ein Beispiel für ein ungenutztes Native VLAN.</p></article>
+<article class="article searchable"><span class="tag">STP / RSTP</span><h3>Spanning Tree konfigurieren</h3><pre><code>show spanning-tree
+show spanning-tree summary
+show spanning-tree vlan 10
+show spanning-tree root
+
+configure terminal
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10 root primary
+interface range gigabitEthernet 1/0/1-24
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+end</code></pre><div class="warn">PortFast und BPDU Guard nur an geeigneten Endgeräte-Ports einsetzen, nicht auf Switch-Uplinks. Root-Bridge und Topologie vor Änderungen prüfen.</div></article>
+<article class="article searchable"><span class="tag">EtherChannel / LACP</span><h3>Ports mit LACP bündeln</h3><pre><code>configure terminal
+interface range gigabitEthernet 1/0/47-48
+ channel-group 1 mode active
+ no shutdown
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+end
+show etherchannel summary
+show interfaces port-channel 1</code></pre><p>Alle Member-Ports müssen kompatible Geschwindigkeit, Duplex-, VLAN- und Trunk-Einstellungen haben. LACP-Modi: active/passive.</p></article>
+<article class="article searchable"><span class="tag">Layer 2 Security</span><h3>Port Security, DHCP Snooping und DAI</h3><pre><code>! Port Security auf einem Endgeräte-Port
+interface gigabitEthernet 1/0/10
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+
+! DHCP Snooping
+ip dhcp snooping
+ip dhcp snooping vlan 10,20
+interface gigabitEthernet 1/0/48
+ ip dhcp snooping trust
+
+! Dynamic ARP Inspection
+ip arp inspection vlan 10,20
+interface gigabitEthernet 1/0/48
+ ip arp inspection trust</code></pre><p>Nur vertrauenswürdige Uplinks als trusted markieren. DAI benötigt passende DHCP-Snooping-Bindings oder ARP-ACLs für statische Hosts.</p></article>
+<article class="article searchable"><span class="tag">Weitere Switching-Befehle</span><h3>MAC-Tabelle, SPAN und Storm Control</h3><pre><code>show mac address-table
+show mac address-table dynamic
+show mac address-table vlan 10
+show interfaces status
+show interfaces counters
+show cdp neighbors detail
+show lldp neighbors detail
+
+! SPAN-Beispiel
+monitor session 1 source interface gi1/0/10 both
+monitor session 1 destination interface gi1/0/20
+show monitor session 1
+
+! Storm Control – Schwellenwert als Beispiel
+interface gi1/0/10
+ storm-control broadcast level 5.00
+ storm-control action trap</code></pre><p>SPAN-Zielports sind für die Analyse reserviert. Storm-Control-Schwellenwerte anhand des realen Verkehrs planen.</p></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
