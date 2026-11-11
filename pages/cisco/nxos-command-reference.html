@@ -76,6 +76,47 @@ show logging logfile | include Ethernet1/1</code></pre><p><b>Praxis:</b> Mit Int
 show interface Ethernet1/1</code></pre><p><b>Praxis:</b> CRC, Drops, Discards und Link-Flaps mit Transceiver- und Kabeldiagnose abgleichen.</p></article>
 <div id="empty" class="note" hidden>Keine passenden NX-OS-Befehle gefunden.</div>
 <div class="note"><b>Abgrenzung:</b> Diese Seite behandelt Nexus NX-OS. Catalyst IOS/IOS-XE-Befehle findest du in der allgemeinen <a href="command-reference.html">Cisco Command Reference</a>. Für produktive Änderungen gelten stets die Release Notes und die offizielle Nexus Command Reference.</div>
+<div class="sectionhead"><h2>vPC – Virtual Port Channel</h2></div>
+<article class="article searchable"><span class="tag">vPC Grundlagen</span><h3>vPC-Status und Konsistenz prüfen</h3><p>vPC erlaubt einem verbundenen Gerät, einen Port-Channel logisch über zwei Nexus-Peers aufzubauen. Peer-Link, Keepalive und Konsistenzparameter müssen korrekt funktionieren.</p><pre><code>show vpc
+show vpc brief
+show vpc role
+show vpc peer-keepalive
+show vpc consistency-parameters global
+show port-channel summary</code></pre><p><b>Prüfen:</b> Peer adjacency, Peer-Link, Keepalive und Consistency-Status gemeinsam auswerten. Die genaue Ausgabe unterscheidet sich nach NX-OS-Release.</p></article>
+<article class="article searchable"><span class="tag">vPC Konfiguration</span><h3>vPC Peer-Link – vereinfachtes Lab-Beispiel</h3><p>Beispiel für zwei unterstützte Nexus-Peers. Dokumentationsadressen verwenden und die Peer-Keepalive-Verbindung über einen separaten Pfad planen.</p><pre><code>feature lacp
+feature vpc
+vpc domain 10
+ peer-keepalive destination 192.0.2.2 source 192.0.2.1 vrf management
+!
+interface port-channel100
+ switchport
+ switchport mode trunk
+ spanning-tree port type network
+ vpc peer-link
+!
+interface Ethernet1/49
+ channel-group 100 mode active
+!
+interface Ethernet1/50
+ channel-group 100 mode active</code></pre><div class="warn"><b>Achtung:</b> Auf dem zweiten Peer Source- und Destination-IP passend tauschen. Peer-Link-Mitglieder, erlaubte VLANs, MTU und Peer-Keepalive müssen zum Design passen. Dies ist ein Lab-Skelett, keine vollständige produktive Vorlage.</div></article>
+<article class="article searchable"><span class="tag">vPC Member Port</span><h3>Downstream-Port-Channel als vPC anbinden</h3><p>Der Downstream-Port-Channel erhält auf beiden Nexus-Peers dieselbe vPC-ID. Die angeschlossene Gegenstelle muss einen passenden LACP-Port-Channel verwenden.</p><pre><code>interface port-channel10
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ vpc 10
+!
+interface Ethernet1/10
+ channel-group 10 mode active
+!
+show port-channel summary
+show vpc brief
+show interface trunk</code></pre><div class="note">Port-Channel- und VLAN-Konfiguration auf beiden Peers konsistent halten. Die tatsächliche Member-Port-Konfiguration muss zum Switchmodell und NX-OS-Release passen.</div></article>
+<article class="article searchable"><span class="tag">vPC Troubleshooting</span><h3>Peer-Link oder vPC ist down</h3><p>Fehler nicht durch Änderungen an beiden Peers gleichzeitig beheben. Zuerst Peer-Link, Keepalive und LACP-Status erfassen.</p><pre><code>show vpc
+show vpc brief
+show vpc peer-keepalive
+show port-channel summary
+show interface port-channel100
+show logging logfile</code></pre><div class="note">Keepalive-Ausfall und Peer-Link-Ausfall haben unterschiedliche Auswirkungen. Split-Brain-Risiko beachten und die offizielle Cisco-Prozedur für das konkrete Fehlerbild verwenden.</div></article>
 <div class="sectionhead"><h2>Offizielle Cisco-Dokumentation</h2></div><ul><li><a href="https://www.cisco.com/c/en/us/support/switches/nexus-9000-series-switches/products-command-reference-list.html" target="_blank" rel="noopener">Cisco Nexus 9000 Command References</a></li><li><a href="https://developer.cisco.com/docs/nx-os/" target="_blank" rel="noopener">Cisco NX-OS Developer Documentation</a></li></ul>
 <footer>IT Knowledge Base · Nexus NX-OS Command Reference</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
