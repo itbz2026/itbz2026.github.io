@@ -1,0 +1,251 @@
+{
+  "brand": "IT Knowledge Base",
+  "subtitle": "Practical IT documentation",
+  "sections": [
+    {
+      "label": "Start",
+      "items": [
+        {
+          "label": "Übersicht",
+          "href": "/index.html"
+        }
+      ]
+    },
+    {
+      "label": "Infrastructure",
+      "items": [
+        {
+          "label": "Windows Server",
+          "href": "/pages/windows-server.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/windows-server-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Active Directory",
+          "href": "/pages/active-directory.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/active-directory-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Networking",
+          "href": "/pages/networking.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/networking-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Cisco Networking",
+          "href": "/pages/cisco-networking.html",
+          "children": [
+            {
+              "label": "Switching",
+              "href": "/pages/cisco/switching.html"
+            },
+            {
+              "label": "Routing",
+              "href": "/pages/cisco/routing.html"
+            },
+            {
+              "label": "Redundancy",
+              "href": "/pages/cisco/redundancy.html"
+            },
+            {
+              "label": "Network Security",
+              "href": "/pages/cisco/security.html"
+            },
+            {
+              "label": "Catalyst 9800 Wireless",
+              "href": "/pages/cisco/wireless-9800.html"
+            },
+            {
+              "label": "Troubleshooting",
+              "href": "/pages/cisco/troubleshooting.html"
+            },
+            {
+              "label": "Practical Labs",
+              "href": "/pages/cisco/practical-labs.html"
+            },
+            {
+              "label": "Nexus / NX-OS",
+              "href": "/pages/cisco/nxos-command-reference.html"
+            },
+            {
+              "label": "Cisco Command Reference",
+              "href": "/pages/cisco/command-reference.html"
+            },
+            {
+              "label": "Legacy Reference",
+              "href": "/pages/cisco/legacy-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Linux & Debian",
+          "href": "/pages/linux.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/linux-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Virtualization",
+          "href": "/pages/virtualisierung.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/virtualisierung-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Proxmox VE & PBS",
+          "href": "/pages/proxmox.html",
+          "children": [
+            {
+              "label": "Fundamentals & Installation",
+              "href": "/pages/proxmox/grundlagen-installation.html"
+            },
+            {
+              "label": "Cluster & Node Management",
+              "href": "/pages/proxmox/cluster-node-management.html"
+            },
+            {
+              "label": "Virtual Machines",
+              "href": "/pages/proxmox/virtuelle-maschinen.html"
+            },
+            {
+              "label": "LXC Containers",
+              "href": "/pages/proxmox/lxc-container.html"
+            },
+            {
+              "label": "Storage",
+              "href": "/pages/proxmox/storage.html"
+            },
+            {
+              "label": "Network & Firewall",
+              "href": "/pages/proxmox/netzwerk-firewall.html"
+            },
+            {
+              "label": "Backup & Restore",
+              "href": "/pages/proxmox/backup-restore.html"
+            },
+            {
+              "label": "High Availability",
+              "href": "/pages/proxmox/high-availability.html"
+            },
+            {
+              "label": "Proxmox Backup Server",
+              "href": "/pages/proxmox/backup-server.html"
+            },
+            {
+              "label": "Security & Users",
+              "href": "/pages/proxmox/sicherheit-benutzer.html"
+            },
+            {
+              "label": "Hardware Passthrough",
+              "href": "/pages/proxmox/hardware-passthrough.html"
+            },
+            {
+              "label": "Monitoring & Performance",
+              "href": "/pages/proxmox/monitoring-performance.html"
+            },
+            {
+              "label": "Updates & Maintenance",
+              "href": "/pages/proxmox/updates-wartung.html"
+            },
+            {
+              "label": "Automation & API",
+              "href": "/pages/proxmox/automatisierung-api.html"
+            },
+            {
+              "label": "Troubleshooting & Recovery",
+              "href": "/pages/proxmox/troubleshooting-recovery.html"
+            },
+            {
+              "label": "Practical Labs",
+              "href": "/pages/proxmox/praxis-labs.html"
+            },
+            {
+              "label": "SDN",
+              "href": "/pages/proxmox/sdn.html"
+            },
+            {
+              "label": "Ceph",
+              "href": "/pages/proxmox/ceph.html"
+            },
+            {
+              "label": "Internals",
+              "href": "/pages/proxmox/internals.html"
+            },
+            {
+              "label": "Datacenter Manager",
+              "href": "/pages/proxmox/datacenter-manager.html"
+            }
+          ]
+        },
+        {
+          "label": "Docker & Containers",
+          "href": "/pages/docker.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/docker-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "IT Security",
+          "href": "/pages/it-security.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/it-security-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Backup & Recovery",
+          "href": "/pages/backup-recovery.html",
+          "children": [
+            {
+              "label": "Command Reference",
+              "href": "/pages/backup-recovery-reference.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Knowledge & Operations",
+      "items": [
+        {
+          "label": "Troubleshooting",
+          "href": "/pages/troubleshooting.html",
+          "children": [
+            {
+              "label": "Extended Reference",
+              "href": "/pages/troubleshooting-reference.html"
+            }
+          ]
+        },
+        {
+          "label": "Command Reference",
+          "href": "/pages/command-reference.html"
+        }
+      ]
+    }
+  ]
+}
