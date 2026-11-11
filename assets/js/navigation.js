@@ -135,7 +135,7 @@
     toggle.type = "button";
     toggle.setAttribute("aria-expanded", "false");
     toggle.setAttribute("aria-controls", "kb-navigation");
-    toggle.textContent = "☰ Menu";
+    toggle.textContent = "☰ Navigation";
 
     const nav = document.createElement("nav");
     nav.id = "kb-navigation";
@@ -152,8 +152,22 @@
         if (item.children && item.children.length) {
           const group = document.createElement("div");
           group.className = "nav-children";
+          const expanded = isInBranch(item);
+          const childToggle = document.createElement("button");
+          childToggle.className = "nav-group-toggle";
+          childToggle.type = "button";
+          childToggle.textContent = expanded ? "Unterseiten ausblenden" : "Unterseiten anzeigen";
+          childToggle.setAttribute("aria-expanded", String(expanded));
+          group.hidden = !expanded;
           item.children.forEach(child => group.appendChild(makeLink(child)));
-          if (isInBranch(item)) group.classList.add("is-current-branch");
+          if (expanded) group.classList.add("is-current-branch");
+          childToggle.addEventListener("click", () => {
+            const open = childToggle.getAttribute("aria-expanded") === "true";
+            childToggle.setAttribute("aria-expanded", String(!open));
+            group.hidden = open;
+            childToggle.textContent = open ? "Unterseiten anzeigen" : "Unterseiten ausblenden";
+          });
+          wrapper.appendChild(childToggle);
           wrapper.appendChild(group);
         }
         nav.appendChild(wrapper);
