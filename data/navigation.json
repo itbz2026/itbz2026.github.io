@@ -193,6 +193,10 @@
             {
               "label": "Datacenter Manager",
               "href": "/pages/proxmox/datacenter-manager.html"
+            },
+            {
+              "label": "Storage – Markdown Pilot",
+              "href": "/pages/generated/proxmox-storage.html"
             }
           ]
         },
