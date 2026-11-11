@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Cisco Nexus NX-OS Command Reference mit Befehlen, Syntax, Parametern und Beispielen."><title>Cisco Nexus NX-OS | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Startseite</a><a href="command-reference.html">Allgemeine Command Reference</a><a href="nxos-command-reference.html" aria-current="page">Nexus NX-OS</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside>
+<main><div class="top"><span>IT Knowledge Base / Cisco / Nexus NX-OS</span></div><a class="back" href="../cisco-networking.html">← Cisco Übersicht</a>
+<header class="hero"><small>Nexus · NX-OS · Data Center Switching</small><h1>Nexus NX-OS Command Reference</h1><p>Eigene Befehlsreferenz für Cisco Nexus. NX-OS ist nicht identisch mit Catalyst IOS/IOS-XE: Syntax, Features und Betriebsmodell immer anhand des Nexus-Modells und Releases prüfen.</p></header>
+<div class="searchbox"><input id="search" type="search" placeholder="NX-OS-Befehl suchen, z. B. show feature, port-channel, vpc …" aria-label="NX-OS-Befehle durchsuchen"></div>
+<div class="note"><b>Wichtig:</b> Nexus-Funktionen werden häufig mit <code>feature</code> aktiviert. Nicht jede Funktion ist auf jedem Nexus-Modell oder NX-OS-Release verfügbar. Vor Änderungen Hardware-/Software-Kompatibilität und Auswirkungen auf den Fabric prüfen.</div>
+<div class="sectionhead"><h2>System und Feature-Verwaltung</h2></div>
+<article class="article searchable"><h3>show version</h3><p><b>Zweck:</b> Zeigt Modell, NX-OS-Version, Systemlaufzeit und Hardwareinformationen.</p><p><b>Plattform:</b> Cisco Nexus NX-OS.</p><p><b>Syntax:</b> <code>show version</code></p><pre><code>show version</code></pre><p><b>Praxis:</b> Vor jeder Änderung genaue Plattform und NX-OS-Version dokumentieren.</p></article>
+<article class="article searchable"><h3>show module</h3><p><b>Zweck:</b> Zeigt installierte Module und deren Status, soweit das Nexus-Modell modulare Hardware verwendet.</p><p><b>Plattform:</b> Modellabhängig auf Nexus NX-OS.</p><p><b>Syntax:</b> <code>show module</code></p><pre><code>show module</code></pre><p><b>Hinweis:</b> Bei Fixed-Form-Factor-Geräten können Informationen und Ausgabe abweichen.</p></article>
+<article class="article searchable"><h3>show feature</h3><p><b>Zweck:</b> Zeigt unterstützte und aktivierte NX-OS-Features.</p><p><b>Plattform:</b> Nexus NX-OS.</p><p><b>Syntax:</b> <code>show feature</code></p><pre><code>show feature
+show feature | include ospf</code></pre><p><b>Praxis:</b> Vor Routing-, vPC- oder anderen Feature-Konfigurationen prüfen, ob die benötigte Funktion verfügbar und aktiviert ist.</p></article>
+<article class="article searchable"><h3>feature ospf</h3><p><b>Zweck:</b> Aktiviert das OSPF-Feature auf unterstützten Nexus-Plattformen.</p><p><b>Plattform:</b> Nexus NX-OS; Lizenz-, Plattform- und Release-Anforderungen prüfen.</p><p><b>Syntax:</b> <code>feature ospf</code></p><pre><code>configure terminal
+feature ospf
+show feature | include ospf</code></pre><p><b>Achtung:</b> Das Aktivieren eines Features allein konfiguriert noch keine OSPF-Nachbarschaften oder Routen.</p></article>
+<div class="sectionhead"><h2>Switching und VLAN</h2></div>
+<article class="article searchable"><h3>vlan</h3><p><b>Zweck:</b> Erstellt ein VLAN und öffnet dessen Konfigurationsmodus.</p><p><b>Plattform:</b> Nexus NX-OS.</p><p><b>Syntax:</b> <code>vlan VLAN-ID</code>; anschließend optional <code>name VLAN-NAME</code>.</p><pre><code>configure terminal
+vlan 20
+ name SERVERS
+show vlan brief</code></pre><p><b>Prüfen:</b> VLAN-Status und VLAN-Zuordnung der Interfaces kontrollieren.</p></article>
+<article class="article searchable"><h3>switchport mode</h3><p><b>Zweck:</b> Definiert einen Layer-2-Port als Access oder Trunk.</p><p><b>Plattform:</b> Nexus NX-OS Ethernet-Interfaces mit Layer-2-Modus.</p><p><b>Syntax:</b> <code>switchport mode { access | trunk }</code></p><pre><code>interface Ethernet1/10
+ switchport
+ switchport mode access
+ switchport access vlan 20
+ no shutdown</code></pre><p><b>Hinweis:</b> Auf Nexus kann ein Interface zunächst Layer 3 sein. <code>switchport</code> setzt es – sofern unterstützt – in den Layer-2-Modus.</p></article>
+<article class="article searchable"><h3>switchport trunk allowed vlan</h3><p><b>Zweck:</b> Begrenzt die VLANs, die über einen Trunk transportiert werden.</p><p><b>Plattform:</b> Nexus NX-OS Layer-2-Trunk-Interfaces.</p><p><b>Syntax:</b> <code>switchport trunk allowed vlan { VLAN-LIST | add VLAN-LIST | remove VLAN-LIST | all | none }</code>; genaue Optionen releaseabhängig.</p><pre><code>interface Ethernet1/1
+ switchport
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+show interface trunk</code></pre><p><b>Achtung:</b> VLAN-Listen auf beiden Seiten des Links vergleichen. Eine falsche Liste kann VLANs vom Fabric trennen.</p></article>
+<article class="article searchable"><h3>show interface status</h3><p><b>Zweck:</b> Zeigt Portstatus und grundlegende Interface-Informationen.</p><p><b>Plattform:</b> Nexus NX-OS.</p><p><b>Syntax:</b> <code>show interface status</code></p><pre><code>show interface status
+show interface Ethernet1/1</code></pre><p><b>Hinweis:</b> NX-OS verwendet in vielen Befehlen die Schreibweise <code>show interface</code> im Singular.</p></article>
+<div class="sectionhead"><h2>Port-Channel und vPC</h2></div>
+<article class="article searchable"><h3>feature lacp</h3><p><b>Zweck:</b> Aktiviert LACP-Unterstützung auf Nexus-Plattformen, auf denen das Feature separat eingeschaltet werden muss.</p><p><b>Plattform:</b> Nexus NX-OS; Feature-Anforderungen modell-/releaseabhängig.</p><p><b>Syntax:</b> <code>feature lacp</code></p><pre><code>configure terminal
+feature lacp
+show feature | include lacp</code></pre></article>
+<article class="article searchable"><h3>channel-group</h3><p><b>Zweck:</b> Fügt ein Ethernet-Interface einem Port-Channel hinzu.</p><p><b>Plattform:</b> Nexus NX-OS; LACP oder statische Bündelung nach Design.</p><p><b>Syntax:</b> <code>channel-group GROUP-ID mode { active | passive | on }</code></p><p><b>Parameter:</b> <code>GROUP-ID</code> = Port-Channel-Nummer; <code>active/passive</code> = LACP; <code>on</code> = statische Bündelung ohne LACP-Aushandlung.</p><pre><code>feature lacp
+interface Ethernet1/1
+ channel-group 10 mode active
+interface Ethernet1/2
+ channel-group 10 mode active
+interface port-channel10
+ switchport
+ switchport mode trunk
+ no shutdown
+show port-channel summary</code></pre><p><b>Prüfen:</b> Beide Seiten müssen konsistente Einstellungen haben; Member-Ports müssen als gebündelt angezeigt werden.</p></article>
+<article class="article searchable"><h3>show port-channel summary</h3><p><b>Zweck:</b> Zeigt Port-Channel-Gruppen, Protokoll und Member-Status.</p><p><b>Plattform:</b> Nexus NX-OS.</p><p><b>Syntax:</b> <code>show port-channel summary</code></p><pre><code>show port-channel summary
+show interface port-channel 10</code></pre><p><b>Auswertung:</b> Prüfe, ob die erwarteten Member-Interfaces aktiv und gebündelt sind; Statuskennzeichen in der Ausgabe anhand der jeweiligen NX-OS-Version interpretieren.</p></article>
+<article class="article searchable"><h3>show vpc</h3><p><b>Zweck:</b> Zeigt vPC-Domäne und Peer-/Consistency-Status.</p><p><b>Plattform:</b> Nexus-Modelle mit vPC-Unterstützung.</p><p><b>Syntax:</b> <code>show vpc</code>; ergänzend <code>show vpc brief</code> und <code>show vpc consistency-parameters global</code>, sofern unterstützt.</p><pre><code>show vpc
+show vpc brief
+show vpc consistency-parameters global</code></pre><p><b>Hinweis:</b> vPC benötigt ein sorgfältig geplantes Peer-Link- und Keepalive-Design. Die beiden Peer-Switches müssen kompatible Konfigurationen und unterstützte Plattformen verwenden.</p></article>
+<div class="sectionhead"><h2>Layer 3 und Routing</h2></div>
+<article class="article searchable"><h3>no switchport</h3><p><b>Zweck:</b> Setzt ein Nexus-Interface in den Layer-3-Routed-Modus, sofern das Modell dies unterstützt.</p><p><b>Plattform:</b> Nexus NX-OS.</p><p><b>Syntax:</b> <code>no switchport</code></p><pre><code>interface Ethernet1/10
+ no switchport
+ ip address 192.0.2.1/30
+ no shutdown
+show ip interface brief</code></pre><p><b>Hinweis:</b> IP-Präfixschreibweise und Interface-Fähigkeit anhand der Plattform prüfen.</p></article>
+<article class="article searchable"><h3>ip route</h3><p><b>Zweck:</b> Erstellt eine statische IPv4-Route.</p><p><b>Plattform:</b> Nexus NX-OS; VRF- und Next-Hop-Syntax je nach Version.</p><p><b>Syntax:</b> <code>ip route PREFIX/PREFIX-LENGTH NEXT-HOP</code></p><pre><code>ip route 192.0.2.0/24 198.51.100.1
+show ip route
+show ip route 192.0.2.0/24</code></pre><p><b>Hinweis:</b> Dokumentationsadressen verwenden; Next-Hop-Erreichbarkeit und VRF-Kontext prüfen.</p></article>
+<article class="article searchable"><h3>router ospf</h3><p><b>Zweck:</b> Konfiguriert einen OSPF-Prozess auf Nexus NX-OS.</p><p><b>Plattform:</b> Nexus mit OSPF-Feature und passender Unterstützung.</p><p><b>Syntax:</b> <code>router ospf PROCESS</code>; Interface-Aktivierung erfolgt typischerweise im Interface-Kontext mit <code>ip router ospf PROCESS area AREA</code>.</p><pre><code>feature ospf
+router ospf UNDERLAY
+ router-id 1.1.1.1
+interface Ethernet1/49
+ no switchport
+ ip address 192.0.2.1/30
+ ip router ospf UNDERLAY area 0.0.0.0
+ no shutdown
+show ip ospf neighbors
+show ip route ospf</code></pre><p><b>Wichtig:</b> NX-OS OSPF-Konfiguration unterscheidet sich von IOS/IOS-XE. Area- und Interface-Befehle nicht ungeprüft übertragen.</p></article>
+<div class="sectionhead"><h2>Speichern und Fehlerdiagnose</h2></div>
+<article class="article searchable"><h3>copy running-config startup-config</h3><p><b>Zweck:</b> Speichert die laufende Konfiguration dauerhaft.</p><p><b>Plattform:</b> Nexus NX-OS.</p><p><b>Syntax:</b> <code>copy running-config startup-config</code></p><pre><code>copy running-config startup-config</code></pre><p><b>Hinweis:</b> Vorher Konfiguration und Auswirkungen kontrollieren.</p></article>
+<article class="article searchable"><h3>show logging logfile</h3><p><b>Zweck:</b> Zeigt Einträge aus dem NX-OS-System-Logfile.</p><p><b>Plattform:</b> Nexus NX-OS; verfügbare Filteroptionen releaseabhängig.</p><p><b>Syntax:</b> <code>show logging logfile</code></p><pre><code>show logging logfile
+show logging logfile | include Ethernet1/1</code></pre><p><b>Praxis:</b> Mit Interface-Countern und Zeitstempeln korrelieren.</p></article>
+<article class="article searchable"><h3>show interface counters errors</h3><p><b>Zweck:</b> Prüft Fehlerzähler der Interfaces.</p><p><b>Plattform:</b> Nexus NX-OS; verfügbare Counter je Plattform.</p><p><b>Syntax:</b> <code>show interface counters errors</code></p><pre><code>show interface counters errors
+show interface Ethernet1/1</code></pre><p><b>Praxis:</b> CRC, Drops, Discards und Link-Flaps mit Transceiver- und Kabeldiagnose abgleichen.</p></article>
+<div id="empty" class="note" hidden>Keine passenden NX-OS-Befehle gefunden.</div>
+<div class="note"><b>Abgrenzung:</b> Diese Seite behandelt Nexus NX-OS. Catalyst IOS/IOS-XE-Befehle findest du in der allgemeinen <a href="command-reference.html">Cisco Command Reference</a>. Für produktive Änderungen gelten stets die Release Notes und die offizielle Nexus Command Reference.</div>
+<div class="sectionhead"><h2>Offizielle Cisco-Dokumentation</h2></div><ul><li><a href="https://www.cisco.com/c/en/us/support/switches/nexus-9000-series-switches/products-command-reference-list.html" target="_blank" rel="noopener">Cisco Nexus 9000 Command References</a></li><li><a href="https://developer.cisco.com/docs/nx-os/" target="_blank" rel="noopener">Cisco NX-OS Developer Documentation</a></li></ul>
+<footer>IT Knowledge Base · Nexus NX-OS Command Reference</footer></main></div><script src="../../assets/search.js"></script></body></html>
