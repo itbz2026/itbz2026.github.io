@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Debian, Shell, Dienste, SSH und Rechte."><title>Linux | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Linux</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Linux</h1><p>Debian, Shell und Systemverwaltung</p></div>
+<article class="article searchable"><span class="tag">Administration</span><h3>System und Dienste verwalten</h3><pre><code>sudo apt update && sudo apt upgrade
+systemctl status ssh
+sudo systemctl restart ssh
+sudo systemctl enable ssh
+df -h
+free -h
+lsblk
+ip addr
+ip route
+ss -tulpn</code></pre></article>
+<article class="article searchable"><span class="tag">Rechte</span><h3>Dateiberechtigungen</h3><p>Linux-Rechte gelten für Eigentümer, Gruppe und andere. Die Rechte sind Lesen (r), Schreiben (w) und Ausführen (x).</p><pre><code>ls -l datei.txt
+chmod 640 datei.txt
+chown user:gruppe datei.txt</code></pre><p><code>640</code> bedeutet: Eigentümer lesen/schreiben, Gruppe lesen, andere keine Rechte.</p></article>
+<article class="article searchable"><span class="tag">SSH</span><h3>SSH absichern</h3><ul><li>SSH-Schlüssel bevorzugen und sicher verwahren.</li><li>Root-Login deaktivieren, wenn ein getesteter Admin-Zugang besteht.</li><li>Zugriff per Firewall auf notwendige Quellnetze begrenzen.</li><li>Konfiguration vor Neustart mit <code>sshd -t</code> prüfen.</li></ul></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Linux · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
