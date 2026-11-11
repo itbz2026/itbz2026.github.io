@@ -1156,5 +1156,401 @@
     "verify": "KB-Nummern und Installationsdaten mit Windows Update History oder dem Update-Katalog abgleichen.",
     "notes": "Get-HotFix zeigt nicht zwingend jedes Update und ist kein vollständiger Ersatz für Windows Update-, DISM- oder Configuration-Manager-Berichte.",
     "comment": "Listet installierte Windows-Hotfixes und KB-Updates mit Installationsdatum auf. Das ist hilfreich, um den Patchstand eines Servers zu prüfen und festzustellen, ob ein bestimmtes Update installiert wurde."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "System Administration",
+    "risk": "low",
+    "name": "Get-WinEvent -LogName System -MaxEvents 50",
+    "purpose": "Zeigt die letzten 50 Ereignisse aus dem Windows-Systemprotokoll.",
+    "syntax": "Get-WinEvent -LogName <LOGNAME> -MaxEvents <COUNT>",
+    "params": [
+      [
+        "-LogName",
+        "Protokollname, z. B. System, Application oder Security."
+      ],
+      [
+        "-MaxEvents",
+        "Begrenzt die Anzahl der zurückgegebenen Ereignisse."
+      ]
+    ],
+    "example": "Get-WinEvent -LogName System -MaxEvents 50 | Format-Table TimeCreated, Id, LevelDisplayName, Message -Wrap",
+    "verify": "Zeitstempel, Event-ID, Level und Meldung prüfen.",
+    "notes": "Für Security-Logs sind erhöhte Berechtigungen erforderlich.",
+    "comment": "Liest aktuelle Windows-Ereignisse aus einem angegebenen Eventlog. Ideal für die erste Fehleranalyse von Systemdiensten und Treibern.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "System Administration",
+    "risk": "low",
+    "name": "Get-ScheduledTask",
+    "purpose": "Listet geplante Windows-Aufgaben und ihren Status.",
+    "syntax": "Get-ScheduledTask [-TaskName <NAME>] [-TaskPath <PATH>]",
+    "params": [
+      [
+        "-TaskName",
+        "Filtert nach Aufgabenname."
+      ],
+      [
+        "-TaskPath",
+        "Filtert nach Aufgabenordner."
+      ]
+    ],
+    "example": "Get-ScheduledTask | Where-Object State -ne 'Disabled' | Select-Object TaskName,TaskPath,State",
+    "verify": "Get-ScheduledTaskInfo -TaskName '<TASK>' -TaskPath '<PATH>'",
+    "notes": "Für Änderungen an Aufgaben sind passende Berechtigungen erforderlich.",
+    "comment": "Zeigt registrierte Aufgaben der Windows-Aufgabenplanung. Zusammen mit Get-ScheduledTaskInfo können Laufstatus und letzter Ausführungszeitpunkt geprüft werden.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "Repair",
+    "risk": "medium",
+    "name": "DISM /Online /Cleanup-Image /RestoreHealth",
+    "purpose": "Repariert den Windows-Komponentenspeicher.",
+    "syntax": "DISM /Online /Cleanup-Image /RestoreHealth",
+    "params": [
+      [
+        "/Online",
+        "Zielt auf das aktuell laufende Windows."
+      ],
+      [
+        "/Cleanup-Image",
+        "Führt Wartungsoperationen am Komponentenabbild aus."
+      ],
+      [
+        "/RestoreHealth",
+        "Sucht Beschädigungen und repariert sie, wenn eine Quelle verfügbar ist."
+      ]
+    ],
+    "example": "DISM /Online /Cleanup-Image /RestoreHealth",
+    "verify": "Danach sfc /scannow ausführen und DISM-Ausgabe prüfen.",
+    "notes": "Als Administrator starten; Reparaturquelle und Windows Update müssen erreichbar sein.",
+    "comment": "Repariert den Windows-Komponentenspeicher, auf den unter anderem SFC zurückgreift. Bei beschädigten Systemdateien häufig vor sfc /scannow ausführen.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Active Directory PowerShell",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "Get-ADReplicationFailure",
+    "purpose": "Zeigt bekannte AD-Replikationsfehler für Domäne oder Server.",
+    "syntax": "Get-ADReplicationFailure [-Target <SERVER|SITE|DOMAIN>]",
+    "params": [
+      [
+        "-Target",
+        "Zieltyp und Zielobjekt angeben."
+      ],
+      [
+        "-Scope",
+        "Optionaler Replikationsbereich, abhängig vom Zieltyp."
+      ]
+    ],
+    "example": "Get-ADReplicationFailure -Target * -Scope Forest",
+    "verify": "Mit repadmin /replsummary und repadmin /showrepl gegenprüfen.",
+    "notes": "ActiveDirectory-Modul und passende Leseberechtigung erforderlich.",
+    "comment": "Liefert Replikationsfehler aus Active Directory. Hilfreich, um fehlerhafte Partner und betroffene Domänencontroller zu finden.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Active Directory Tools",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "repadmin /showrepl",
+    "purpose": "Zeigt den Replikationsstatus eines Domänencontrollers je Naming Context und Partner.",
+    "syntax": "repadmin /showrepl [DCNAME]",
+    "params": [
+      [
+        "DCNAME",
+        "Optionaler Domänencontroller; ohne Angabe lokaler DC."
+      ]
+    ],
+    "example": "repadmin /showrepl * /csv",
+    "verify": "Letztes Replikationsdatum, Partner und Fehlercode prüfen.",
+    "notes": "Read-only-Diagnose. Für Zusammenfassung repadmin /replsummary verwenden.",
+    "comment": "Zeigt detailliert, wann ein Domänencontroller Daten von seinen Replikationspartnern empfangen hat und ob Fehler aufgetreten sind.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Services",
+    "risk": "low",
+    "name": "systemctl --failed",
+    "purpose": "Listet fehlgeschlagene systemd-Units.",
+    "syntax": "systemctl --failed [--type=service]",
+    "params": [
+      [
+        "--type=service",
+        "Beschränkt die Ausgabe auf Dienste."
+      ]
+    ],
+    "example": "systemctl --failed --type=service",
+    "verify": "Details mit systemctl status <UNIT> und journalctl -u <UNIT> prüfen.",
+    "notes": "Read-only-Abfrage.",
+    "comment": "Zeigt fehlgeschlagene Dienste und andere systemd-Units. Ein guter erster Schritt nach Boot- oder Serviceproblemen.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Services",
+    "risk": "low",
+    "name": "journalctl -p err -b",
+    "purpose": "Zeigt Fehlerereignisse des aktuellen Boots.",
+    "syntax": "journalctl [-p <PRIORITY>] [-b]",
+    "params": [
+      [
+        "-p err",
+        "Filtert auf Fehler und höhere Prioritäten."
+      ],
+      [
+        "-b",
+        "Beschränkt auf den aktuellen Boot."
+      ]
+    ],
+    "example": "journalctl -p err -b --no-pager",
+    "verify": "Zeitpunkt und betroffene Unit mit journalctl -u <UNIT> korrelieren.",
+    "notes": "Für ältere Boots journalctl -b -1 verwenden, sofern persistent gespeichert.",
+    "comment": "Filtert das systemd-Journal auf Fehler des aktuellen Systemstarts. Gut zur schnellen Eingrenzung von Boot- und Dienstproblemen.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Storage",
+    "risk": "low",
+    "name": "findmnt",
+    "purpose": "Zeigt eingehängte Dateisysteme und Mount-Optionen.",
+    "syntax": "findmnt [-t <FSTYPE>] [-o <COLUMNS>]",
+    "params": [
+      [
+        "-t",
+        "Filtert nach Dateisystemtyp, z. B. ext4, nfs oder cifs."
+      ],
+      [
+        "-o",
+        "Wählt Ausgabespalten."
+      ]
+    ],
+    "example": "findmnt -o TARGET,SOURCE,FSTYPE,OPTIONS",
+    "verify": "Mit lsblk -f und /etc/fstab vergleichen.",
+    "notes": "Read-only-Abfrage.",
+    "comment": "Zeigt, welche Datenträger und Netzwerkdateisysteme wo eingehängt sind. Besonders nützlich bei Storage- und Mount-Problemen.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Network",
+    "risk": "low",
+    "name": "ss -s",
+    "purpose": "Gibt eine kompakte Statistik der Socket-Verbindungen aus.",
+    "syntax": "ss -s",
+    "params": [],
+    "example": "ss -s",
+    "verify": "Details mit ss -tulpn oder ss -tanp anzeigen.",
+    "notes": "Read-only-Abfrage.",
+    "comment": "Liefert eine schnelle Übersicht über TCP-, UDP- und Socket-Zustände des Systems.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Virtualization",
+    "risk": "low",
+    "name": "qm list",
+    "purpose": "Listet virtuelle Maschinen mit Status und Ressourcenübersicht.",
+    "syntax": "qm list",
+    "params": [],
+    "example": "qm list",
+    "verify": "Einzelne VM mit qm status <VMID> und qm config <VMID> prüfen.",
+    "notes": "Auf dem Proxmox-Host ausführen.",
+    "comment": "Zeigt die registrierten QEMU/KVM-VMs des Nodes mit VMID, Name, Status, Speicher und CPU-Informationen.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Containers",
+    "risk": "low",
+    "name": "pct config",
+    "purpose": "Zeigt die Konfiguration eines LXC-Containers.",
+    "syntax": "pct config <CTID>",
+    "params": [
+      [
+        "<CTID>",
+        "Numerische Container-ID."
+      ]
+    ],
+    "example": "pct config  CTID",
+    "verify": "Status mit pct status <CTID> und Ressourcen mit pct resource <CTID> prüfen.",
+    "notes": "Platzhalter durch eine echte Container-ID ersetzen.",
+    "comment": "Liest die Konfiguration eines LXC-Containers, etwa Netzwerk, Mountpoints, CPU, RAM und Features.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Storage",
+    "risk": "low",
+    "name": "pvesm list",
+    "purpose": "Listet Inhalte eines konfigurierten Proxmox-Storage.",
+    "syntax": "pvesm list <STORAGE_ID> [--content <CONTENT>]",
+    "params": [
+      [
+        "<STORAGE_ID>",
+        "Storage-ID aus pvesm status."
+      ],
+      [
+        "--content",
+        "Optionaler Inhaltstyp, z. B. images oder vztmpl."
+      ]
+    ],
+    "example": "pvesm list local --content vztmpl",
+    "verify": "Storage-Status mit pvesm status prüfen.",
+    "notes": "Storage-Backend und Inhaltstyp bestimmen, welche Objekte angezeigt werden.",
+    "comment": "Zeigt gespeicherte Volumes und Templates eines Proxmox-Storage. Hilfreich, um vorhandene Images oder Backups zu finden.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Cluster",
+    "risk": "low",
+    "name": "pvecm expected",
+    "purpose": "Zeigt bzw. setzt die erwartete Stimmenzahl für Corosync-Quorum.",
+    "syntax": "pvecm expected <VOTES>",
+    "params": [
+      [
+        "<VOTES>",
+        "Neue erwartete Stimmenzahl; ändernder Eingriff in Quorum-Verhalten."
+      ]
+    ],
+    "example": "pvecm status",
+    "verify": "Quorum mit pvecm status und corosync-quorumtool -s prüfen.",
+    "notes": "Nur als Diagnose: pvecm status. Das Setzen von expected votes ist ein gezielter Notfall-Eingriff und darf nicht als Standard-Reparatur verwendet werden.",
+    "comment": "Der Befehl kann die erwartete Stimmenzahl des Clusters verändern. Er ist kein harmloser Diagnosebefehl und sollte nur nach Verständnis der Quorum-Situation eingesetzt werden.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Switching",
+    "risk": "low",
+    "name": "show mac address-table",
+    "purpose": "Zeigt gelernte MAC-Adressen und zugehörige VLANs und Ports.",
+    "syntax": "show mac address-table [dynamic|static] [vlan <VLAN>]",
+    "params": [
+      [
+        "dynamic",
+        "Nur dynamisch gelernte Einträge."
+      ],
+      [
+        "vlan <VLAN>",
+        "Auf VLAN begrenzen."
+      ]
+    ],
+    "example": "show mac address-table dynamic vlan 10",
+    "verify": "Port und VLAN mit show interfaces <IF> switchport prüfen.",
+    "notes": "Syntax kann je nach Catalyst-Plattform variieren.",
+    "comment": "Hilft zu erkennen, an welchem Switchport eine MAC-Adresse gelernt wurde. Wichtig bei Client-, VLAN- und Layer-2-Fehlern.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Switching",
+    "risk": "low",
+    "name": "show etherchannel summary",
+    "purpose": "Zeigt Port-Channels und den Status ihrer Member-Interfaces.",
+    "syntax": "show etherchannel summary",
+    "params": [],
+    "example": "show etherchannel summary",
+    "verify": "Bei Abweichungen show etherchannel detail und show interfaces trunk prüfen.",
+    "notes": "Statuskennzeichen und Syntax je nach IOS/IOS-XE-Version beachten.",
+    "comment": "Zeigt, ob Links korrekt zu einem EtherChannel gebündelt sind oder einzelne Member suspendiert beziehungsweise nicht gebündelt sind.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Routing",
+    "risk": "low",
+    "name": "show ip ospf neighbor",
+    "purpose": "Zeigt OSPF-Nachbarn und deren Adjazenzstatus.",
+    "syntax": "show ip ospf neighbor [detail]",
+    "params": [
+      [
+        "detail",
+        "Zusätzliche Informationen zur Nachbarschaft."
+      ]
+    ],
+    "example": "show ip ospf neighbor",
+    "verify": "Bei fehlenden Nachbarn Interface, Area, Timer, MTU, Authentifizierung und Netzwerkerreichbarkeit prüfen.",
+    "notes": "OSPF muss auf dem Gerät konfiguriert und aktiv sein.",
+    "comment": "Zeigt, ob OSPF-Router Nachbarschaften aufgebaut haben. Der Zustand FULL ist bei normalen Broadcast-Netzen typischerweise das erwartete Ziel.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Troubleshooting",
+    "risk": "low",
+    "name": "show interfaces counters errors",
+    "purpose": "Zeigt Interface-Fehlerzähler.",
+    "syntax": "show interfaces counters errors",
+    "params": [],
+    "example": "show interfaces counters errors",
+    "verify": "Betroffene Ports mit show interfaces <IF> detailliert untersuchen.",
+    "notes": "Zähler können je nach Plattform und Interface-Typ variieren.",
+    "comment": "Hilft, CRC-, Input-, Output- und andere Fehler auf Switchports schnell zu erkennen. Bei Auffälligkeiten Kabel, Optik und Gegenstelle prüfen.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Docker Engine",
+    "category": "Containers",
+    "risk": "low",
+    "name": "docker inspect",
+    "purpose": "Zeigt detaillierte Metadaten eines Containers, Images oder Netzwerks.",
+    "syntax": "docker inspect <OBJECT>",
+    "params": [
+      [
+        "<OBJECT>",
+        "Containername/-ID, Image oder Netzwerk."
+      ]
+    ],
+    "example": "docker inspect nextcloud-app-1",
+    "verify": "Gezielt Felder wie State, Mounts, NetworkSettings und Config prüfen.",
+    "notes": "Ausgabe kann Umgebungsvariablen und sensible Konfigurationswerte enthalten. Vor dem Teilen bereinigen.",
+    "comment": "Liefert die vollständige JSON-Konfiguration eines Docker-Objekts. Besonders hilfreich bei Mount-, Netzwerk- und Startproblemen.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Docker Engine",
+    "category": "Containers",
+    "risk": "low",
+    "name": "docker stats",
+    "purpose": "Zeigt Live-Ressourcenverbrauch laufender Container.",
+    "syntax": "docker stats [CONTAINER...]",
+    "params": [
+      [
+        "--no-stream",
+        "Einmalige Momentaufnahme statt laufender Aktualisierung."
+      ]
+    ],
+    "example": "docker stats --no-stream",
+    "verify": "CPU, RAM, Netzwerk und Block-I/O vergleichen.",
+    "notes": "Read-only-Abfrage.",
+    "comment": "Zeigt CPU-, Speicher- und I/O-Verbrauch der Container. Gut zur ersten Diagnose bei hoher Last.",
+    "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Docker Compose",
+    "category": "Containers",
+    "risk": "low",
+    "name": "docker compose ps",
+    "purpose": "Zeigt Status und Port-Mappings der Compose-Services.",
+    "syntax": "docker compose ps [--all]",
+    "params": [
+      [
+        "--all",
+        "Auch gestoppte Container anzeigen."
+      ]
+    ],
+    "example": "docker compose ps --all",
+    "verify": "Logs mit docker compose logs --tail=100 <SERVICE> prüfen.",
+    "notes": "Im Verzeichnis mit compose.yaml ausführen oder -f angeben.",
+    "comment": "Zeigt den Zustand der Services eines Compose-Projekts. Nützlich nach Deployments oder Neustarts.",
+    "commentLabel": "Was macht dieser Befehl?"
   }
 ]
