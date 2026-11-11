@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Cisco Praxislabs mit Topologien, vollständigen Konfigurationen, Prüfkommandos und Troubleshooting."><title>Cisco Practical Labs | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Startseite</a><a href="command-reference.html">Command Reference</a><a href="nxos-command-reference.html">Nexus NX-OS</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="troubleshooting.html">Troubleshooting</a><a href="practical-labs.html" aria-current="page">Practical Labs</a></nav></aside>
+<main><div class="top"><span>IT Knowledge Base / Cisco / Practical Labs</span></div><a class="back" href="../cisco-networking.html">← Cisco Übersicht</a>
+<header class="hero"><small>Hands-on · Topology · Full Config · Verification</small><h1>Cisco Practical Labs</h1><p>Nachvollziehbare Übungen mit Beispieltopologie, IP-Plan, vollständigen Geräte-Konfigurationen, Prüfkommandos und typischen Fehlerbildern.</p></header>
+<div class="note"><b>Lab-Hinweis:</b> Die Beispiele verwenden generische Catalyst IOS/IOS-XE-Syntax. Interface-Namen, verfügbare Funktionen und Details können je nach Switch-Modell und Softwareversion abweichen. In Packet Tracer, CML, EVE-NG oder einem isolierten Lab testen – nicht ungeprüft auf Produktivgeräte übertragen.</div>
+<div class="sectionhead"><h2>Lab 01 – VLANs, 802.1Q-Trunk und Router-on-a-Stick</h2><p>Ziel: Zwei VLANs über zwei Switches transportieren und Inter-VLAN-Routing mit einem Router bereitstellen.</p></div>
+<article class="article searchable"><h3>1. Topologie und Verkabelung</h3><pre><code>PC-A (VLAN 10) -- SW1 Gi1/0/10
+                       |
+                  SW1 Gi1/0/48
+                       |
+                  SW2 Gi1/0/48
+                       |
+PC-B (VLAN 20) -- SW2 Gi1/0/10
+
+R1 G0/0 -------- SW1 Gi1/0/47  (802.1Q-Trunk)</code></pre><p>SW1 und SW2 sind über einen Trunk verbunden. R1 ist über einen zweiten Trunk an SW1 angeschlossen und übernimmt das Routing zwischen VLAN 10 und VLAN 20.</p></article>
+<article class="article searchable"><h3>2. IP-Adressplan</h3><table><thead><tr><th>Gerät</th><th>Interface</th><th>Adresse</th><th>Gateway</th></tr></thead><tbody><tr><td>PC-A</td><td>NIC / VLAN 10</td><td>192.168.10.10/24</td><td>192.168.10.1</td></tr><tr><td>PC-B</td><td>NIC / VLAN 20</td><td>192.168.20.10/24</td><td>192.168.20.1</td></tr><tr><td>R1</td><td>G0/0.10</td><td>192.168.10.1/24</td><td>–</td></tr><tr><td>R1</td><td>G0/0.20</td><td>192.168.20.1/24</td><td>–</td></tr></tbody></table><p>Die Subinterfaces verwenden VLAN-Tags 10 und 20. Die Beispieladressen sind private IPv4-Adressen.</p></article>
+<article class="article searchable"><h3>3. SW1 – vollständige Beispielkonfiguration</h3><pre><code>enable
+configure terminal
+hostname SW1
+
+vlan 10
+ name USERS
+vlan 20
+ name SERVERS
+
+interface GigabitEthernet1/0/10
+ description PC-A_VLAN10
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shutdown
+
+interface GigabitEthernet1/0/48
+ description TRUNK_TO_SW2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ no shutdown
+
+interface GigabitEthernet1/0/47
+ description TRUNK_TO_R1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ no shutdown
+
+end
+show vlan brief
+show interfaces trunk
+copy running-config startup-config</code></pre><p><b>Erklärung:</b> VLANs 10 und 20 werden angelegt. PC-A erhält einen Access-Port in VLAN 10. Die Ports zu SW2 und R1 transportieren beide VLANs als Trunk.</p></article>
+<article class="article searchable"><h3>4. SW2 – vollständige Beispielkonfiguration</h3><pre><code>enable
+configure terminal
+hostname SW2
+
+vlan 10
+ name USERS
+vlan 20
+ name SERVERS
+
+interface GigabitEthernet1/0/10
+ description PC-B_VLAN20
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ no shutdown
+
+interface GigabitEthernet1/0/48
+ description TRUNK_TO_SW1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ no shutdown
+
+end
+show vlan brief
+show interfaces trunk
+copy running-config startup-config</code></pre><p><b>Erklärung:</b> PC-B wird VLAN 20 zugeordnet. Der Uplink zu SW1 transportiert VLAN 10 und VLAN 20.</p></article>
+<article class="article searchable"><h3>5. R1 – Router-on-a-Stick</h3><pre><code>enable
+configure terminal
+hostname R1
+
+interface GigabitEthernet0/0
+ description TRUNK_TO_SW1
+ no ip address
+ no shutdown
+
+interface GigabitEthernet0/0.10
+ description GATEWAY_VLAN10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+
+interface GigabitEthernet0/0.20
+ description GATEWAY_VLAN20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+
+end
+show ip interface brief
+show ip route connected
+copy running-config startup-config</code></pre><p><b>Erklärung:</b> Das physische Interface bleibt ohne IP-Adresse. Jedes Subinterface erhält ein VLAN-Tag und die Gateway-IP des jeweiligen VLANs.</p></article>
+<article class="article searchable"><h3>6. Endgeräte konfigurieren</h3><p>PC-A statisch konfigurieren: IP <code>192.168.10.10</code>, Maske <code>255.255.255.0</code>, Gateway <code>192.168.10.1</code>.</p><p>PC-B statisch konfigurieren: IP <code>192.168.20.10</code>, Maske <code>255.255.255.0</code>, Gateway <code>192.168.20.1</code>.</p></article>
+<article class="article searchable"><h3>7. Verifikation – Schritt für Schritt</h3><pre><code>! Auf beiden Switches:
+show vlan brief
+show interfaces trunk
+show spanning-tree vlan 10
+show spanning-tree vlan 20
+
+! Auf R1:
+show ip interface brief
+show ip route connected
+
+! Von PC-A:
+ping 192.168.10.1
+ping 192.168.20.10
+
+! Von PC-B:
+ping 192.168.20.1
+ping 192.168.10.10</code></pre><p><b>Erwartetes Ergebnis:</b> Beide PCs erreichen ihr jeweiliges Gateway. Danach können sie sich über R1 gegenseitig erreichen, sofern lokale Host-Firewalls ICMP nicht blockieren.</p></article>
+<article class="article searchable"><h3>8. Troubleshooting – typische Fehler</h3><ul><li><b>VLAN fehlt:</b> <code>show vlan brief</code> prüfen und VLAN auf dem benötigten Switch anlegen.</li><li><b>VLAN nicht auf dem Trunk:</b> <code>show interfaces trunk</code> prüfen; erlaubte VLAN-Liste auf beiden Seiten vergleichen.</li><li><b>Trunk kommt nicht hoch:</b> Verkabelung, Interface-Status, Trunk-Modus und Gegenstelle kontrollieren.</li><li><b>Subinterface down:</b> Physisches Router-Interface und Switchport prüfen.</li><li><b>Falsches Gateway:</b> PC-IP, Maske und Gateway vergleichen.</li><li><b>Ping zum Gateway geht, PC-zu-PC nicht:</b> Routingtabelle, Host-Firewall und ACLs prüfen.</li></ul><pre><code>show interfaces status
+show interfaces trunk
+show mac address-table dynamic
+show ip interface brief
+show ip route
+show logging</code></pre></article>
+<article class="article searchable"><h3>9. Übungsaufgaben</h3><ol><li>Erstelle zusätzlich VLAN 30 für Gäste.</li><li>Erweitere beide Trunks um VLAN 30.</li><li>Erstelle auf R1 das Subinterface G0/0.30 mit Gateway 192.168.30.1/24.</li><li>Prüfe, ob ein Client in VLAN 30 sein Gateway erreicht.</li><li>Erstelle anschließend eine ACL, die VLAN 30 den Zugriff auf VLAN 20 verbietet, aber den Zugriff auf ein erlaubtes Zielnetz ermöglicht.</li></ol><p><b>Lernziel:</b> VLAN-Erstellung, Trunking, 802.1Q, Inter-VLAN-Routing, ACL-Reihenfolge und systematische Verifikation sicher beherrschen.</p></article>
+<div class="note"><b>Rollback im Lab:</b> Bei Fehlkonfiguration die betroffenen Interfaces kontrolliert zurücksetzen oder die gespeicherte Lab-Konfiguration wiederherstellen. Auf Produktivgeräten niemals blind <code>default interface</code> oder globale Reset-Befehle ausführen.</div>
+<div class="sectionhead"><h2>Weiterführende Referenzen</h2></div><ul><li><a href="command-reference.html">Cisco Command Reference – IOS/IOS-XE und allgemeine Befehle</a></li><li><a href="nxos-command-reference.html">Nexus NX-OS Command Reference</a></li><li><a href="switching.html">Cisco Switching</a></li><li><a href="routing.html">Cisco Routing</a></li><li><a href="security.html">Cisco Network Security</a></li></ul>
+<div id="empty" class="note" hidden>Keine passenden Lab-Inhalte gefunden.</div>
+<footer>IT Knowledge Base · Cisco Practical Labs</footer></main></div><script src="../../assets/search.js"></script></body></html>
