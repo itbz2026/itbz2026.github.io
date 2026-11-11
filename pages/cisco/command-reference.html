@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Cisco Command Reference mit Syntax, Parametern, Beispielen, Plattformhinweisen und Prüfkommandos.">
+<title>Cisco Command Reference | IT Knowledge Base</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body><div class="layout">
+<aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav>
+<a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Startseite</a>
+<a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html" aria-current="page">Command Reference</a>
+</nav></aside>
+<main><div class="top"><span>IT Knowledge Base / Cisco / Command Reference</span></div>
+<a class="back" href="../cisco-networking.html">← Cisco Übersicht</a>
+<header class="hero"><small>IOS · IOS-XE · NX-OS · Catalyst 9800</small><h1>Cisco Command Reference</h1>
+<p>Schnell nachschlagen: Zweck, Syntax, Parameter, Beispiel, Ausgabeprüfung und Hinweise zur Plattform. Suche nach Befehlen oder Stichwörtern.</p></header>
+<div class="searchbox"><input id="search" type="search" placeholder="Befehl oder Thema suchen, z. B. show interfaces, vlan, ospf …" aria-label="Cisco-Befehle durchsuchen"></div>
+<div class="note"><b>Syntax-Legende:</b> <code>WORD</code> = festes Schlüsselwort · <code>&lt;wert&gt;</code> = einzusetzender Wert · <code>[OPTION]</code> = optional · <code>{A | B}</code> = eine der Alternativen. Parameter und Verfügbarkeit können je nach Modell und Softwareversion abweichen. Vor Änderungen immer <code>?</code> zur kontextbezogenen Hilfe verwenden.</div>
+<div class="sectionhead"><h2>Grundlegende Diagnosebefehle</h2><p>Häufig benötigte Befehle für den täglichen Betrieb.</p></div>
+<article class="article searchable"><h3>show running-config</h3><p><b>Zweck:</b> Zeigt die aktuell aktive Gerätekonfiguration im Arbeitsspeicher.</p><p><b>Plattform:</b> Cisco IOS / IOS-XE; vergleichbare Befehle auf NX-OS.</p><p><b>Syntax:</b> <code>show running-config [ | include WORD ]</code></p><p><b>Parameter:</b> <code>| include WORD</code> filtert die Ausgabe nach einer Zeichenfolge. Weitere Pipe-Filter wie <code>begin</code> oder <code>section</code> sind plattformabhängig.</p><pre><code>show running-config
+show running-config | include hostname
+show running-config | section interface</code></pre><p><b>Prüfen:</b> Kontrolliere, ob die erwarteten Interfaces, VLANs und Routing-Einstellungen vorhanden sind.</p><p><b>Hinweis:</b> Änderungen in der Running-Config sind nicht automatisch dauerhaft gespeichert.</p></article>
+<article class="article searchable"><h3>show startup-config</h3><p><b>Zweck:</b> Zeigt die gespeicherte Konfiguration, die beim Neustart geladen wird.</p><p><b>Plattform:</b> IOS / IOS-XE; Speichermechanismus auf anderen Plattformen prüfen.</p><p><b>Syntax:</b> <code>show startup-config</code></p><p><b>Parameter:</b> Keine regulären Parameter.</p><pre><code>show startup-config</code></pre><p><b>Praxis:</b> Mit <code>show running-config</code> vergleichen, wenn du prüfen möchtest, ob letzte Änderungen gespeichert wurden.</p></article>
+<article class="article searchable"><h3>copy running-config startup-config</h3><p><b>Zweck:</b> Speichert die aktive Konfiguration als Startkonfiguration.</p><p><b>Plattform:</b> IOS / IOS-XE; Syntax kann auf NX-OS abweichen.</p><p><b>Syntax:</b> <code>copy running-config startup-config</code></p><p><b>Parameter:</b> Quelle = <code>running-config</code>; Ziel = <code>startup-config</code>.</p><pre><code>copy running-config startup-config</code></pre><p><b>Achtung:</b> Erst nach erfolgreicher Prüfung speichern. Dadurch werden auch versehentliche Änderungen für den nächsten Neustart übernommen.</p></article>
+<article class="article searchable"><h3>show version</h3><p><b>Zweck:</b> Zeigt Plattform, Softwareversion, Laufzeit und weitere Systeminformationen.</p><p><b>Plattform:</b> IOS / IOS-XE; NX-OS besitzt ebenfalls <code>show version</code>, die Ausgabe unterscheidet sich.</p><p><b>Syntax:</b> <code>show version</code></p><p><b>Parameter:</b> Keine regulären Parameter.</p><pre><code>show version</code></pre><p><b>Praxis:</b> Vor einer Konfigurationsänderung Modell und Softwareversion erfassen.</p></article>
+<article class="article searchable"><h3>show inventory</h3><p><b>Zweck:</b> Zeigt erkannte Hardware-Komponenten und Produktkennungen.</p><p><b>Plattform:</b> Viele Catalyst IOS-XE-Geräte; Verfügbarkeit modellabhängig.</p><p><b>Syntax:</b> <code>show inventory</code></p><pre><code>show inventory</code></pre><p><b>Praxis:</b> Hilfreich für Hardware-Dokumentation und Supportfälle.</p></article>
+<article class="article searchable"><h3>show interfaces status</h3><p><b>Zweck:</b> Kompakte Übersicht über Switchports, Status, VLAN, Duplex und Geschwindigkeit.</p><p><b>Plattform:</b> Viele Catalyst Switches; Router und andere Plattformen verwenden teils andere Varianten.</p><p><b>Syntax:</b> <code>show interfaces status</code></p><pre><code>show interfaces status
+show interfaces gigabitEthernet 1/0/1</code></pre><p><b>Parameter:</b> Ein Interface kann für die Detailansicht ergänzt werden; Interface-Namen und Nummerierung sind geräteabhängig.</p></article>
+<article class="article searchable"><h3>show ip interface brief</h3><p><b>Zweck:</b> Schnelle Übersicht über IPv4-Adressen und den Status von Layer-3-Interfaces.</p><p><b>Plattform:</b> IOS / IOS-XE; auf NX-OS je nach Feature und Version prüfen.</p><p><b>Syntax:</b> <code>show ip interface brief</code></p><pre><code>show ip interface brief</code></pre><p><b>Auswertung:</b> <code>up/up</code> bedeutet, dass Interface und Line Protocol aktiv sind. <code>administratively down</code> weist meist auf <code>shutdown</code> hin.</p></article>
+<article class="article searchable"><h3>show logging</h3><p><b>Zweck:</b> Zeigt lokale Systemmeldungen und Ereignisse.</p><p><b>Plattform:</b> IOS / IOS-XE; Umfang und Filter unterscheiden sich.</p><p><b>Syntax:</b> <code>show logging</code></p><pre><code>show logging</code></pre><p><b>Praxis:</b> Nach Link-Flaps, Port-Security-Verstößen oder Routing-Problemen prüfen.</p></article>
+<div class="sectionhead"><h2>Interfaces und Layer 2</h2><p>Konfiguration und Kontrolle von Ports und VLANs.</p></div>
+<article class="article searchable"><h3>interface</h3><p><b>Zweck:</b> Wechselt in den Konfigurationsmodus eines Interfaces.</p><p><b>Plattform:</b> IOS / IOS-XE; Interface-Bezeichnungen unterscheiden sich nach Hardware.</p><p><b>Syntax:</b> <code>interface TYPE SLOT/PORT</code></p><p><b>Parameter:</b> <code>TYPE</code> z. B. <code>GigabitEthernet</code>; <code>SLOT/PORT</code> ist die gerätespezifische Portnummer.</p><pre><code>configure terminal
+interface GigabitEthernet1/0/10
+ description Uplink-to-SW2
+ no shutdown</code></pre><p><b>Hinweis:</b> Vor Änderungen immer sicherstellen, dass du den richtigen Port ausgewählt hast.</p></article>
+<article class="article searchable"><h3>switchport mode access</h3><p><b>Zweck:</b> Setzt einen Layer-2-Port auf Access-Modus für ein einzelnes Access-VLAN.</p><p><b>Plattform:</b> Layer-2-fähige Catalyst Switchports; nicht auf jedem Router- oder L3-Port verfügbar.</p><p><b>Syntax:</b> <code>switchport mode access</code></p><p><b>Parameter:</b> Keine. Das zugehörige VLAN wird separat mit <code>switchport access vlan VLAN-ID</code> gesetzt.</p><pre><code>interface GigabitEthernet1/0/10
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast</code></pre><p><b>Prüfen:</b> <code>show interfaces switchport</code> und <code>show vlan brief</code>.</p></article>
+<article class="article searchable"><h3>switchport trunk allowed vlan</h3><p><b>Zweck:</b> Legt fest, welche VLANs über einen 802.1Q-Trunk transportiert werden.</p><p><b>Plattform:</b> Unterstützte Catalyst Layer-2-Trunkports; Syntax und Trunk-Verhalten modellabhängig.</p><p><b>Syntax:</b> <code>switchport trunk allowed vlan { add | remove | except } VLAN-LIST</code></p><p><b>Parameter:</b> <code>add</code> ergänzt VLANs; <code>remove</code> entfernt VLANs; <code>except</code> erlaubt alle außer der angegebenen Liste. Ohne diese Schlüsselwörter ersetzt eine neue Liste in der Regel die bisherige Liste.</p><pre><code>interface GigabitEthernet1/0/48
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+! VLAN 40 ergänzen:
+ switchport trunk allowed vlan add 40</code></pre><p><b>Prüfen:</b> <code>show interfaces trunk</code>. Achtung: Eine versehentlich ersetzte VLAN-Liste kann Verbindungen unterbrechen.</p></article>
+<article class="article searchable"><h3>show vlan brief</h3><p><b>Zweck:</b> Zeigt VLANs und zugeordnete Access-Ports.</p><p><b>Plattform:</b> Catalyst Layer-2-Switching; Ausgabe abhängig von VTP- und VLAN-Konfiguration.</p><p><b>Syntax:</b> <code>show vlan brief</code></p><pre><code>show vlan brief
+show vlan id 20</code></pre><p><b>Parameter:</b> <code>id 20</code> zeigt ein bestimmtes VLAN, sofern unterstützt.</p></article>
+<article class="article searchable"><h3>show mac address-table</h3><p><b>Zweck:</b> Zeigt gelernte MAC-Adressen und die zugehörigen VLANs/Ports.</p><p><b>Plattform:</b> Catalyst IOS / IOS-XE; Syntax auf NX-OS ähnlich, aber nicht identisch.</p><p><b>Syntax:</b> <code>show mac address-table [ dynamic | static ] [ vlan VLAN-ID ]</code></p><p><b>Parameter:</b> <code>dynamic</code> oder <code>static</code> filtert nach Eintragstyp; <code>vlan VLAN-ID</code> begrenzt die Anzeige auf ein VLAN.</p><pre><code>show mac address-table
+show mac address-table dynamic vlan 20</code></pre></article>
+<div class="sectionhead"><h2>Routing und Redundanz</h2></div>
+<article class="article searchable"><h3>show ip route</h3><p><b>Zweck:</b> Zeigt die IPv4-Routingtabelle.</p><p><b>Plattform:</b> IOS / IOS-XE; NX-OS unterstützt eigene Varianten.</p><p><b>Syntax:</b> <code>show ip route [ IP-ADDRESS | PROTOCOL ]</code></p><p><b>Parameter:</b> Optional eine Ziel-IP oder ein Routingprotokoll, z. B. <code>ospf</code> oder <code>eigrp</code>, sofern unterstützt.</p><pre><code>show ip route
+show ip route 192.168.20.10
+show ip route ospf</code></pre><p><b>Auswertung:</b> Achte auf Präfix, Next Hop, Ausgangsinterface und Administrative Distance.</p></article>
+<article class="article searchable"><h3>show ip ospf neighbor</h3><p><b>Zweck:</b> Zeigt OSPF-Nachbarn und deren Adjazenzstatus.</p><p><b>Plattform:</b> IOS / IOS-XE mit aktiviertem OSPF; Syntax kann je nach OSPF-Variante abweichen.</p><p><b>Syntax:</b> <code>show ip ospf neighbor [ detail ]</code></p><p><b>Parameter:</b> <code>detail</code> zeigt zusätzliche Nachbarinformationen.</p><pre><code>show ip ospf neighbor
+show ip ospf neighbor detail</code></pre><p><b>Prüfen:</b> Bei fehlenden Nachbarn Area, Netzmaske, Hello/Dead-Timer, Authentifizierung und Layer-3-Erreichbarkeit kontrollieren.</p></article>
+<article class="article searchable"><h3>standby</h3><p><b>Zweck:</b> Konfiguriert HSRP auf einem Layer-3-Interface.</p><p><b>Plattform:</b> IOS / IOS-XE auf Geräten mit HSRP-Unterstützung; Feature- und Versionsabhängigkeit beachten.</p><p><b>Syntax:</b> <code>standby GROUP ip VIRTUAL-IP</code> sowie optionale Befehle wie <code>standby GROUP priority VALUE</code> und <code>standby GROUP preempt</code>.</p><p><b>Parameter:</b> <code>GROUP</code> = HSRP-Gruppennummer; <code>VIRTUAL-IP</code> = gemeinsames Gateway; <code>VALUE</code> = Priorität (typischer Wertebereich 0–255, Standard häufig 100).</p><pre><code>interface Vlan10
+ ip address 192.168.10.2 255.255.255.0
+ standby 10 ip 192.168.10.1
+ standby 10 priority 110
+ standby 10 preempt</code></pre><p><b>Prüfen:</b> <code>show standby brief</code>. Beide Router müssen dieselbe Gruppe und virtuelle IP verwenden.</p></article>
+<div class="sectionhead"><h2>Wireless – Catalyst 9800</h2></div>
+<article class="article searchable"><h3>show ap summary</h3><p><b>Zweck:</b> Zeigt erkannte Access Points und ihren Join-Status am Controller.</p><p><b>Plattform:</b> Catalyst 9800 Wireless Controller; nicht als allgemeiner Switch-Befehl verwenden.</p><p><b>Syntax:</b> <code>show ap summary</code></p><pre><code>show ap summary
+show ap name AP-NAME config general</code></pre><p><b>Parameter:</b> Der AP-Name wird bei Detailabfragen ergänzt; exakte Unterbefehle hängen vom IOS-XE-Release ab.</p></article>
+<article class="article searchable"><h3>show wireless client summary</h3><p><b>Zweck:</b> Übersicht der verbundenen WLAN-Clients.</p><p><b>Plattform:</b> Catalyst 9800; Syntax und Detailoptionen releaseabhängig.</p><p><b>Syntax:</b> <code>show wireless client summary</code></p><pre><code>show wireless client summary</code></pre><p><b>Praxis:</b> Bei Client-Problemen anschließend mit MAC-Adresse gezielte Detail- und Policy-Informationen abrufen.</p></article>
+<div class="note"><b>Qualitätsregel für diese Datenbank:</b> Jeder neue Befehl erhält dieselben Felder: Zweck, Plattform/Version, Syntax, Erklärung jedes Parameters, Beispiel, Verifikation, typische Fehler und Sicherheits-/Änderungshinweise. Komplexe Befehle bekommen zusätzlich vollständige Praxislabs mit mehreren Geräten.</div>
+<div class="sectionhead"><h2>Offizielle Cisco-Referenzen</h2></div>
+<ul>
+<li><a href="https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-command-reference-list.html" target="_blank" rel="noopener">Cisco IOS-XE Command References</a></li>
+<li><a href="https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-26/products-command-reference-list.html" target="_blank" rel="noopener">Cisco IOS-XE 26 Command References</a></li>
+<li><a href="https://www.cisco.com/c/en/us/support/wireless/catalyst-9800-series-wireless-controllers/products-command-reference-list.html" target="_blank" rel="noopener">Catalyst 9800 Command Reference</a></li>
+<li><a href="https://www.cisco.com/c/en/us/support/switches/nexus-9000-series-switches/products-command-reference-list.html" target="_blank" rel="noopener">Nexus 9000 NX-OS Command Reference</a></li>
+</ul>
+<footer>IT Knowledge Base · Cisco Command Reference</footer></main></div>
+<script src="../../assets/search.js"></script>
+</body></html>
