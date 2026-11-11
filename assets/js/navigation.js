@@ -36,11 +36,13 @@
 
     let index = [];
     try {
-      const response = await fetch("/data/search-index.json", {cache:"no-cache"});
-      if (!response.ok) throw new Error("Search index unavailable");
+      let response = await fetch("/data/search-index.json", {cache:"no-store"});
+      if (!response.ok) response = await fetch("data/search-index.json", {cache:"no-store"});
+      if (!response.ok) throw new Error("Search index unavailable: " + response.status);
       index = await response.json();
+      if (!Array.isArray(index)) throw new Error("Search index has an invalid format");
     } catch (error) {
-      input.placeholder = "Suche derzeit nicht verfügbar";
+      input.placeholder = "Suche nicht verfügbar – Seite neu laden";
       input.disabled = true;
       return;
     }
