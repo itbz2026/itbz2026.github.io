@@ -336,3 +336,88 @@ footer{color:#77869a}
 @media(max-width:1050px){.home-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.home-hero{grid-template-columns:1fr;gap:22px;padding:25px 21px;margin-bottom:29px}.home-hero-decoration{right:-130px}.home-section{margin-bottom:29px}}
 @media(max-width:480px){.home-category-grid,.home-quick-grid{grid-template-columns:1fr}.home-section-heading{align-items:flex-start}.home-section-count{margin-top:5px}.home-category{padding:13px}}
+
+
+/* Code blocks – readable technical documentation */
+.article pre,
+main pre {
+  position: relative;
+  box-sizing: border-box;
+  margin: 16px 0;
+  padding: 18px 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: pre;
+  overflow-wrap: normal;
+  tab-size: 4;
+  border: 1px solid #304966;
+  border-left: 4px solid #4b8bc5;
+  border-radius: 10px;
+  background: #17283d;
+  color: #eaf2fb;
+  box-shadow: 0 5px 16px rgba(17, 39, 64, .10);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.85;
+  letter-spacing: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #66819f #1b3048;
+}
+.article pre code,
+main pre code {
+  display: block;
+  min-width: max-content;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  white-space: inherit;
+  overflow-wrap: normal;
+}
+.article pre::selection,
+.article pre code::selection,
+main pre::selection,
+main pre code::selection {
+  background: #386b9b;
+  color: #fff;
+}
+.article p code,
+.article li code,
+main p code,
+main li code {
+  display: inline;
+  padding: 2px 6px;
+  border: 1px solid #dce6f0;
+  border-radius: 5px;
+  background: #edf3f9;
+  color: #214e79;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: .9em;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 1200px) {
+  .article pre,
+  main pre {
+    font-size: 14.5px;
+    padding: 19px 22px;
+  }
+}
+@media (max-width: 760px) {
+  .article pre,
+  main pre {
+    margin: 13px -2px;
+    padding: 15px 14px;
+    font-size: 13px;
+    line-height: 1.8;
+    border-radius: 8px;
+  }
+}
+@media (max-width: 420px) {
+  .article pre,
+  main pre {
+    font-size: 12.5px;
+    padding: 13px 11px;
+  }
+}
