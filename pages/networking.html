@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="IP, Subnetting, DNS, DHCP und VLANs."><title>Networking | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Networking</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Networking</h1><p>Netzwerkgrundlagen und Diagnose</p></div>
+<article class="article searchable"><span class="tag">Grundlagen</span><h3>IP, Gateway und Subnetz</h3><ul><li><b>IP-Adresse:</b> logische Adresse eines Netzwerkgeräts.</li><li><b>Subnetzmaske/CIDR:</b> bestimmt den Netz- und Hostanteil.</li><li><b>Default Gateway:</b> leitet Verkehr in andere Netze.</li><li><b>DNS:</b> löst Namen in IP-Adressen auf.</li><li><b>DHCP:</b> verteilt IP-Adresse, Gateway und DNS-Server.</li><li><b>VLAN:</b> trennt Netzwerke logisch auf Layer 2.</li></ul></article>
+<article class="article searchable"><span class="tag">Referenz</span><h3>Häufige Netzwerkports</h3><div class="tablewrap"><table><tr><th>Port</th><th>Dienst</th><th>Verwendung</th></tr><tr><td>22/TCP</td><td>SSH</td><td>Sichere Remote-Shell</td></tr><tr><td>53/TCP, UDP</td><td>DNS</td><td>Namensauflösung</td></tr><tr><td>67/68 UDP</td><td>DHCP</td><td>Adressvergabe</td></tr><tr><td>80/TCP</td><td>HTTP</td><td>Webverkehr</td></tr><tr><td>123/UDP</td><td>NTP</td><td>Zeitsynchronisierung</td></tr><tr><td>443/TCP</td><td>HTTPS</td><td>Verschlüsselter Webverkehr</td></tr><tr><td>3389/TCP</td><td>RDP</td><td>Remote Desktop</td></tr></table></div></article>
+<article class="article searchable"><span class="tag">Diagnose</span><h3>Verbindung und DNS prüfen</h3><pre><code># Windows
+ipconfig /all
+ping 192.168.1.1
+nslookup example.com
+tracert example.com
+
+# Linux
+ip addr
+ip route
+ping -c 4 192.168.1.1
+dig example.com
+traceroute example.com</code></pre></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Networking · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
