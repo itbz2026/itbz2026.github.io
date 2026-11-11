@@ -6,7 +6,7 @@
 <header class="hero"><small>Catalyst · IOS · IOS-XE · Layer 2</small><h1>Cisco Switching – Wissensdatenbank</h1><p>Logische Lernreihenfolge von CLI und Interfaces über VLAN, Trunking, VTP, STP, EtherChannel und Sicherheit bis zu Monitoring und Troubleshooting. Mit Syntax, Parametern, Konfigurationsbeispielen und Prüfkommandos.</p></header>
 <div class="note"><b>Plattform:</b> Beispiele primär für Catalyst IOS/IOS-XE. Interface-Namen, Features und Syntax sind modell- und releaseabhängig. Nexus verwendet NX-OS – siehe <a href="nxos-command-reference.html">separate NX-OS-Referenz</a>. Erst im Lab testen, Änderungen dokumentieren und vor Produktiveinsatz Cisco-Dokumentation prüfen.</div>
 <div class="sectionhead"><h2>Inhaltsverzeichnis – empfohlene Reihenfolge</h2></div>
-<div class="article"><ol><li><a href="#basics">Grundlagen und CLI</a></li><li><a href="#interfaces">Interfaces und Port-Grundlagen</a></li><li><a href="#vlan">VLANs und Access-Ports</a></li><li><a href="#voice">Voice VLAN</a></li><li><a href="#trunk">802.1Q Trunking und DTP</a></li><li><a href="#vtp">VTP v1/v2/v3</a></li><li><a href="#stp">STP, RSTP, MST und Guard-Funktionen</a></li><li><a href="#etherchannel">EtherChannel, LACP und PAgP</a></li><li><a href="#l2">MAC, CDP, LLDP, UDLD und ARP</a></li><li><a href="#security">Layer-2-Security</a></li><li><a href="#multicast">Multicast und IGMP Snooping</a></li><li><a href="#span">SPAN und RSPAN</a></li><li><a href="#management">Management und Betrieb</a></li><li><a href="#troubleshooting">Troubleshooting</a></li></ol></div>
+<div class="article"><ol><li><a href="#basics">Grundlagen und CLI</a></li><li><a href="#interfaces">Interfaces und Port-Grundlagen</a></li><li><a href="#vlan">VLANs und Access-Ports</a></li><li><a href="#voice">Voice VLAN</a></li><li><a href="#trunk">802.1Q Trunking und DTP</a></li><li><a href="#vtp">VTP v1/v2/v3</a></li><li><a href="#stp">STP, RSTP, MST und Guard-Funktionen</a></li><li><a href="#etherchannel">EtherChannel, LACP und PAgP</a></li><li><a href="#l2">MAC, CDP, LLDP, UDLD und ARP</a></li><li><a href="#security">Layer-2-Security</a></li><li><a href="#multicast">Multicast und IGMP Snooping</a></li><li><a href="#span">SPAN und RSPAN</a></li><li><a href="#poe">PoE – Power over Ethernet</a></li><li><a href="#qos">QoS – Quality of Service</a></li><li><a href="#ipv6">IPv6 Switching und First-Hop</a></li><li><a href="#management">Management und Betrieb</a></li><li><a href="#troubleshooting">Troubleshooting</a></li></ol></div>
 
 <div class="sectionhead" id="basics"><h2>1. Grundlagen und CLI</h2></div>
 <article class="article searchable"><span class="tag">Basis</span><h3>show version und show inventory</h3><p><b>Zweck:</b> Modell, IOS-/IOS-XE-Version, Laufzeit, Seriennummern und Hardware ermitteln.</p><p><b>Syntax:</b> <code>show version</code>, <code>show inventory</code>.</p><pre><code>show version
@@ -338,7 +338,96 @@ no monitor session 1
 end
 show monitor session all</code></pre><p><b>RSPAN:</b> Transportiert gespiegelten Verkehr über ein dediziertes Remote-SPAN-VLAN. Konfiguration und Einschränkungen sind modellabhängig; RSPAN-VLAN nicht als Client-VLAN verwenden.</p></article>
 
-<div class="sectionhead" id="management"><h2>13. Management und Betrieb</h2></div>
+<div class="sectionhead" id="poe"><h2>13. PoE – Power over Ethernet</h2><p>Stromversorgung für Access Points, IP-Telefone, Kameras und andere Endgeräte über Ethernet.</p></div>
+<article class="article searchable"><span class="tag">PoE</span><h3>PoE-Status und verfügbares Power-Budget prüfen</h3><p><b>Zweck:</b> Zeigt, welche Ports Endgeräte versorgen, welchen Standard bzw. Leistungstyp sie verwenden und wie viel Leistung verfügbar ist.</p><pre><code>show power inline
+show power inline detail
+show power inline gi1/0/10
+show environment power
+show interfaces status</code></pre><p><b>Auswertung:</b> Prüfe Status, Device, Class, benötigte Leistung, verfügbare Leistung und Gesamtbudget. Die genaue Ausgabe und unterstützten Optionen unterscheiden sich nach Catalyst-Modell und IOS/IOS XE.</p></article>
+<article class="article searchable"><span class="tag">PoE</span><h3>PoE auf einem Interface konfigurieren</h3><p><b>Zweck:</b> Steuert, ob ein unterstützter Switchport PoE bereitstellt. Die verfügbaren Modi sind plattformabhängig.</p><pre><code>configure terminal
+interface gigabitEthernet 1/0/10
+ power inline auto
+end
+show power inline gi1/0/10</code></pre><p><b>Hinweis:</b> <code>auto</code> ist auf vielen Catalyst-Plattformen der Standard. Nur wenn die Plattform es unterstützt und das Design es verlangt, weitere Modi wie <code>static</code> oder <code>never</code> verwenden. Syntax vorab mit <code>power inline ?</code> prüfen.</p><div class="warn"><b>Achtung:</b> <code>power inline never</code> unterbricht die Stromversorgung am Port. Vorher prüfen, ob Telefon, Access Point oder Kamera darüber versorgt wird.</div></article>
+<article class="article searchable"><span class="tag">PoE</span><h3>PoE-Fehler systematisch eingrenzen</h3><p><b>Typische Ursachen:</b> Power-Budget erschöpft, inkompatibles Endgerät/Kabel, PoE deaktiviert, falsche Verkabelung oder Hardware-/Portfehler.</p><pre><code>show power inline
+show power inline detail
+show power inline gi1/0/10
+show logging
+show interfaces gi1/0/10
+show inventory</code></pre><p><b>Vorgehen:</b> Switch-Gesamtbudget prüfen, betroffenen Port und Kabel testen, Endgerät an einem bekannten funktionierenden Port prüfen und Logs auf Überlast- oder Hardwaremeldungen untersuchen. PoE-Budget und PoE/PoE+/UPOE-Unterstützung sind modellabhängig.</p></article>
+
+<div class="sectionhead" id="qos"><h2>14. QoS – Quality of Service</h2><p>Verkehr erkennen, markieren und bei Überlast priorisieren. QoS-Syntax und Hardware-Verhalten sind stark plattformabhängig.</p></div>
+<article class="article searchable"><span class="tag">QoS</span><h3>QoS-Grundlagen: Classification, Marking und Queuing</h3><p><b>Classification:</b> Ordnet Verkehr anhand von DSCP, CoS, ACL oder anderen Merkmalen einer Klasse zu. <b>Marking:</b> Setzt DSCP- oder CoS-Werte. <b>Queuing/Scheduling:</b> Bestimmt die Behandlung bei Auslastung. <b>Policing/Shaping:</b> Begrenzt oder glättet Datenraten.</p><div class="tablewrap"><table><tr><th>Feld</th><th>Typische Verwendung</th></tr><tr><td>DSCP</td><td>Layer-3-Markierung im IP-Header</td></tr><tr><td>CoS / 802.1p</td><td>Layer-2-Priorität im VLAN-Tag</td></tr><tr><td>Trust Boundary</td><td>Legt fest, ob eingehende Markierungen übernommen werden</td></tr><tr><td>Queue</td><td>Ausgangswarteschlange und Scheduling-Verhalten</td></tr></table></div><p><b>Praxis:</b> End-to-End-QoS planen. Markierungen nicht unkontrolliert übernehmen; Trust Boundary am Telefon, Access Point oder Uplink bewusst festlegen.</p></article>
+<article class="article searchable"><span class="tag">QoS</span><h3>QoS-Status und Interface-Statistiken prüfen</h3><pre><code>show mls qos
+show mls qos interface gi1/0/10
+show policy-map
+show policy-map interface gi1/0/10
+show class-map
+show interfaces gi1/0/10 counters
+show platform hardware fed switch active qos queue stats interface gi1/0/10</code></pre><p><b>Hinweis:</b> Nicht jeder Befehl existiert auf jeder Plattform. <code>show mls qos</code> gehört zu älteren Catalyst-Generationen; neuere Catalyst- und IOS-XE-Plattformen verwenden andere QoS-Modelle und Plattformdiagnosen.</p></article>
+<article class="article searchable"><span class="tag">QoS</span><h3>Auto-QoS für Cisco IP-Telefone – Beispiel</h3><p><b>Zweck:</b> Auto-QoS kann auf unterstützten Catalyst-Plattformen passende QoS-Richtlinien für erkannte Sprachgeräte erzeugen.</p><pre><code>interface gigabitEthernet 1/0/10
+ auto qos voip cisco-phone
+end
+show running-config interface gi1/0/10
+show policy-map interface gi1/0/10</code></pre><p><b>Wichtig:</b> Die Auto-QoS-Befehle unterscheiden sich je nach Plattform und Softwarestand. Auf manchen Geräten lautet die Option beispielsweise <code>auto qos trust</code> oder die Konfiguration wird über andere Profile erzeugt. Vor dem Einsatz <code>auto qos ?</code> prüfen und generierte Konfiguration kontrollieren.</p></article>
+<article class="article searchable"><span class="tag">QoS</span><h3>MQC – Class-Map und Policy-Map verstehen</h3><p><b>Zweck:</b> Modular QoS CLI (MQC) trennt Klassifizierung (<code>class-map</code>) von Aktionen (<code>policy-map</code>) und der Anwendung auf Interfaces (<code>service-policy</code>).</p><pre><code>class-map match-any VOICE
+ match dscp ef
+!
+policy-map EXAMPLE-QOS
+ class VOICE
+  set dscp ef
+!
+interface gigabitEthernet 1/0/10
+ service-policy input EXAMPLE-QOS</code></pre><div class="warn"><b>Nur Syntaxbeispiel:</b> Dieses generische MQC-Beispiel ist keine universell gültige Catalyst-Konfiguration. Unterstützte Match-/Action-Befehle, Richtlinienrichtung, Queue-Zuordnung und Hardware-Ressourcen müssen für das konkrete Modell und Release geprüft werden. Bestehende QoS-Policies nicht ohne Prüfung ersetzen.</div></article>
+<article class="article searchable"><span class="tag">QoS</span><h3>QoS-Troubleshooting</h3><pre><code>show policy-map interface gi1/0/10
+show class-map
+show policy-map
+show interfaces gi1/0/10 counters errors
+show interfaces gi1/0/10</code></pre><p><b>Prüfen:</b> Werden Pakete klassifiziert? Stimmen DSCP/CoS-Markierungen? Ist die Policy am richtigen Interface und in der richtigen Richtung aktiv? Gibt es Queue-Drops oder Überlast? Counters vor/nach einem Test vergleichen.</p></article>
+
+<div class="sectionhead" id="ipv6"><h2>15. IPv6 Switching und First-Hop</h2><p>IPv6 auf Management-SVIs und Layer-3-Switches, Neighbor Discovery und grundlegende Diagnose.</p></div>
+<article class="article searchable"><span class="tag">IPv6</span><h3>IPv6-Status und Neighbor Discovery prüfen</h3><pre><code>show ipv6 interface brief
+show ipv6 interface vlan 10
+show ipv6 neighbors
+show ipv6 route
+show ipv6 protocols</code></pre><p><b>Zweck:</b> Prüft IPv6-Adressen, Interface-Status, Neighbor Cache und Routing-Tabelle. IPv6 Neighbor Discovery übernimmt Funktionen, die bei IPv4 unter anderem ARP erfüllt.</p></article>
+<article class="article searchable"><span class="tag">IPv6</span><h3>IPv6 auf einem SVI konfigurieren</h3><p><b>Zweck:</b> Weist einem VLAN-Interface eine IPv6-Adresse zu, z. B. als Gateway für ein VLAN.</p><pre><code>configure terminal
+vlan 10
+ name CLIENTS
+interface vlan 10
+ description CLIENTS-IPV6-GATEWAY
+ ipv6 address 2001:db8:10::1/64
+ no shutdown
+end
+show ipv6 interface brief
+show ipv6 interface vlan 10</code></pre><p><b>Hinweis:</b> <code>2001:db8::/32</code> ist für Dokumentationsbeispiele reserviert. Für produktive Netze den zugewiesenen globalen Präfix verwenden. Das SVI benötigt ein aktives VLAN und mindestens einen aktiven Layer-2-Port im VLAN.</p></article>
+<article class="article searchable"><span class="tag">IPv6</span><h3>IPv6-Routing auf einem Layer-3-Switch aktivieren</h3><p><b>Zweck:</b> Aktiviert IPv6-Weiterleitung zwischen gerouteten Interfaces/SVIs, sofern Plattform und Lizenz dies unterstützen.</p><pre><code>configure terminal
+ipv6 unicast-routing
+interface vlan 10
+ ipv6 address 2001:db8:10::1/64
+ no shutdown
+interface vlan 20
+ ipv6 address 2001:db8:20::1/64
+ no shutdown
+end
+show ipv6 route
+show ipv6 interface brief</code></pre><div class="warn"><b>Achtung:</b> Das Aktivieren von IPv6-Routing verändert das Weiterleitungsverhalten. Vor Produktiveinsatz IPv6-Adressplan, Routing, ACLs, RA/ND-Verhalten und Sicherheitsrichtlinien planen.</div></article>
+<article class="article searchable"><span class="tag">IPv6</span><h3>IPv6 Default Route und statische Routen</h3><pre><code>configure terminal
+ipv6 route ::/0 2001:db8:10::fe
+ipv6 route 2001:db8:30::/64 2001:db8:20::fe
+end
+show ipv6 route static
+show ipv6 route</code></pre><p><b>Parameter:</b> <code>::/0</code> ist die IPv6-Default-Route. Next-Hop-Adressen und Präfixe sind Beispiele und müssen zum eigenen Adressplan passen.</p></article>
+<article class="article searchable"><span class="tag">IPv6</span><h3>IPv6 First-Hop Security – RA Guard und DHCPv6 Guard</h3><p><b>Zweck:</b> Schutzmechanismen können unerwünschte Router Advertisements bzw. DHCPv6-Nachrichten auf Access-Ports blockieren.</p><pre><code>show ipv6 neighbors
+show ipv6 interface vlan 10
+show running-config interface gi1/0/10</code></pre><p><b>Wichtig:</b> RA Guard und DHCPv6 Guard sind auf unterstützten Plattformen verfügbar, aber Syntax, Policy-Modell und Einschränkungen unterscheiden sich stark. Die konkrete Konfiguration muss aus dem Configuration Guide des Switch-Modells und Releases übernommen werden. Nicht ungeprüft auf Uplinks oder Router-Ports anwenden.</p></article>
+<article class="article searchable"><span class="tag">IPv6</span><h3>IPv6-Troubleshooting</h3><pre><code>show ipv6 interface brief
+show ipv6 interface vlan 10
+show ipv6 neighbors
+show ipv6 route
+show logging</code></pre><p><b>Reihenfolge:</b> IPv6-Adresse/Präfix prüfen, SVI-Status und VLAN-Aktivität kontrollieren, Neighbor Discovery prüfen, Default Gateway/Router Advertisements untersuchen, Routing und IPv6-ACLs kontrollieren.</p></article>
+
+<div class="sectionhead" id="management"><h2>16. Management und Betrieb</h2></div>
 <article class="article searchable"><span class="tag">Management</span><h3>Management-SVI und Default Gateway</h3><p><b>Zweck:</b> Weist einem Management-VLAN eine IP-Adresse zu.</p><pre><code>vlan 99
  name MANAGEMENT
 interface vlan 99
@@ -361,7 +450,7 @@ show running-config
 show startup-config
 show archive</code></pre><p><b>Praxis:</b> Vorher externes Backup exportieren, Änderung testen, anschließend speichern. Archive-Funktionen und Speicherpfad sind plattformabhängig.</p></article>
 
-<div class="sectionhead" id="troubleshooting"><h2>14. Troubleshooting – systematische Reihenfolge</h2><p>Physisch → Interface → VLAN → Trunk → STP → MAC → Security → Gateway/Anwendung.</p></div>
+<div class="sectionhead" id="troubleshooting"><h2>17. Troubleshooting – systematische Reihenfolge</h2><p>Physisch → Interface → VLAN → Trunk → STP → MAC → Security → Gateway/Anwendung.</p></div>
 <article class="article searchable"><span class="tag">Troubleshooting</span><h3>Port down, Fehler oder err-disabled</h3><pre><code>show interfaces status
 show interfaces gi1/0/10
 show interfaces counters errors
@@ -407,7 +496,7 @@ show etherchannel summary
 show mac address-table dynamic
 show logging</code></pre><p><b>Praxis:</b> Vorher-Ausgaben sichern, eine Änderung nach der anderen durchführen, Funktion testen, Nachher-Ausgaben vergleichen und erst danach speichern.</p></article>
 
-<div class="sectionhead" id="errdisable"><h2>15. Err-disabled Ports und Port-Recovery</h2></div>
+<div class="sectionhead" id="errdisable"><h2>18. Err-disabled Ports und Port-Recovery</h2></div>
 <article class="article searchable"><span class="tag">Troubleshooting</span><h3>Err-disabled Ursache ermitteln</h3><p>Ein Port kann durch Schutzfunktionen wie BPDU Guard, Port Security, UDLD oder Link-Flap Detection deaktiviert werden. Erst Ursache finden, dann den Port wieder aktivieren.</p><pre><code>show interfaces status err-disabled
 show interfaces status
 show errdisable recovery
