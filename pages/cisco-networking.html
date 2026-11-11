@@ -147,4 +147,148 @@ show cdp neighbors
 show lldp neighbors
 copy running-config startup-config</code></pre><p><b>Wichtige Begriffe:</b> VLAN = virtuelles LAN · LAN = lokales Netzwerk · WAN = Weitverkehrsnetz · NAT = Netzwerkadressübersetzung · ACL = Zugriffskontrollliste · STP = Schleifenvermeidung · RSTP = Rapid STP · LACP = Link Aggregation Control Protocol · SVI = Switched Virtual Interface · Trunk = mehrere VLANs auf einem Link · Access-Port = Port für ein VLAN.</p></article>
 <article class="article searchable"><span class="tag">Hinweise</span><h3>Sicher arbeiten</h3><ul><li>Vor Änderungen immer <code>show running-config</code> prüfen und eine Sicherung erstellen.</li><li>Nach erfolgreichen Änderungen <code>copy running-config startup-config</code> ausführen.</li><li>VLAN- und Trunk-Konfigurationen auf beiden Seiten kontrollieren.</li><li>STP nicht leichtfertig deaktivieren; es schützt vor Layer-2-Schleifen.</li><li>ACLs können Verbindungen blockieren; vorab testen und Rückfallplan bereithalten.</li><li>Cisco-Befehle unterscheiden sich je nach IOS-Version und Gerätemodell.</li><li>Mit Cisco Packet Tracer oder in einer isolierten Testumgebung üben.</li></ul><p>Quelle: <a href="https://app.notion.com/p/41598f85c55b800dbe52fc54db559aa8" target="_blank" rel="noopener">Cisco Networking – Command Cheat Sheet in Notion</a>. Ergänzende offizielle Referenz: <a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/vlan/vlan-configuration-guide/configure-vlan-trunks.html" target="_blank" rel="noopener">Cisco VLAN Trunking Guide</a> · <a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/etherchannel/etherchannel-configuration-guide/etherchannels.html" target="_blank" rel="noopener">Cisco EtherChannel Guide</a>.</p></article>
-<article class="article searchable"><span class="tag">Weiterführende Referenz</span><h3>Cisco Command Cheat Sheet</h3><p>Die ausführliche Cisco-Befehlsreferenz ist auch in deiner Notion-Sammlung verfügbar: <a href="https://app.notion.com/p/Cisco-Networking-Command-Cheat-Sheet-41598f85c55b800dbe52fc54db559aa8" target="_blank" rel="noopener">Cisco Networking – Command Cheat Sheet</a>.</p><p>Offizielle Cisco-Dokumentation: <a href="https://www.cisco.com/c/en/us/support/switches/index.html" target="_blank" rel="noopener">Cisco Switches – Support und Dokumentation</a>.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Cisco Networking · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
+<article class="article searchable"><span class="tag">Weiterführende Referenz</span><h3>Cisco Command Cheat Sheet</h3><p>Die ausführliche Cisco-Befehlsreferenz ist auch in deiner Notion-Sammlung verfügbar: <a href="https://app.notion.com/p/Cisco-Networking-Command-Cheat-Sheet-41598f85c55b800dbe52fc54db559aa8" target="_blank" rel="noopener">Cisco Networking – Command Cheat Sheet</a>.</p><p>Offizielle Cisco-Dokumentation: <a href="https://www.cisco.com/c/en/us/support/switches/index.html" target="_blank" rel="noopener">Cisco Switches – Support und Dokumentation</a>.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div>
+<article class="article searchable"><span class="tag">VTP · VLAN Trunking Protocol</span><h3>VTP verstehen: Version 1, 2 und 3</h3>
+<p>VTP verteilt VLAN-Informationen innerhalb derselben VTP-Domain über Trunk-Verbindungen. Alle Switches müssen denselben Domain-Namen verwenden. VTP ersetzt keine Trunk-Konfiguration.</p>
+<div class="tablewrap"><table><tr><th>Version</th><th>Wichtige Eigenschaften</th><th>Hinweis</th></tr>
+<tr><td>VTP v1</td><td>Grundlegende VLAN-Verteilung; klassische VTP-Funktion</td><td>Legacy; nur einsetzen, wenn erforderlich</td></tr>
+<tr><td>VTP v2</td><td>Verbesserte Behandlung unbekannter TLVs; zusätzliche Konsistenzfunktionen</td><td>Nicht interoperabel mit v1 im selben Domain-Betrieb, wenn v2 aktiviert ist</td></tr>
+<tr><td>VTP v3</td><td>Unterstützt Extended VLANs und Private VLANs; Primary-Server-Konzept; verbesserte Kontrolle</td><td>Für moderne unterstützte Umgebungen bevorzugt; Kompatibilität prüfen</td></tr></table></div>
+<h3>Wichtige VTP-Modi</h3><ul><li><b>Server:</b> Kann VLAN-Datenbank ändern und verteilen. Bei VTP v3 muss ein Primary Server Änderungen an der VLAN-Datenbank vornehmen.</li><li><b>Client:</b> Übernimmt VLAN-Informationen und kann sie nicht lokal verwalten.</li><li><b>Transparent:</b> Verwaltet VLANs lokal; leitet VTP-Nachrichten je nach Version/Plattform weiter, nimmt aber nicht an der VLAN-Verteilung teil.</li><li><b>Off:</b> VTP-Nachrichten werden nicht weitergeleitet; Verfügbarkeit abhängig von Plattform und Version.</li></ul>
+<h3>VTP-Status prüfen</h3><pre><code>show vtp status
+show vtp counters
+show vlan brief
+show interfaces trunk
+show running-config | include vtp</code></pre>
+<h3>Beispiel: VTP v2 – Server und Client</h3><p>Nur in einer isolierten Testumgebung verwenden. Beispiel-Domain: LABNET.</p><pre><code>! Auf dem Server-Switch
+configure terminal
+vtp domain LABNET
+vtp version 2
+vtp mode server
+vtp password MeinVtpPasswort
+end
+show vtp status
+
+! Auf dem Client-Switch
+configure terminal
+vtp domain LABNET
+vtp version 2
+vtp mode client
+vtp password MeinVtpPasswort
+end
+show vtp status
+
+! Auf beiden Switches: Uplink als Trunk konfigurieren
+configure terminal
+interface gigabitEthernet 0/24
+ switchport mode trunk
+ no shutdown
+end</code></pre>
+<h3>Beispiel: VTP v3 – Primary Server</h3><pre><code>! Auf jedem Switch der Domain
+configure terminal
+vtp domain LABNET
+vtp version 3
+vtp password MeinVtpPasswort
+end
+
+! Auf dem vorgesehenen Primary Server
+vtp primary vlan
+show vtp status
+
+! VLAN zentral erstellen
+configure terminal
+vlan 10
+ name CLIENTS
+vlan 20
+ name SERVERS
+end
+show vlan brief
+show vtp status</code></pre>
+<h3>VTP sicher prüfen – bevor du einen Switch verbindest</h3><ul><li><code>show vtp status</code>: Version, Domain, Modus und Configuration Revision kontrollieren.</li><li>Ein Switch mit höherer Configuration Revision kann in bestimmten VTP-Szenarien unerwartet VLAN-Informationen verteilen.</li><li>Vor dem Anschluss eines gebrauchten Switches VTP-Modus, Domain und Revision prüfen; bei Unsicherheit zuerst isolieren und sauber vorbereiten.</li><li>VTP-Passwort und identische Domain auf allen teilnehmenden Geräten konfigurieren.</li><li>VTP v3 Primary-Server-Rolle bewusst vergeben.</li><li>Viele Netzwerke nutzen bewusst <code>vtp mode transparent</code> oder <code>vtp mode off</code>, um unerwünschte zentrale VLAN-Verteilung zu vermeiden.</li></ul>
+<div class="warn">Achtung: VTP kann bei falscher Domain-/Revision-Konstellation VLAN-Konfigurationen verändern. Niemals ungeprüft einen gebrauchten Switch in ein produktives VTP-Netz stecken. Befehle und unterstützte Modi hängen vom Switch-Modell und IOS/IOS XE ab.</div>
+</article>
+<article class="article searchable"><span class="tag">Cisco Catalyst 9800-L-C-K9 · Wireless LAN Controller</span><h3>9800-L-C-K9: Grundlegende CLI-Befehle</h3>
+<p>Der Catalyst 9800-L-C-K9 ist ein Catalyst 9800-L Wireless LAN Controller (WLC), kein Ethernet-Access-Switch. Er verwaltet Access Points, WLANs, Policy Profiles, Tags und Wireless-Clients. Die genaue Syntax und verfügbare Funktionen hängen von der installierten IOS-XE-Version ab.</p>
+<h3>System, Version und Hardware</h3><pre><code>show version
+show inventory
+show platform
+show clock
+show running-config
+show startup-config
+show logging
+show processes cpu
+show memory statistics
+show redundancy</code></pre>
+<h3>WLANs, APs und Clients überwachen</h3><pre><code>show wireless summary
+show ap summary
+show ap name AP-NAME config general
+show ap name AP-NAME tag detail
+show wireless client summary
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail
+show wlan summary
+show wlan id 10
+show wireless stats client detail
+show wireless stats ap join summary</code></pre>
+<h3>RF, Radio und Access Points</h3><pre><code>show ap dot11 5ghz summary
+show ap dot11 24ghz summary
+show ap name AP-NAME config slot
+show wireless stats ap history
+show wireless stats ap join</code></pre>
+<h3>Konfigurationsobjekte anzeigen</h3><pre><code>show wireless tag policy detailed
+show wireless tag site detailed
+show wireless tag rf detailed
+show wireless profile policy detailed
+show wireless profile flex detailed
+show wireless profile radio detailed
+show wlan summary
+show aaa servers
+show radius server-group all</code></pre>
+<h3>Beispiel: WLAN-Konfiguration mit WPA2-PSK</h3><p>Beispielwerte ersetzen: WLAN-ID 10, SSID CORP-WIFI, Policy Profile CORP-POLICY, VLAN 20. Vor produktiver Nutzung Sicherheitsvorgaben prüfen; WPA2-PSK ist hier nur ein einfaches Laborbeispiel.</p><pre><code>configure terminal
+wlan CORP-WIFI 10 CORP-WIFI
+ security wpa psk set-key ascii 0 CHANGE-ME-TO-A-STRONG-KEY
+ no shutdown
+exit
+
+wireless profile policy CORP-POLICY
+ vlan 20
+ no shutdown
+exit
+
+wireless tag policy CORP-TAG
+ wlan CORP-WIFI policy CORP-POLICY
+exit
+
+! Tag einem AP zuweisen – AP-Namen anpassen
+ap name AP-NAME
+ policy-tag CORP-TAG
+end
+
+show wlan summary
+show wireless tag policy detailed
+show ap summary
+show wireless client summary</code></pre>
+<div class="warn">Die WLAN-Beispielkonfiguration ist ein vereinfachtes Template. Je nach IOS-XE-Release, Sicherheitsmodus, AAA/RADIUS, VLAN-Design und AP-Modell können zusätzliche Einstellungen erforderlich sein. Vor Anwendung Syntax mit ? und der passenden Cisco-Konfigurationsanleitung prüfen.</div>
+<h3>AP Join und CAPWAP Troubleshooting</h3><pre><code>show ap summary
+show wireless stats ap join summary
+show wireless stats ap join
+show logging | include CAPWAP
+show logging | include DTLS
+show logging | include AP
+show wireless management trustpoint
+show ip interface brief
+show ip route
+ping 192.0.2.10</code></pre>
+<h3>Wireless Client Troubleshooting</h3><pre><code>show wireless client summary
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail
+show logging | include AAA
+show aaa servers
+show radius statistics
+show wireless stats client detail</code></pre>
+<h3>Konfiguration sichern und Software prüfen</h3><pre><code>copy running-config startup-config
+show install summary
+show version
+dir bootflash:
+show logging</code></pre>
+<p>Offizielle Referenzen: <a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/command-reference/b_wireless_cr.html" target="_blank" rel="noopener">Catalyst 9800 Command Reference</a> · <a href="https://www.cisco.com/c/en/us/support/wireless/catalyst-9800-series-wireless-controllers/products-installation-and-configuration-guides-list.html" target="_blank" rel="noopener">Catalyst 9800 Configuration Guides</a>.</p>
+</article>
+<footer>IT Knowledge Base · Cisco Networking · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
