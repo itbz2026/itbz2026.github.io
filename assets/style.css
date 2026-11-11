@@ -161,3 +161,19 @@ nav a.branch-active{color:#fff;background:#203653}
 .command-reference-notes{margin-top:28px}
 @media(max-width:900px){.command-list-grid{grid-template-columns:1fr}.command-search-head{align-items:stretch;flex-direction:column}.command-search-box{width:100%}.command-toolbar{position:relative;top:auto}}
 @media(max-width:560px){.command-hero{padding:25px 20px}.command-stats{gap:22px}.command-filter-group{display:block}.filter-caption{display:block;margin-bottom:7px}.command-toolbar{padding:14px}.command-card{padding:14px}.command-results-line{align-items:flex-start;gap:10px;flex-direction:column}}
+
+/* Compact command reference: short descriptions and immediately visible commands */
+.command-card-compact{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.command-card-compact .command-card-head{margin:0}
+.command-card-compact .command-card-title h3{font-size:15px;margin-top:3px}
+.command-short-description{margin:0;color:#53647a;font-size:12px;line-height:1.45}
+.command-card-compact .command-code-wrap{align-items:center}
+.command-card-compact .command-code-wrap pre{padding:9px 11px;font-size:12px}
+.command-card-compact .copy-command{padding:8px 10px;font-size:11px}
+.command-card-compact .command-platform{font-size:9px}
+.command-card-compact .command-code-wrap code{overflow-wrap:anywhere}
+.command-card-compact .command-code-wrap pre{white-space:pre-wrap}
+.command-page .command-syntax{margin:12px 0}
+.command-page .command-reference-notes{padding:16px}
+.command-page .command-reference-notes ol{margin:6px 0}
+@media(max-width:560px){.command-card-compact{padding:12px}.command-card-compact .command-code-wrap{align-items:stretch}.command-card-compact .copy-command{font-size:10px}}
