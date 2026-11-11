@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Cisco Routing: statische Routen, Inter-VLAN Routing, OSPF und EIGRP."><title>Cisco Routing | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Cisco / Cisco Routing</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a><div class="sectionhead"><h1>Cisco Routing</h1><p>Static Routing · Inter-VLAN · OSPF · EIGRP</p></div>
+<article class="article searchable"><span class="tag">Grundlagen</span><h3>Routing-Tabelle und Layer-3-Prüfung</h3><pre><code>show ip interface brief
+show ip route
+show ip route connected
+show ip protocols
+show arp
+ping 192.168.1.1
+traceroute 8.8.8.8</code></pre><p>Prüfe zuerst Interface-Status, IP-Adresse, Subnetzmaske und Gateway. Danach Routing-Tabelle und Next Hop.</p></article>
+<article class="article searchable"><span class="tag">Static Routing</span><h3>Statische Route konfigurieren</h3><pre><code>configure terminal
+ip route 192.168.20.0 255.255.255.0 10.0.0.2
+ip route 0.0.0.0 0.0.0.0 10.0.0.1
+end
+show ip route static</code></pre><p>Die erste Route erreicht 192.168.20.0/24 über 10.0.0.2. Die zweite ist eine Default Route. Entfernen mit <code>no ip route 192.168.20.0 255.255.255.0 10.0.0.2</code>.</p></article>
+<article class="article searchable"><span class="tag">Inter-VLAN Routing</span><h3>SVIs auf einem Layer-3-Switch</h3><pre><code>configure terminal
+ip routing
+vlan 10
+vlan 20
+interface vlan 10
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+interface vlan 20
+ ip address 192.168.20.1 255.255.255.0
+ no shutdown
+end
+show ip interface brief
+show ip route connected</code></pre><p>Clients nutzen die jeweilige SVI-Adresse als Default Gateway. Das SVI wird erst aktiv, wenn das VLAN existiert und ein aktiver Port darin vorhanden ist.</p></article>
+<article class="article searchable"><span class="tag">OSPF</span><h3>OSPF Area 0 – Beispielkonfiguration</h3><pre><code>configure terminal
+router ospf 10
+ router-id 1.1.1.1
+ network 10.0.0.0 0.0.0.3 area 0
+ network 192.168.10.0 0.0.0.255 area 0
+ passive-interface default
+ no passive-interface gigabitEthernet 1/0/48
+end
+show ip ospf neighbor
+show ip ospf interface brief
+show ip route ospf
+show ip protocols</code></pre><p>OSPF-Nachbarn benötigen passende Area-, Timer-, MTU- und Authentifizierungseinstellungen. Wildcard 0.0.0.255 entspricht /24.</p></article>
+<article class="article searchable"><span class="tag">EIGRP</span><h3>EIGRP – klassischer Named/AS-Kontext</h3><pre><code>configure terminal
+router eigrp 100
+ network 10.0.0.0 0.0.0.3
+ network 192.168.10.0 0.0.0.255
+ passive-interface default
+ no passive-interface gigabitEthernet 1/0/48
+end
+show ip eigrp neighbors
+show ip eigrp topology
+show ip route eigrp</code></pre><div class="warn">EIGRP-Unterstützung und klassische Syntax sind modell-, lizenz- und releaseabhängig. Nicht jeder Catalyst-Switch unterstützt EIGRP.</div></article>
+<article class="article searchable"><span class="tag">DHCP Relay</span><h3>DHCP-Requests an zentralen Server weiterleiten</h3><pre><code>configure terminal
+interface vlan 10
+ ip helper-address 192.168.100.10
+end
+show running-config interface vlan 10</code></pre><p><code>ip helper-address</code> wird auf dem Client-Gateway/SVI gesetzt und leitet DHCP-Broadcasts an den DHCP-Server weiter. Routing und Firewall-Regeln müssen den Rückweg erlauben.</p></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
