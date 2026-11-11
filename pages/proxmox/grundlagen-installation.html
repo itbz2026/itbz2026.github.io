@@ -11,7 +11,23 @@ getent hosts $(hostname -f)
 getent hosts pve01.example.com
 cat /etc/hosts</code></pre><div class="note">Im Cluster Hostname oder Management-IP niemals unkoordiniert ändern.</div></article><article class="article searchable"><span class="tag">Praxisreferenz</span><h3>Wichtige Pfade und Dienste</h3><p>/etc/pve wird durch pmxcfs bereitgestellt. Wichtige Dienste stellen Webproxy, API, Statusdaten und Cluster-Konfiguration bereit.</p><pre><code>ls -la /etc/pve/
 systemctl status pveproxy pvedaemon pvestatd pve-cluster
-journalctl -u pveproxy -b --no-pager</code></pre><div class="note">Dateien unter /etc/pve nicht wie gewöhnliche lokale Dateien behandeln. Änderungen können clusterweit wirken.</div></article><div class="sectionhead"><h2>Erweiterte Administration & Praxis</h2><p>Zusätzliche Aufgaben für Betrieb, Diagnose und Expertenpraxis.</p></div><article class="article searchable"><span class="tag">Erweiterte Praxisreferenz</span><h3>Zeitdienst und NTP prüfen</h3><p>Eine korrekte Systemzeit ist für Cluster, Zertifikate und Logs wichtig.</p><pre><code>timedatectl
+journalctl -u pveproxy -b --no-pager</code></pre><div class="note">Dateien unter /etc/pve nicht wie gewöhnliche lokale Dateien behandeln. Änderungen können clusterweit wirken.</div></article><article class="article searchable"><span class="tag">Praxisreferenz</span><h3>Netzwerk und Management-Verbindung prüfen</h3><p>Interface, Bridge, IP-Adresse, Routing und Erreichbarkeit getrennt prüfen. Die aktive Netzwerkkonfiguration liegt üblicherweise in <code>/etc/network/interfaces</code>; Änderungen mit Konsolenzugriff und Rückfallplan durchführen.</p><pre><code>ip -br link
+ip -br address
+ip route
+cat /etc/network/interfaces
+bridge link
+ping -c 3 &lt;GATEWAY-IP&gt;
+getent hosts &lt;PVE-FQDN&gt;</code></pre><div class="warn"><b>Achtung:</b> Netzwerkänderungen können die Weboberfläche und SSH-Verbindung trennen. Remote-Konfiguration nicht ohne lokalen Konsolenzugriff und getesteten Rückweg ändern. <code>ifreload -a</code> erst nach Prüfung der Konfiguration und im Wartungsfenster ausführen.</div></article>
+<article class="article searchable"><span class="tag">Praxisreferenz</span><h3>Repository- und Paketstatus kontrollieren</h3><p>Prüfen, ob die konfigurierten Paketquellen zur installierten Proxmox-Version und Subscription passen und keine veralteten oder doppelten Einträge aktiv sind.</p><pre><code>pveversion -v
+apt-cache policy proxmox-ve
+apt update
+apt list --upgradable</code></pre><div class="note">Repository-Dateien können je nach Debian-/Proxmox-Version in <code>/etc/apt/sources.list</code>, <code>/etc/apt/sources.list.d/</code> oder DEB822-Dateien liegen. Vor Änderungen die offizielle Anleitung für genau diese Version verwenden.</div></article>
+<article class="article searchable"><span class="tag">Erweiterte Praxisreferenz</span><h3>Boot, Kernel und Neustart prüfen</h3><p>Nach Kernel- oder Paketupdates prüfen, welcher Kernel läuft und ob ein Neustart erforderlich ist.</p><pre><code>uname -r
+proxmox-boot-tool status
+ls -lh /boot
+systemctl --failed
+journalctl -b -p err --no-pager</code></pre><div class="note">Nicht jedes System verwendet dieselbe Boot-Konfiguration. <code>proxmox-boot-tool status</code> ist insbesondere bei unterstützten systemd-boot-/EFI-Setups relevant. Vor einem Neustart Clusterstatus, laufende Gäste und Wartungsfenster berücksichtigen.</div></article>
+<div class="sectionhead"><h2>Erweiterte Administration & Praxis</h2><p>Zusätzliche Aufgaben für Betrieb, Diagnose und Expertenpraxis.</p></div><article class="article searchable"><span class="tag">Erweiterte Praxisreferenz</span><h3>Zeitdienst und NTP prüfen</h3><p>Eine korrekte Systemzeit ist für Cluster, Zertifikate und Logs wichtig.</p><pre><code>timedatectl
 systemctl status systemd-timesyncd
 chronyc tracking 2&gt;/dev/null || true</code></pre><div class="note"><b>Hinweis:</b> Je nach Installation systemd-timesyncd oder chrony verwenden, nicht beide parallel konfigurieren.</div></article><article class="article searchable"><span class="tag">Erweiterte Praxisreferenz</span><h3>Hardwareinventar dokumentieren</h3><p>Vor der Inbetriebnahme CPU, RAM, Firmware, Controller, NICs und Datenträger erfassen.</p><pre><code>lscpu
 free -h
