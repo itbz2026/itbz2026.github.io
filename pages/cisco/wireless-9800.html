@@ -50,5 +50,27 @@ show wireless client summary
 show wireless client mac-address AA:BB:CC:DD:EE:FF detail
 show logging
 show aaa servers</code></pre></article>
+<article class="article searchable"><span class="tag">AAA / RADIUS</span><h3>RADIUS- und 802.1X-Fehler eingrenzen</h3><p>Bei Authentifizierungsproblemen zuerst AAA-Server-Erreichbarkeit, Shared Secret, Zertifikate, Zeit und Policy-Zuordnung prüfen.</p><pre><code>show aaa servers
+show radius statistics
+show running-config | section aaa
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail
+show logging | include RADIUS
+show logging | include AAA</code></pre><div class="note">MAC-Adresse durch die Client-MAC ersetzen. Debug-Kommandos können hohe CPU-Last und umfangreiche Logs erzeugen; nur gezielt und kurzzeitig einsetzen.</div></article>
+<article class="article searchable"><span class="tag">Policy / VLAN</span><h3>Client erhält falsches VLAN oder keine IP</h3><p>Die Zuordnung von WLAN, Policy Profile, Policy Tag und VLAN-Pool nachvollziehen. Danach DHCP-Relay, Scope, Gateway und ACL prüfen.</p><pre><code>show wlan summary
+show wireless profile policy summary
+show wireless tag policy summary
+show wireless tag policy detailed &lt;POLICY_TAG&gt;
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail</code></pre><div class="note">Client-MAC und Policy-Tag ersetzen. Ein erfolgreicher WLAN-Join beweist nicht, dass DHCP und Datenpfad funktionieren.</div></article>
+<article class="article searchable"><span class="tag">RF / Roaming</span><h3>RF- und Roaming-Probleme untersuchen</h3><p>Bei schwachem Signal, häufigen Roams oder niedriger Datenrate Client-RSSI, SNR, Band, Kanalbelegung und AP-Auslastung prüfen.</p><pre><code>show ap summary
+show ap name &lt;AP_NAME&gt; config general
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail
+show wireless stats client detail
+show logging</code></pre><div class="note">RF-Kommandos und Detailfelder sind releaseabhängig. Messwerte immer am Client und am Controller vergleichen; Roaming nicht allein anhand eines einzelnen RSSI-Werts bewerten.</div></article>
+<article class="article searchable"><span class="tag">AP Join Troubleshooting</span><h3>Access Point registriert sich nicht am Controller</h3><p>Layer 3, DNS, DHCP, CAPWAP, Zertifikat und Zeit in dieser Reihenfolge prüfen. Auch AP-Kompatibilität mit dem Controller-Release verifizieren.</p><pre><code>show wireless stats ap join summary
+show wireless stats ap join
+show ap summary
+show logging | include CAPWAP
+show logging | include DTLS
+show clock</code></pre><div class="warn"><b>Achtung:</b> AP-Reset oder Zertifikats-Workarounds nicht als ersten Schritt einsetzen. Erst Join-Fehlercode und Ursache identifizieren.</div></article>
 <article class="article searchable"><span class="tag">Cisco Referenzen</span><h3>Offizielle Dokumentation</h3><ul><li><a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/command-reference/b_wireless_cr.html" target="_blank" rel="noopener">Catalyst 9800 Command Reference</a></li><li><a href="https://www.cisco.com/c/en/us/support/wireless/catalyst-9800-series-wireless-controllers/products-installation-and-configuration-guides-list.html" target="_blank" rel="noopener">Catalyst 9800 Configuration Guides</a></li></ul></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
