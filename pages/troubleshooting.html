@@ -1,11 +1,56 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Fehler systematisch eingrenzen."><title>Troubleshooting | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
-<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Troubleshooting</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Troubleshooting</h1><p>Fehler systematisch eingrenzen</p></div>
-<article class="article searchable"><span class="tag">Methode</span><h3>Standard-Vorgehensweise</h3><ol><li><b>Problem beschreiben:</b> Was funktioniert nicht und seit wann?</li><li><b>Umfang bestimmen:</b> Ein Benutzer, ein Gerät oder mehrere Systeme?</li><li><b>Änderungen prüfen:</b> Updates, Konfiguration, Netzwerk oder Rechte.</li><li><b>Logs prüfen:</b> Fehlermeldungen und Zeitstempel sichern.</li><li><b>Hypothese testen:</b> Eine Änderung nach der anderen.</li><li><b>Lösung verifizieren:</b> Funktion und Nebenwirkungen prüfen.</li><li><b>Dokumentieren:</b> Ursache, Lösung und Prävention festhalten.</li></ol><h4>Incident-Notiz</h4><pre><code>Datum/Uhrzeit:
-System/Dienst:
-Fehlerbild und Auswirkung:
-Fehlermeldung/Logs:
-Prüfungen:
-Ursache:
-Lösung und Ergebnis:
-Prävention:</code></pre></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Troubleshooting · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Systematische Fehleranalyse für Windows, Linux, Netzwerk, Virtualisierung und Docker."><title>Troubleshooting | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html" aria-current="page">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Troubleshooting</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Troubleshooting</h1><p>Fehler eingrenzen, Ursache finden und Lösung dokumentieren</p></div>
+<article class="article searchable"><span class="tag">Methode</span><h3>Standard-Vorgehensweise</h3><ol><li><b>Problem beschreiben:</b> Was funktioniert nicht, seit wann und mit welcher Fehlermeldung?</li><li><b>Umfang bestimmen:</b> Ein Benutzer, ein Gerät, ein Standort oder mehrere Systeme?</li><li><b>Änderungen prüfen:</b> Updates, Konfigurationen, Berechtigungen und Netzwerkänderungen.</li><li><b>Beweise sammeln:</b> Logs, Zeitstempel, Status und reproduzierbare Schritte sichern.</li><li><b>Hypothese bilden:</b> mögliche Ursachen priorisieren.</li><li><b>Kontrolliert testen:</b> jeweils nur eine Änderung durchführen.</li><li><b>Verifizieren:</b> Funktion und Nebenwirkungen prüfen.</li><li><b>Dokumentieren:</b> Ursache, Lösung und Prävention festhalten.</li></ol></article>
+<article class="article searchable"><span class="tag">Netzwerk</span><h3>Keine Netzwerkverbindung</h3><ol><li>Physische Verbindung, WLAN und Interface-Status prüfen.</li><li>IP-Adresse, Subnetz und Gateway prüfen.</li><li>Gateway und danach externe IP testen.</li><li>DNS-Auflösung testen.</li><li>Routing, VLAN, ACL und Firewall prüfen.</li><li>Zielport und Anwendung testen.</li></ol><pre><code>ipconfig /all
+ping 192.168.1.1
+route print
+nslookup example.com
+tracert example.com
+Test-NetConnection example.com -Port 443
+ip addr
+ip route
+ping -c 4 192.168.1.1
+dig example.com
+ss -tulpn</code></pre></article>
+<article class="article searchable"><span class="tag">DNS</span><h3>Namensauflösung funktioniert nicht</h3><ul><li>Welcher DNS-Server ist konfiguriert?</li><li>Ist die IP des DNS-Servers erreichbar?</li><li>Funktioniert die Abfrage direkt gegen den zuständigen DNS-Server?</li><li>Stimmen A/AAAA-, CNAME-, PTR- oder SRV-Einträge?</li><li>Ist ein Cacheproblem möglich?</li></ul><pre><code>ipconfig /all
+ipconfig /flushdns
+nslookup hostname.example.local
+Resolve-DnsName hostname.example.local
+dig hostname.example.local</code></pre></article>
+<article class="article searchable"><span class="tag">Windows</span><h3>Windows-Dienst startet nicht</h3><pre><code>Get-Service
+Get-Service -Name SERVICE
+Get-WinEvent -LogName System -MaxEvents 50
+sc.exe query SERVICE
+sfc /scannow
+DISM /Online /Cleanup-Image /RestoreHealth</code></pre><p>Abhängigkeiten, Dienstkonto, Berechtigungen, Starttyp, freie Ressourcen und passende Ereignisprotokolle kontrollieren.</p></article>
+<article class="article searchable"><span class="tag">Linux</span><h3>Linux-Dienst oder Server fehlerhaft</h3><pre><code>systemctl status SERVICE
+systemctl --failed
+journalctl -u SERVICE -b
+journalctl -p err -b
+df -h
+free -h
+dmesg -T | tail -n 50
+ss -tulpn</code></pre><p>Prüfe zusätzlich Dateirechte, Konfigurationssyntax, Speicherplatz, Inodes und Abhängigkeiten.</p></article>
+<article class="article searchable"><span class="tag">Docker</span><h3>Container startet nicht oder ist nicht erreichbar</h3><pre><code>docker ps -a
+docker compose ps
+docker logs --tail 100 CONTAINER
+docker inspect CONTAINER
+docker stats
+docker network ls
+docker volume ls
+ss -tulpn</code></pre><p>Image, Exit-Code, Healthcheck, Mounts, UID/GID, Umgebungsvariablen, Netzwerk und Port-Mapping prüfen. Vor Prune- oder Volume-Löschaktionen Backupstatus kontrollieren.</p></article>
+<article class="article searchable"><span class="tag">Virtualisierung</span><h3>VM ist langsam oder nicht erreichbar</h3><ul><li>Host-Auslastung, CPU-Overcommit und RAM-Druck prüfen.</li><li>Datastore-Latenz, freie Kapazität und Snapshot-Ketten prüfen.</li><li>Virtuelle Netzwerkkarte, Portgroup, VLAN und vSwitch prüfen.</li><li>Guest-Tools und Gastbetriebssystem-Logs prüfen.</li><li>Host- und VM-Zeit synchronisieren.</li></ul></article>
+<article class="article searchable"><span class="tag">Incident-Notiz</span><h3>Vorlage zur Dokumentation</h3><pre><code>Ticket / Incident:
+Datum und Uhrzeit:
+Betroffenes System / Benutzer:
+Priorität und Auswirkung:
+Fehlerbild / Fehlermeldung:
+Letzte Änderungen:
+Logs / Belege:
+Durchgeführte Prüfungen:
+Vermutete Ursache:
+Lösung / Änderung:
+Testergebnis:
+Präventionsmaßnahme:
+Verantwortlich / Abschluss:</code></pre></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Troubleshooting · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
