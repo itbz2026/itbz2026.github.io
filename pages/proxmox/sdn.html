@@ -9,5 +9,21 @@ journalctl -b -p warning --no-pager</code></pre><div class="note">Nach Änderung
 tracepath &lt;PEER_IP&gt;
 ip route get &lt;PEER_IP&gt;</code></pre><div class="note"><b>Hinweis:</b> Overlay-Probleme sind häufig Underlay-Probleme. Zuerst physisches Netzwerk prüfen.</div></article><article class="article searchable"><span class="tag">Erweiterte Praxisreferenz</span><h3>SDN-Änderungen kontrolliert ausrollen</h3><p>Änderungen dokumentieren, in einem Test-VNet validieren und erst danach produktive Segmente ändern.</p><pre><code>ip -br link
 ip route
-bridge fdb show</code></pre><div class="note"><b>Hinweis:</b> Managementzugriff und Gastkommunikation von mehreren Nodes testen.</div></article><div class="warn"><b>Betriebssicherheit:</b> Destruktive Änderungen an Storage, Netzwerk, Cluster oder Gastkonfiguration nur mit geprüftem Backup, Wartungsplan und Rückweg durchführen.</div><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Proxmox · Proxmox SDN</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
+bridge fdb show</code></pre><div class="note"><b>Hinweis:</b> Managementzugriff und Gastkommunikation von mehreren Nodes testen.</div></article><article class="article searchable"><span class="tag">VXLAN / EVPN</span><h3>Overlay-Fehler systematisch eingrenzen</h3><p>Bei VXLAN zuerst Underlay-Konnektivität zwischen allen beteiligten Nodes prüfen. Danach MTU, VTEP-Erreichbarkeit, Routing und erst anschließend Overlay-Konfiguration untersuchen.</p><pre><code>ip -br address
+ip route get &lt;PEER-IP&gt;
+ip -d link
+bridge fdb show
+ping -c 4 &lt;PEER-IP&gt;
+tracepath &lt;PEER-IP&gt;</code></pre><div class="note">VXLAN fügt Kapselungs-Overhead hinzu. Die erforderliche Underlay-MTU hängt vom Transport und Design ab. Nicht pauschal MTU-Werte übernehmen.</div></article>
+<article class="article searchable"><span class="tag">VLAN Troubleshooting</span><h3>VLAN-Pfad vom Gast bis zum physischen Switch prüfen</h3><p>Die VLAN-ID muss auf Gast-NIC, VNet/Bridge, Host-Uplink und Switch-Trunk konsistent sein.</p><pre><code>ip -d link show
+bridge vlan show
+bridge link
+cat /etc/network/interfaces
+ip -s link</code></pre><div class="note">Auf dem physischen Switch zusätzlich VLAN-Mitgliedschaft, erlaubte Trunk-VLANs und Port-Channel-Konfiguration kontrollieren. Management-VLAN vor Änderungen absichern.</div></article>
+<article class="article searchable"><span class="tag">Änderungsmanagement</span><h3>SDN-Änderungen kontrolliert anwenden</h3><p>Vor dem Apply Konfiguration exportieren bzw. dokumentieren, betroffene Nodes und Gäste identifizieren und einen lokalen oder Out-of-Band-Zugriff sicherstellen.</p><pre><code>pvesh get /cluster/sdn
+ip -br link
+ip route
+bridge vlan show
+journalctl -b -p warning --no-pager</code></pre><div class="warn"><b>Achtung:</b> SDN-Konfigurationsänderungen können die Managementverbindung unterbrechen. Keine Netzwerkänderung ausschließlich über die Verbindung durchführen, die dadurch verloren gehen könnte.</div></article>
+<div class="warn"><b>Betriebssicherheit:</b> Destruktive Änderungen an Storage, Netzwerk, Cluster oder Gastkonfiguration nur mit geprüftem Backup, Wartungsplan und Rückweg durchführen.</div><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Proxmox · Proxmox SDN</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
