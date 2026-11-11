@@ -1,65 +1,64 @@
-# 💻 IT Knowledge Base
+# IT Knowledge Base
 
-**A practical and structured IT knowledge base for system administrators, network engineers, and IT enthusiasts.**
+A practical, searchable reference for IT administration, infrastructure, networking, and troubleshooting.
 
-🌐 **Website:** https://itbz2026.github.io/
+**Website:** <https://itbz2026.github.io/>
 
-## 📖 About the Project
+## Explore the knowledge base
 
-IT Knowledge Base is a growing collection of technical documentation, administration guides, command references, practical examples, and troubleshooting instructions.
+- [Windows Server](https://itbz2026.github.io/pages/windows-server.html) · [Extended reference](https://itbz2026.github.io/pages/windows-server-reference.html)
+- [Active Directory](https://itbz2026.github.io/pages/active-directory.html) · [Extended reference](https://itbz2026.github.io/pages/active-directory-reference.html)
+- [Networking](https://itbz2026.github.io/pages/networking.html) · [Cisco](https://itbz2026.github.io/pages/cisco-networking.html)
+- [Linux & Debian](https://itbz2026.github.io/pages/linux.html) · [Extended reference](https://itbz2026.github.io/pages/linux-reference.html)
+- [Proxmox VE](https://itbz2026.github.io/pages/proxmox.html)
+- [Virtualization](https://itbz2026.github.io/pages/virtualisierung.html)
+- [Docker](https://itbz2026.github.io/pages/docker.html)
+- [IT Security](https://itbz2026.github.io/pages/it-security.html)
+- [Backup & Recovery](https://itbz2026.github.io/pages/backup-recovery.html)
+- [Troubleshooting](https://itbz2026.github.io/pages/troubleshooting.html)
+- [Command Reference](https://itbz2026.github.io/pages/command-reference.html)
 
-The goal is to provide clear, reliable, and easy-to-use IT knowledge in one central place.
+## What is included?
 
-## 📚 Main Categories
+- Administration commands with practical examples
+- Configuration guides and technical references
+- Networking and infrastructure concepts
+- Proxmox, virtualization, Linux, Windows, and Docker topics
+- Practical labs, troubleshooting steps, and operational notes
+- A site-wide search to find topics across the documentation
 
-- 🖥️ Windows Server
-- 👥 Active Directory
-- 🌐 Networking
-- 🔧 Cisco Networking
-- 🐧 Linux & Debian
-- 🖥️ Virtualization
-- ⚙️ Proxmox VE & Proxmox Backup Server
-- 🐳 Docker & Container Management
-- 🔐 IT Security
-- 💾 Backup & Recovery
-- 🛠️ Troubleshooting
-- ⌨️ Command Reference
+## Using the documentation
 
-## 🧰 What You Will Find
+1. Open the [knowledge base](https://itbz2026.github.io/).
+2. Choose a category or use the global search.
+3. Review the prerequisites and version notes before running commands.
+4. Test configuration changes in a lab or maintenance window before production use.
 
-- Important administration commands
-- Command syntax and parameters
-- Configuration examples
-- Step-by-step technical guides
-- Network and infrastructure documentation
-- Practical labs and scenarios
-- Troubleshooting procedures
-- Security and best practices
-- Product and version-specific notes
+Commands and examples are provided as technical learning material. Syntax and behavior may differ by product version, platform, and environment. Verify important operations against the vendor's current documentation and test them safely before production use.
 
-## 🎯 Project Goals
+## Contributing and maintenance
 
-- Keep technical information organized and accessible.
-- Provide practical knowledge for everyday IT administration.
-- Explain commands with useful examples and parameters.
-- Expand the documentation with new technologies and topics.
-- Maintain a clear, searchable, and easy-to-navigate structure.
+The site is built with HTML, CSS, and JavaScript and published using GitHub Pages. Markdown source articles are stored in `content/` and generated into HTML by `scripts/build.py`.
 
-## 🛠️ Technologies
+To add or update documentation, follow [ARTIKEL-HINZUFUEGEN.md](ARTIKEL-HINZUFUEGEN.md).
 
-- HTML5
-- CSS3
-- JavaScript
-- GitHub Pages
+## Project structure
 
-## 📌 Project Status
+| Path | Purpose |
+| --- | --- |
+| `index.html` | Website homepage |
+| `pages/` | Topic and reference pages |
+| `content/` | Markdown source articles |
+| `pages/generated/` | Generated HTML articles |
+| `assets/` | Shared stylesheets and JavaScript |
+| `data/navigation.json` | Main navigation structure |
+| `data/search-index.json` | Generated global search index |
+| `scripts/build.py` | HTML generation and search indexing |
 
-This project is actively being expanded. New topics, command references, practical examples, and documentation are added over time.
+## License and usage
 
-## 📄 License
-
-Unless otherwise stated, the documentation is provided for learning and reference purposes. Always verify commands and configurations against the official documentation and test them in a suitable environment before production use.
+No open-source license is currently specified for this repository. Unless a license is added, do not assume that the content or source code may be redistributed, modified, or reused beyond what applicable law permits.
 
 ---
 
-**Built for learning, practicing, and improving IT skills.**
+**A growing technical reference for learning, practicing, and improving IT skills.**
