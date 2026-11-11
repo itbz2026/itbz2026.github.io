@@ -1,5 +1,300 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Installation, Rollen, Updates und Administration."><title>Windows Server | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
-<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Windows Server</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Windows Server</h1><p>Grundlagen und Administration</p></div>
-<article class="article searchable"><span class="tag">Grundlagen</span><h3>Überblick und typische Rollen</h3><p>Windows Server stellt zentrale IT-Dienste für Benutzer, Geräte und Anwendungen bereit.</p><ul><li><b>AD DS:</b> Identitäten und Computer zentral verwalten.</li><li><b>DNS:</b> Namen in IP-Adressen auflösen.</li><li><b>DHCP:</b> IP-Konfiguration automatisch vergeben.</li><li><b>File Services:</b> Dateien und Freigaben bereitstellen.</li><li><b>Hyper-V:</b> Virtuelle Maschinen betreiben.</li></ul><div class="note">Nur benötigte Rollen installieren, Updates einspielen und Änderungen dokumentieren.</div></article>
-<article class="article searchable"><span class="tag">Checkliste</span><h3>Erste Konfiguration nach Installation</h3><ol><li>Servernamen festlegen und neu starten.</li><li>Statische IP und korrekten DNS-Server konfigurieren.</li><li>Zeitzone und Zeitsynchronisierung prüfen.</li><li>Updates installieren.</li><li>Firewall und Remoteverwaltung gezielt konfigurieren.</li><li>Benötigte Rollen installieren und testen.</li><li>Backup und Monitoring einrichten.</li></ol></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Windows Server · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Windows Server: Installation, Rollen, PowerShell, Speicher, Dienste, Sicherheit und Troubleshooting.">
+<title>Windows Server | IT Knowledge Base</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="layout">
+<aside>
+<div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div>
+<div class="navtitle">Themenbereiche</div>
+<nav>
+<a href="windows-server.html" aria-current="page">Windows Server</a>
+<a href="active-directory.html">Active Directory</a>
+<a href="networking.html">Networking</a>
+<a href="cisco-networking.html">Cisco Networking</a>
+<a href="linux.html">Linux</a>
+<a href="virtualisierung.html">Virtualisierung</a>
+<a href="docker.html">Docker</a>
+<a href="it-security.html">IT Security</a>
+<a href="backup-recovery.html">Backup &amp; Recovery</a>
+<a href="troubleshooting.html">Troubleshooting</a>
+<a href="command-reference.html">Command Reference</a>
+</nav>
+</aside>
+<main>
+<div class="top"><span>IT Knowledge Base / Windows Server</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div>
+<a class="back" href="../index.html">← Zur Übersicht</a>
+<div class="sectionhead"><h1>Windows Server</h1><p>Installation, Konfiguration und Administration</p></div>
+
+<article class="article searchable">
+<span class="tag">Grundlagen</span><h3>Aufgaben und typische Rollen</h3>
+<p>Windows Server stellt zentrale Dienste für Benutzer, Computer und Anwendungen bereit. Eine Serverrolle erweitert das System um eine bestimmte Funktion.</p>
+<ul>
+<li><b>Active Directory Domain Services (AD DS):</b> zentrale Identitäts- und Computerverwaltung.</li>
+<li><b>DNS Server:</b> Namensauflösung für Hosts und Dienste.</li>
+<li><b>DHCP Server:</b> automatische Vergabe von IP-Konfigurationen.</li>
+<li><b>File and Storage Services:</b> Dateifreigaben und Speicherverwaltung.</li>
+<li><b>Hyper-V:</b> Betrieb virtueller Maschinen.</li>
+<li><b>Web Server (IIS):</b> Bereitstellung von Webanwendungen.</li>
+<li><b>Remote Desktop Services:</b> zentrale Remotedesktop- und Sitzungshostdienste.</li>
+</ul>
+<div class="note">Installiere nur Rollen und Features, die der Server tatsächlich benötigt. Weniger installierte Komponenten reduzieren Wartungsaufwand und Angriffsfläche.</div>
+</article>
+
+<article class="article searchable">
+<span class="tag">Planung</span><h3>Vor der Installation</h3>
+<ul>
+<li>Serverzweck und benötigte Rollen festlegen.</li>
+<li>Hardware beziehungsweise VM-Ressourcen planen: CPU, RAM, Datenträger und Netzwerk.</li>
+<li>Edition und Installationsoption auswählen: Desktop Experience oder Server Core.</li>
+<li>Servername, IP-Plan, DNS, Gateway und Zeitzone dokumentieren.</li>
+<li>Speicherbedarf, Backup, Monitoring und Wiederherstellung berücksichtigen.</li>
+</ul>
+<p><b>Server Core</b> hat keine lokale grafische Desktopoberfläche und wird überwiegend per PowerShell, Eingabeaufforderung und Remoteverwaltung administriert. Es benötigt in der Regel weniger Ressourcen und hat eine kleinere lokale Angriffsfläche.</p>
+</article>
+
+<article class="article searchable">
+<span class="tag">Erstkonfiguration</span><h3>Checkliste nach der Installation</h3>
+<ol>
+<li>Computername setzen und Neustart durchführen.</li>
+<li>IP-Adresse, Subnetz, Gateway und DNS korrekt konfigurieren.</li>
+<li>Zeitzone und Zeitsynchronisierung prüfen.</li>
+<li>Windows Updates installieren und Neustarts abschließen.</li>
+<li>Nur benötigte Rollen und Features installieren.</li>
+<li>Firewall und Remoteverwaltung gezielt konfigurieren.</li>
+<li>Administratorkonten und Berechtigungen überprüfen.</li>
+<li>Backup, Monitoring und Protokollierung einrichten.</li>
+<li>Konfiguration und Wiederherstellungsweg dokumentieren.</li>
+</ol>
+</article>
+
+<article class="article searchable">
+<span class="tag">PowerShell</span><h3>Systeminformationen und Erstkonfiguration</h3>
+<pre><code># Systeminformationen
+Get-ComputerInfo
+hostname
+Get-TimeZone
+Get-NetIPConfiguration
+
+# Computername ändern (Neustart erforderlich)
+Rename-Computer -NewName "SRV01" -Restart
+
+# Rollen und Features anzeigen
+Get-WindowsFeature
+
+# Beispiel: DNS-Serverrolle installieren
+Install-WindowsFeature -Name DNS -IncludeManagementTools</code></pre>
+<div class="warn">Beispielnamen wie SRV01 und Netzwerkkonfigurationen vor der Verwendung an die eigene Umgebung anpassen. Änderungen an produktiven Servern vorher planen.</div>
+</article>
+
+<article class="article searchable">
+<span class="tag">Netzwerk</span><h3>IP-Konfiguration prüfen</h3>
+<p>Server mit festen Infrastrukturaufgaben verwenden häufig eine dokumentierte statische IP-Adresse. In Domänenumgebungen muss insbesondere die DNS-Konfiguration stimmen.</p>
+<pre><code># Konfiguration anzeigen
+ipconfig /all
+Get-NetIPConfiguration
+Get-DnsClientServerAddress
+
+# Erreichbarkeit und Namensauflösung testen
+ping 192.168.1.1
+Resolve-DnsName server.example.local
+Test-NetConnection server.example.local -Port 445
+
+# Routingtabelle anzeigen
+route print
+Get-NetRoute</code></pre>
+<p>Eine erfolgreiche IP-Verbindung beweist nicht automatisch, dass DNS, Firewall oder der benötigte Anwendungsdienst funktionieren.</p>
+</article>
+
+<article class="article searchable">
+<span class="tag">Rollen & Features</span><h3>Rollen verwalten</h3>
+<pre><code># Installierte Rollen und Features
+Get-WindowsFeature | Where-Object InstallState -eq "Installed"
+
+# Verfügbare Rollen suchen
+Get-WindowsFeature *File*
+Get-WindowsFeature *Web*
+
+# Beispiel: File-Server-Rolle installieren
+Install-WindowsFeature -Name FS-FileServer -IncludeManagementTools
+
+# Beispiel: Rolle entfernen
+Uninstall-WindowsFeature -Name FS-FileServer</code></pre>
+<p>Für die grafische Verwaltung kann der Server-Manager verwendet werden. Viele Rollen lassen sich zusätzlich mit PowerShell verwalten.</p>
+</article>
+
+<article class="article searchable">
+<span class="tag">Dateidienste</span><h3>Freigaben und NTFS-Berechtigungen</h3>
+<p>Bei Windows-Dateifreigaben wirken Freigabeberechtigungen und NTFS-Berechtigungen zusammen. Der tatsächlich mögliche Zugriff ergibt sich aus beiden Berechtigungsebenen.</p>
+<pre><code># Freigaben anzeigen
+Get-SmbShare
+
+# Beispiel: Freigabe erstellen
+New-SmbShare -Name "Daten" -Path "D:\Daten" -FullAccess "CONTOSO\FileAdmins"
+
+# Freigabeberechtigungen anzeigen
+Get-SmbShareAccess -Name "Daten"
+
+# NTFS-Berechtigungen anzeigen
+Get-Acl "D:\Daten" | Format-List</code></pre>
+<div class="warn">Berechtigungen nach dem Least-Privilege-Prinzip vergeben. Für den produktiven Einsatz Gruppen statt einzelner Benutzer verwenden und Zugriffe testen.</div>
+</article>
+
+<article class="article searchable">
+<span class="tag">Dienste</span><h3>Windows-Dienste verwalten</h3>
+<pre><code># Dienste auflisten
+Get-Service
+
+# Bestimmten Dienst suchen und prüfen
+Get-Service -Name Spooler
+
+# Dienst starten, stoppen oder neu starten
+Start-Service -Name Spooler
+Stop-Service -Name Spooler
+Restart-Service -Name Spooler
+
+# Starttyp anzeigen
+Get-CimInstance Win32_Service |
+  Select-Object Name, State, StartMode</code></pre>
+<p>Vor einem Neustart eines Dienstes prüfen, welche Anwendungen davon abhängig sind und ob eine Unterbrechung Auswirkungen hat.</p>
+</article>
+
+<article class="article searchable">
+<span class="tag">Remoteverwaltung</span><h3>RDP und PowerShell-Remoting</h3>
+<ul>
+<li>Remote Desktop (RDP) ermöglicht eine grafische Sitzung; Standardport ist TCP 3389.</li>
+<li>PowerShell-Remoting verwendet typischerweise WinRM; Standardports sind TCP 5985 (HTTP) und 5986 (HTTPS).</li>
+<li>Remotezugriff auf erforderliche Admin-Systeme und Quellnetze begrenzen.</li>
+<li>MFA und geeignete sichere Zugangswege verwenden, sofern verfügbar.</li>
+</ul>
+<pre><code># WinRM-Konfiguration prüfen
+winrm quickconfig
+winrm enumerate winrm/config/listener
+
+# Verbindung testen
+Test-WSMan SRV01
+
+# Remote-PowerShell-Sitzung öffnen
+Enter-PSSession -ComputerName SRV01
+
+# Sitzung beenden
+Exit-PSSession</code></pre>
+<div class="warn">WinRM nicht ungeschützt ins Internet veröffentlichen. Für produktive Umgebungen sichere Authentifizierung, Zertifikate beziehungsweise Kerberos und Firewallregeln passend zur Domänen- und Netzwerkarchitektur konfigurieren.</div>
+</article>
+
+<article class="article searchable">
+<span class="tag">Updates</span><h3>Windows Updates und Wartung</h3>
+<ul>
+<li>Updates zunächst in einer Testumgebung oder Pilotgruppe prüfen.</li>
+<li>Wartungsfenster und mögliche Neustarts einplanen.</li>
+<li>Vor kritischen Änderungen den Backup-Status prüfen.</li>
+<li>Nach Updates Dienste, Anwendungen und Ereignisprotokolle kontrollieren.</li>
+<li>Installationsstand und bekannte Probleme dokumentieren.</li>
+</ul>
+<pre><code># Betriebssystemversion und Build
+Get-ComputerInfo |
+  Select-Object WindowsProductName, WindowsVersion, OsBuildNumber
+
+# Letzte Hotfixes anzeigen
+Get-HotFix | Sort-Object InstalledOn -Descending</code></pre>
+</article>
+
+<article class="article searchable">
+<span class="tag">Monitoring & Logs</span><h3>Ereignisanzeige und Systemzustand</h3>
+<p>Die Ereignisanzeige hilft, Fehler zeitlich einzugrenzen. Besonders wichtig sind die Protokolle <b>System</b>, <b>Anwendung</b> und – bei Domänen- oder Sicherheitsproblemen – passende Spezialprotokolle.</p>
+<pre><code># Letzte Systemfehler anzeigen
+Get-WinEvent -FilterHashtable @{
+  LogName = 'System'
+  Level = 2
+} -MaxEvents 20
+
+# Letzte Anwendungsfehler anzeigen
+Get-WinEvent -FilterHashtable @{
+  LogName = 'Application'
+  Level = 2
+} -MaxEvents 20
+
+# Speicherplatz prüfen
+Get-Volume
+Get-PSDrive -PSProvider FileSystem
+
+# CPU- und Speicherauslastung (Momentaufnahme)
+Get-Counter '\Processor(_Total)\% Processor Time'
+Get-Counter '\Memory\Available MBytes'</code></pre>
+</article>
+
+<article class="article searchable">
+<span class="tag">Sicherheit</span><h3>Basis-Hardening</h3>
+<ul>
+<li>Sicherheitsupdates zeitnah und kontrolliert installieren.</li>
+<li>Separate Administratorkonten nutzen und privilegierte Rechte begrenzen.</li>
+<li>MFA für administrative Zugänge einsetzen, wo möglich.</li>
+<li>Firewall aktiv lassen und nur notwendige Verbindungen erlauben.</li>
+<li>Unnötige Rollen, Dienste und lokale Konten entfernen oder deaktivieren.</li>
+<li>RDP und WinRM nur für autorisierte Systeme und Netze freigeben.</li>
+<li>Audit- und Sicherheitsprotokolle zentral sammeln und überwachen.</li>
+<li>Backups vor Manipulation schützen und Wiederherstellung testen.</li>
+</ul>
+</article>
+
+<article class="article searchable">
+<span class="tag">Troubleshooting</span><h3>Häufige Fehler systematisch prüfen</h3>
+<div class="tablewrap"><table>
+<tr><th>Problem</th><th>Erste Prüfung</th><th>Hilfreiche Befehle</th></tr>
+<tr><td>Server nicht erreichbar</td><td>IP, Gateway, VLAN, Firewall und Link prüfen</td><td><code>ipconfig /all</code>, <code>ping</code>, <code>Test-NetConnection</code></td></tr>
+<tr><td>Namensauflösung fehlerhaft</td><td>DNS-Server und DNS-Einträge prüfen</td><td><code>nslookup</code>, <code>Resolve-DnsName</code></td></tr>
+<tr><td>Dienst startet nicht</td><td>Abhängigkeiten und Ereignisprotokoll prüfen</td><td><code>Get-Service</code>, <code>Get-WinEvent</code></td></tr>
+<tr><td>Freigabe nicht erreichbar</td><td>Netzwerk, SMB-Port und Berechtigungen prüfen</td><td><code>Test-NetConnection -Port 445</code>, <code>Get-SmbShareAccess</code></td></tr>
+<tr><td>Wenig Speicherplatz</td><td>Volume und große Verzeichnisse ermitteln</td><td><code>Get-Volume</code>, <code>Get-ChildItem</code></td></tr>
+<tr><td>Systemdateien beschädigt</td><td>Komponentenstore und Systemdateien prüfen</td><td><code>DISM</code>, <code>sfc /scannow</code></td></tr>
+</table></div>
+<pre><code># Komponentenstore prüfen und reparieren
+DISM /Online /Cleanup-Image /RestoreHealth
+
+# Geschützte Systemdateien prüfen
+sfc /scannow</code></pre>
+<p>Bei Fehlern zuerst Zeitstempel, betroffene Systeme, letzte Änderungen und genaue Fehlermeldungen erfassen. Immer nur eine Änderung gleichzeitig testen.</p>
+</article>
+
+<article class="article searchable">
+<span class="tag">Backup & Recovery</span><h3>Backup-Grundregeln</h3>
+<ul>
+<li>Systemstatus und wichtige Daten entsprechend der Wiederherstellungsanforderungen sichern.</li>
+<li>Aufbewahrungsfristen, RPO und RTO festlegen.</li>
+<li>Backups getrennt vom Produktivsystem speichern und Zugriffe absichern.</li>
+<li>Erfolgreiche Backup-Jobs überwachen.</li>
+<li>Wiederherstellung regelmäßig praktisch testen und dokumentieren.</li>
+</ul>
+<div class="note">Ein erfolgreicher Backup-Job allein reicht nicht: Erst ein getesteter Restore zeigt, ob Daten und Systeme wiederhergestellt werden können.</div>
+</article>
+
+<article class="article searchable">
+<span class="tag">Referenz</span><h3>Wichtige Windows-Server-Ports</h3>
+<div class="tablewrap"><table>
+<tr><th>Port</th><th>Protokoll</th><th>Dienst / Zweck</th></tr>
+<tr><td>53</td><td>TCP/UDP</td><td>DNS</td></tr>
+<tr><td>67 / 68</td><td>UDP</td><td>DHCP</td></tr>
+<tr><td>80 / 443</td><td>TCP</td><td>HTTP / HTTPS</td></tr>
+<tr><td>88</td><td>TCP/UDP</td><td>Kerberos</td></tr>
+<tr><td>123</td><td>UDP</td><td>NTP / Windows-Zeitdienst</td></tr>
+<tr><td>135</td><td>TCP</td><td>RPC Endpoint Mapper</td></tr>
+<tr><td>389 / 636</td><td>TCP/UDP bzw. TCP</td><td>LDAP / LDAPS</td></tr>
+<tr><td>445</td><td>TCP</td><td>SMB</td></tr>
+<tr><td>3389</td><td>TCP/UDP</td><td>Remote Desktop</td></tr>
+<tr><td>5985 / 5986</td><td>TCP</td><td>WinRM HTTP / HTTPS</td></tr>
+</table></div>
+<p>Die tatsächlich benötigten Ports hängen von installierten Rollen, Funktionen und der Netzwerkarchitektur ab. Nicht pauschal alle Ports freigeben.</p>
+</article>
+
+<div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div>
+<footer>IT Knowledge Base · Windows Server · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer>
+</main>
+</div>
+<script src="../assets/search.js"></script>
+</body>
+</html>
