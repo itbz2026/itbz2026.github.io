@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Virtualisierung: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Virtualisierung – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Virtualisierung / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="virtualisierung.html">← Zur Hauptseite Virtualisierung</a><div class="sectionhead"><h1>Virtualisierung – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>Hypervisor-Konzepte</h3><p>Typ-1-Hypervisor läuft direkt auf Hardware; Typ-2-Hypervisor als Anwendung auf einem Hostbetriebssystem. CPU-Virtualisierung, RAM und Storage sind zentrale Ressourcen.</p><pre><code># Host-Checks
+# Windows
+systeminfo
+Get-ComputerInfo | Select-Object HyperVisorPresent
+# Linux
+lscpu | grep -E 'Virtualization|Model name'
+lsmod | grep kvm</code></pre><p><b>Parameter und Hinweise:</b> VM-Kompatibilität hängt von CPU-Erweiterungen, Firmware, Hypervisor-Version und Gastbetriebssystem ab.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>VMware ESXi – Hostdiagnose</h3><p>ESXi verwaltet VMs, Datastores, virtuelle Switches und VMkernel-Netze. ESXCLI-Befehle sind versions- und Berechtigungsabhängig.</p><pre><code>esxcli system version get
+esxcli hardware platform get
+esxcli network nic list
+esxcli storage filesystem list
+esxcli vm process list</code></pre><p><b>Parameter und Hinweise:</b> ESXi Shell/SSH nur für Administration aktivieren und danach wieder deaktivieren. Vor Storage- oder Netzwerkänderungen Out-of-band-Zugang sicherstellen.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>VMware – VM und Netzwerk</h3><p>Portgroups, vSwitches, VLAN-IDs und Uplinks müssen mit der physischen Switchkonfiguration übereinstimmen.</p><pre><code>esxcli network vswitch standard list
+esxcli network vswitch standard portgroup list
+esxcli network ip interface list
+esxcli network ip route ipv4 list</code></pre><p><b>Parameter und Hinweise:</b> VLAN-ID 0/None, 1–4094 und Trunking-Verhalten unterscheiden sich je nach Portgroup- und Switchdesign.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>Proxmox VE – Status und Cluster</h3><p>Proxmox VE nutzt KVM/QEMU für VMs und LXC für Container. Cluster-Quorum und Storage-Verfügbarkeit vor Änderungen prüfen.</p><pre><code>pveversion -v
+pvecm status
+pvesh get /nodes
+qm list
+pct list
+pvesm status</code></pre><p><b>Parameter und Hinweise:</b> Cluster ohne Quorum kann Schreiboperationen blockieren. Keine corosync-/Quorum-Änderung ohne Kenntnis der Clusterarchitektur.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>Proxmox – VM Verwaltung</h3><p>qm verwaltet QEMU-VMs; pct verwaltet LXC-Container. Konfiguration und Task-Logs vor Änderungen prüfen.</p><pre><code>qm config 100
+qm status 100
+qm start 100
+qm shutdown 100
+qm snapshot 100 pre-change
+pct config 101
+pct status 101</code></pre><p><b>Parameter und Hinweise:</b> VMID und Storage vor Befehlen prüfen. Snapshots sind kein Ersatz für unabhängige Backups.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Hyper-V – PowerShell</h3><p>Hyper-V-Cmdlets verwalten VMs, virtuelle Switches, virtuelle Festplatten und Checkpoints.</p><pre><code>Get-VM
+Get-VMNetworkAdapter -VMName 'APP01'
+Get-VMSwitch
+Get-VHD -Path 'D:\VMs\APP01.vhdx'
+Checkpoint-VM -Name 'APP01' -SnapshotName 'BeforeUpdate'</code></pre><p><b>Parameter und Hinweise:</b> Checkpoints erhöhen Storagebedarf und sind keine Backupstrategie. Produktions-Checkpoints und App-Konsistenz passend planen.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>Virtuelle Netzwerke</h3><p>Bridged/External verbindet VMs mit physischem Netz; NAT teilt Host-Uplink; Host-only/Private isoliert je nach Plattform. VLAN und MTU müssen abgestimmt sein.</p><pre><code># Hyper-V
+Get-VMSwitch
+Get-VMNetworkAdapterVlan -VMName 'APP01'
+# Proxmox
+cat /etc/network/interfaces
+bridge link
+ip -d link show</code></pre><p><b>Parameter und Hinweise:</b> Änderungen an Management-vSwitch oder Bridge können den Hostzugriff verlieren. Wartungsfenster und lokale Konsole vorsehen.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Snapshots und Backups</h3><p>Snapshots/Checkpoints sind kurzfristige Rücksprungpunkte. Backup muss unabhängig, versioniert und wiederherstellbar sein.</p><pre><code># Proxmox
+pvesm status
+# VMware
+vim-cmd vmsvc/getallvms
+# Hyper-V
+Get-VMSnapshot -VMName 'APP01'</code></pre><p><b>Parameter und Hinweise:</b> Lange Snapshotketten belasten Storage und Performance. Snapshots nach erfolgreicher Änderung kontrolliert konsolidieren/löschen.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>Kapazitätsplanung und Performance</h3><p>CPU Ready/Co-Stop, Memory Ballooning/Swapping, Storage-Latenz und Netzwerkdrops getrennt betrachten.</p><pre><code># ESXi
+esxtop
+# Proxmox/Linux
+top
+free -h
+iostat -xz 1 5
+# Hyper-V
+Get-Counter '\Hyper-V Hypervisor Virtual Processor(*)\% Total Run Time'</code></pre><p><b>Parameter und Hinweise:</b> Ein einzelner hoher Hostwert erklärt nicht automatisch eine langsame VM. Zeitfenster, Gastmetriken und Storagepfad korrelieren.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Virtualisierung · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
