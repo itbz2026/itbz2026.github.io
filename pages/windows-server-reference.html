@@ -41,5 +41,13 @@ Get-Service wuauserv</code></pre><p><b>Parameter und Hinweise:</b> Get-WinEvent 
 <article class="article searchable"><span class="tag">09 · Referenz</span><h3>Remoteverwaltung und WinRM</h3><p>PowerShell-Remoting verwendet WinRM. In Domänen bevorzugt Kerberos; außerhalb einer Domäne sichere Vertrauensstellung und HTTPS korrekt konfigurieren.</p><pre><code>Test-WSMan SRV01
 Enter-PSSession -ComputerName SRV01
 Invoke-Command -ComputerName SRV01 -ScriptBlock { Get-Service }
-Get-WSManInstance -ResourceURI winrm/config</code></pre><p><b>Parameter und Hinweise:</b> Enable-PSRemoting richtet Listener und Firewallregeln ein. Nicht unüberlegt TrustedHosts mit * setzen; Remoting-Zugriff einschränken.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Windows Server · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
+Get-WSManInstance -ResourceURI winrm/config</code></pre><p><b>Parameter und Hinweise:</b> Enable-PSRemoting richtet Listener und Firewallregeln ein. Nicht unüberlegt TrustedHosts mit * setzen; Remoting-Zugriff einschränken.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><article class="article searchable"><span class="tag">Betrieb & Troubleshooting</span><h3>Windows-Dienste und Abhängigkeiten prüfen</h3><p>Fehlgeschlagene Dienste, Starttyp und Abhängigkeiten kontrollieren, bevor ein Dienst neu gestartet wird.</p><pre><code>Get-Service
+Get-Service -Name 'DNS','DHCPServer','LanmanServer'
+Get-CimInstance Win32_Service | Where-Object State -ne 'Running' | Select-Object Name,State,StartMode,StartName
+Get-Service -Name 'DNS' -DependentServices
+Get-WinEvent -LogName System -MaxEvents 50</code></pre><div class="note">Nicht jeden gestoppten Dienst als Fehler bewerten. Einige Dienste starten nur bei Bedarf.</div></article>
+<article class="article searchable"><span class="tag">Betrieb & Troubleshooting</span><h3>Windows-Systemintegrität prüfen</h3><p>Komponentenspeicher und geschützte Systemdateien bei Verdacht auf beschädigte Windows-Komponenten prüfen.</p><pre><code>DISM /Online /Cleanup-Image /ScanHealth
+DISM /Online /Cleanup-Image /RestoreHealth
+sfc /scannow</code></pre><div class="warn">Als Administrator ausführen. DISM kann Windows Update oder eine passende Reparaturquelle benötigen. Ausgabe und CBS-/DISM-Logs dokumentieren.</div></article>
+<footer>IT Knowledge Base · Windows Server · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
