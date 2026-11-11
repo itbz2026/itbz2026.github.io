@@ -30,7 +30,7 @@
     results.hidden = true;
     wrap.append(input, results);
     const toggle = aside.querySelector(".sidebar-toggle");
-    aside.insertBefore(wrap, toggle || null);
+    const homeSlot = document.getElementById("home-search-slot");\n    if (homeSlot) homeSlot.replaceChildren(wrap);\n    else aside.insertBefore(wrap, toggle || null);
 
     let index = [];
     try {
