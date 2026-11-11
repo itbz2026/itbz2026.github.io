@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Troubleshooting: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Troubleshooting – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Troubleshooting / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="troubleshooting.html">← Zur Hauptseite Troubleshooting</a><div class="sectionhead"><h1>Troubleshooting – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>Methodik und Scope</h3><p>Symptom, Auswirkung, Beginn, Umfang und letzte Änderung erfassen. Hypothesen anhand messbarer Belege testen.</p><pre><code># Incident
+Symptom:
+Betroffene Systeme / Benutzer:
+Beginn / Zeitzone:
+Letzte Änderung:
+Auswirkung / Priorität:
+Logs / Messwerte:
+Hypothese:
+Test / Ergebnis:
+Ursache / Lösung:</code></pre><p><b>Parameter und Hinweise:</b> Je Test möglichst eine Variable ändern. Vor Eingriffen Zustand, Konfiguration und Zeitstempel sichern.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>Layer-by-Layer Netzwerkdiagnose</h3><p>Von physischer Verbindung über Link, VLAN, IP, ARP/ND, Routing, DNS, Transport bis Anwendung prüfen.</p><pre><code># Windows
+ipconfig /all
+arp -a
+route print
+nslookup example.com
+Test-NetConnection example.com -Port 443
+# Linux
+ip -br addr; ip route; ip neigh; ss -tulpn</code></pre><p><b>Parameter und Hinweise:</b> Ping kann durch Firewall blockiert sein. Erfolgreicher Ping beweist nicht, dass TCP-Port oder Anwendung funktionieren.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>DNS-Fehler systematisch</h3><p>Client-DNS-Server, Record, Delegation, Cache und Erreichbarkeit getrennt testen.</p><pre><code>Resolve-DnsName HOST
+Resolve-DnsName HOST -Server 192.0.2.53
+nslookup -debug HOST
+ipconfig /flushdns
+# Linux
+dig +trace HOST</code></pre><p><b>Parameter und Hinweise:</b> Mit autoritativem DNS-Server vergleichen. Split DNS, Suchsuffix und negative Cacheeinträge beachten.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>Windows Performance</h3><p>CPU, RAM, Disk, Netzwerk, Prozesse und Eventlogs über denselben Zeitraum korrelieren.</p><pre><code>Get-Process | Sort-Object CPU -Descending | Select-Object -First 10
+Get-Counter '\Processor(_Total)\% Processor Time'
+Get-Counter '\LogicalDisk(_Total)\Avg. Disk sec/Read'
+Get-WinEvent -LogName System -MaxEvents 100</code></pre><p><b>Parameter und Hinweise:</b> Einzelne Momentaufnahme ist keine Trendanalyse. Perfmon/Data Collector Sets für reproduzierbare Zeiträume nutzen.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>Linux Performance</h3><p>Load, CPU, RAM, Swap, Disk-Latenz, Inodes und Netzwerkdrops prüfen.</p><pre><code>uptime
+ top
+free -h
+vmstat 1 5
+iostat -xz 1 5
+df -hT
+df -ih
+ip -s link</code></pre><p><b>Parameter und Hinweise:</b> Load Average umfasst laufende und ununterbrechbar wartende Tasks; nicht direkt als CPU-Prozent interpretieren.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Windows Dienstfehler</h3><p>Dienststatus, Starttyp, Abhängigkeiten, Konto, Rechte und System-/Anwendungslogs prüfen.</p><pre><code>Get-Service -Name SERVICE
+sc.exe qc SERVICE
+sc.exe queryex SERVICE
+Get-WinEvent -LogName System -MaxEvents 100
+Test-NetConnection HOST -Port PORT</code></pre><p><b>Parameter und Hinweise:</b> Dienst nicht blind neu starten, wenn dadurch Datenverlust oder Failover ausgelöst werden kann. Wartungs- und Abhängigkeit prüfen.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>Linux Dienstfehler</h3><p>Unitstatus, Journal, Konfigurationssyntax, Rechte, Ports und Ressourcen prüfen.</p><pre><code>systemctl status SERVICE
+systemctl cat SERVICE
+journalctl -u SERVICE -b --no-pager
+systemctl --failed
+ss -tulpn</code></pre><p><b>Parameter und Hinweise:</b> Nach Konfigurationsänderung passende Syntaxprüfung ausführen und Reload statt Restart bevorzugen, wenn unterstützt.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Docker Fehleranalyse</h3><p>Containerstatus, Exit-Code, Logs, Healthcheck, Mounts, DNS und Port-Mapping prüfen.</p><pre><code>docker compose ps -a
+docker compose logs --tail 200 SERVICE
+docker inspect CONTAINER
+docker network inspect NETWORK
+docker volume inspect VOLUME</code></pre><p><b>Parameter und Hinweise:</b> Kein docker system prune --volumes als erste Maßnahme. Erst feststellen, welche Daten persistent sind und ob ein Restore möglich ist.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>Virtualisierungsfehler</h3><p>Hostzustand, Datastore, virtuelle Switches, VM-Tools, Gastressourcen und Snapshotketten prüfen.</p><pre><code># Proxmox
+pvecm status
+pvesm status
+qm status 100
+# ESXi
+esxcli storage filesystem list
+esxcli network nic list
+# Hyper-V
+Get-VM; Get-VMSwitch</code></pre><p><b>Parameter und Hinweise:</b> Hostmanagement- oder Storageänderungen können mehrere VMs gleichzeitig beeinträchtigen. Out-of-band-Zugriff und Wartungsfenster sicherstellen.</p></article>
+<article class="article searchable"><span class="tag">10 · Referenz</span><h3>Abschluss und Wissensartikel</h3><p>Nach Lösung Ursache, Indikatoren, genaue Schritte, Verifikation und Prävention festhalten.</p><pre><code># Root Cause:
+# Auswirkung:
+# Zeitlinie:
+# Ursache:
+# Lösung:
+# Verifikation:
+# Rollback:
+# Prävention:
+# Referenz / Ticket:</code></pre><p><b>Parameter und Hinweise:</b> Passwörter, Tokens, private Schlüssel und personenbezogene Daten vor Ablage in der Wissensdatenbank entfernen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Troubleshooting · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
