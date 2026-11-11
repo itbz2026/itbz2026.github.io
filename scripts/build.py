@@ -73,6 +73,7 @@ def render_article(source):
 </main>
 </div>
 <script src="/assets/js/navigation.js" defer></script>
+<script src="/assets/js/code-blocks.js?v=20261111-2" defer></script>
 </body>
 </html>
 """
