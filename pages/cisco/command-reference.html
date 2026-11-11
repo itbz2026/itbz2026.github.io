@@ -184,6 +184,67 @@ show interfaces GigabitEthernet1/0/10</code></pre><p><b>Auswertung:</b> CRC/FCS-
 show lldp neighbors detail</code></pre><p><b>Hinweis:</b> CDP/LLDP nur dort aktivieren, wo Nachbarerkennung betrieblich gewünscht und sicherheitlich vertretbar ist.</p></article>
 <div id="empty" class="note" hidden>Keine passenden Befehle gefunden. Prüfe die Schreibweise oder suche nach einem Stichwort.</div>
 <div class="note"><b>Qualitätsregel für diese Datenbank:</b> Jeder neue Befehl erhält dieselben Felder: Zweck, Plattform/Version, Syntax, Erklärung jedes Parameters, Beispiel, Verifikation, typische Fehler und Sicherheits-/Änderungshinweise. Komplexe Befehle bekommen zusätzlich vollständige Praxislabs mit mehreren Geräten.</div>
+
+<div class="sectionhead"><h2>Weitere wichtige Show- und Diagnosebefehle</h2><p>Gezielte Prüfungen für Routing, Layer 2, Redundanz und Sicherheit.</p></div>
+<article class="article searchable"><h3>show interfaces</h3><p><b>Zweck:</b> Zeigt Status, Layer-2-/Layer-3-Informationen, Geschwindigkeit, Duplex, MTU und Zähler eines Interfaces.</p><p><b>Plattform:</b> IOS / IOS-XE; Ausgabe und Detailfelder sind plattformabhängig.</p><p><b>Syntax:</b> <code>show interfaces [INTERFACE]</code></p><p><b>Parameter:</b> Optional ein Interface wie <code>GigabitEthernet1/0/1</code>; ohne Angabe werden alle Interfaces ausgegeben.</p><pre><code>show interfaces
+show interfaces GigabitEthernet1/0/1
+show interfaces description</code></pre><p><b>Auswertung:</b> Prüfe administrativen und operativen Status, Input/Output Errors, CRC, Drops, Duplex und Speed.</p></article>
+<article class="article searchable"><h3>show ip protocols</h3><p><b>Zweck:</b> Zeigt aktive IPv4-Routing-Protokolle, Prozessparameter, Router-IDs, Filter und angekündigte Netzwerke.</p><p><b>Plattform:</b> IOS / IOS-XE; Details je Routing-Protokoll unterschiedlich.</p><p><b>Syntax:</b> <code>show ip protocols</code></p><pre><code>show ip protocols
+show ip route</code></pre><p><b>Praxis:</b> Prüfe, ob OSPF/EIGRP/BGP aktiv ist und ob die erwarteten Netze angekündigt werden.</p></article>
+<article class="article searchable"><h3>show ip arp</h3><p><b>Zweck:</b> Zeigt die IPv4-zu-MAC-Adresszuordnung im ARP-Cache.</p><p><b>Plattform:</b> IOS / IOS-XE; auf manchen Plattformen zusätzliche Optionen.</p><p><b>Syntax:</b> <code>show ip arp [IP-ADDRESS]</code></p><pre><code>show ip arp
+show ip arp 192.168.10.25</code></pre><p><b>Auswertung:</b> Fehlt ein dynamischer Eintrag, prüfe VLAN, Subnetz, ARP-Erreichbarkeit und Layer-2-Lernstatus.</p></article>
+<article class="article searchable"><h3>show ip interface</h3><p><b>Zweck:</b> Zeigt IPv4-Interface-Details, ACL-Bindungen, Helper-Adressen und weitere IP-Parameter.</p><p><b>Plattform:</b> IOS / IOS-XE.</p><p><b>Syntax:</b> <code>show ip interface [INTERFACE]</code></p><pre><code>show ip interface brief
+show ip interface Vlan20
+show ip interface GigabitEthernet0/0</code></pre><p><b>Praxis:</b> Prüfe IP-Adresse, Status, eingehende/ausgehende ACLs und ob DHCP-Relay auf dem erwarteten SVI aktiv ist.</p></article>
+<article class="article searchable"><h3>show standby brief</h3><p><b>Zweck:</b> Zeigt kompakt HSRP-Gruppen, virtuelle IPs, Active-/Standby-Router und Status.</p><p><b>Plattform:</b> IOS / IOS-XE Geräte mit HSRP-Unterstützung.</p><p><b>Syntax:</b> <code>show standby brief</code></p><pre><code>show standby brief
+show standby Vlan10</code></pre><p><b>Auswertung:</b> Pro Gruppe muss der erwartete Active- und Standby-Router sichtbar sein. Prüfe außerdem Priorität, Preempt und Interface-Tracking.</p></article>
+<article class="article searchable"><h3>standby priority</h3><p><b>Zweck:</b> Setzt die HSRP-Priorität eines Routers für eine Gruppe.</p><p><b>Plattform:</b> IOS / IOS-XE; HSRP-Version und Interface-Kontext beachten.</p><p><b>Syntax:</b> <code>standby GROUP priority VALUE</code></p><p><b>Parameter:</b> <code>GROUP</code> = HSRP-Gruppennummer; <code>VALUE</code> = Priorität, üblicher Standardwert 100. Höhere Priorität gewinnt die Wahl.</p><pre><code>interface Vlan10
+ standby 10 ip 192.168.10.1
+ standby 10 priority 110
+ standby 10 preempt
+show standby brief</code></pre><p><b>Hinweis:</b> Ohne Preempt übernimmt ein später zurückkehrender Router mit höherer Priorität nicht automatisch in jedem Szenario die Active-Rolle.</p></article>
+<article class="article searchable"><h3>ip dhcp snooping</h3><p><b>Zweck:</b> Aktiviert DHCP Snooping global und für ausgewählte VLANs, um unerlaubte DHCP-Serverantworten auf untrusted Ports zu blockieren.</p><p><b>Plattform:</b> Unterstützte Catalyst IOS / IOS-XE Switches; Konfiguration und Datenbankoptionen modellabhängig.</p><p><b>Syntax:</b> <code>ip dhcp snooping</code> und <code>ip dhcp snooping vlan VLAN-LIST</code>.</p><p><b>Parameter:</b> VLAN-Liste legt fest, für welche VLANs Snooping aktiv ist. Uplink zum legitimen DHCP-Server wird gezielt trusted gesetzt.</p><pre><code>ip dhcp snooping
+ip dhcp snooping vlan 10,20
+interface GigabitEthernet1/0/48
+ ip dhcp snooping trust
+interface range GigabitEthernet1/0/1-24
+ ip dhcp snooping limit rate 15
+show ip dhcp snooping</code></pre><p><b>Achtung:</b> Nur vertrauenswürdige DHCP-Uplinks trusten. Falsche Trust-Zuordnung kann Clients ohne DHCP-Lease lassen.</p></article>
+<article class="article searchable"><h3>ip arp inspection</h3><p><b>Zweck:</b> Aktiviert Dynamic ARP Inspection für ausgewählte VLANs, um ARP-Pakete anhand der DHCP-Snooping-Bindings oder statischer ARP-ACLs zu validieren.</p><p><b>Plattform:</b> Unterstützte Catalyst IOS / IOS-XE Switches.</p><p><b>Syntax:</b> <code>ip arp inspection vlan VLAN-LIST</code></p><p><b>Parameter:</b> VLAN-Liste bestimmt den Schutzbereich; Trust-Status wird interfacebezogen gesetzt.</p><pre><code>ip arp inspection vlan 10,20
+interface GigabitEthernet1/0/48
+ ip arp inspection trust
+show ip arp inspection
+show ip arp inspection interfaces</code></pre><p><b>Voraussetzung:</b> DHCP Snooping-Bindings müssen für dynamische Clients vorhanden sein oder statische ARP-ACLs müssen gepflegt werden. Erst in einer Testumgebung validieren.</p></article>
+<article class="article searchable"><h3>switchport port-security</h3><p><b>Zweck:</b> Aktiviert Port Security auf einem Access-Port und begrenzt bzw. kontrolliert gelernte MAC-Adressen.</p><p><b>Plattform:</b> Unterstützte Catalyst IOS / IOS-XE Access-Ports; nicht auf allen Interface-Typen verfügbar.</p><p><b>Syntax:</b> <code>switchport port-security</code>, ergänzt durch <code>maximum</code>, <code>mac-address</code> und <code>violation</code>.</p><pre><code>interface GigabitEthernet1/0/10
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+show port-security interface GigabitEthernet1/0/10
+show port-security address</code></pre><p><b>Hinweis:</b> Sticky-MAC-Adressen können in der Konfiguration gespeichert werden. Vor Rollout Wechselgeräte, Dockingstations und Telefone berücksichtigen.</p></article>
+<article class="article searchable"><h3>spanning-tree portfast bpduguard default</h3><p><b>Zweck:</b> Aktiviert global BPDU Guard für PortFast-Ports, um versehentliche Switch-Verbindungen an Edge-Ports zu erkennen.</p><p><b>Plattform:</b> Catalyst IOS / IOS-XE mit PortFast/BPDU Guard.</p><p><b>Syntax:</b> <code>spanning-tree portfast bpduguard default</code></p><pre><code>spanning-tree portfast default
+spanning-tree portfast bpduguard default
+show spanning-tree summary</code></pre><p><b>Achtung:</b> BPDU Guard kann einen Port bei empfangenen BPDUs in err-disabled versetzen. Nicht unüberlegt auf Switch-Uplinks anwenden.</p></article>
+<article class="article searchable"><h3>show ip access-lists</h3><p><b>Zweck:</b> Zeigt konfigurierte IPv4-ACLs und – sofern verfügbar – Trefferzähler.</p><p><b>Plattform:</b> IOS / IOS-XE.</p><p><b>Syntax:</b> <code>show ip access-lists [NAME-OR-NUMBER]</code></p><pre><code>show ip access-lists
+show ip access-lists USERS-TO-SERVER</code></pre><p><b>Praxis:</b> Reihenfolge, Permit/Deny-Regeln und Trefferzähler kontrollieren. Zähler können je nach Plattform und Hardwareverarbeitung anders dargestellt werden.</p></article>
+<article class="article searchable"><h3>show tech-support</h3><p><b>Zweck:</b> Sammelt umfangreiche Diagnoseinformationen für Cisco TAC oder tiefgehende Fehleranalyse.</p><p><b>Plattform:</b> IOS / IOS-XE; Umfang und Unterbefehle releaseabhängig.</p><p><b>Syntax:</b> <code>show tech-support</code></p><pre><code>show tech-support</code></pre><p><b>Achtung:</b> Ausgabe kann sehr groß sein und sensible Informationen wie Hostnamen, IP-Adressen, Konfigurationsteile oder Hardwaredetails enthalten. Vor Weitergabe bereinigen und in Produktivumgebungen Ressourcen-/Supporthinweise beachten.</p></article>
+<article class="article searchable"><h3>show platform</h3><p><b>Zweck:</b> Zeigt plattformspezifische Hardware- und Betriebsinformationen.</p><p><b>Plattform:</b> IOS / IOS-XE; Unterbefehle sind stark modellabhängig.</p><p><b>Syntax:</b> <code>show platform</code></p><pre><code>show platform
+show platform software status control-processor brief</code></pre><p><b>Hinweis:</b> Nicht jeder Unterbefehl ist auf jedem Catalyst-Modell verfügbar. Für konkrete Plattformen die passende Command Reference nutzen.</p></article>
+<article class="article searchable"><h3>show environment</h3><p><b>Zweck:</b> Zeigt Umgebungswerte wie Temperatur, Lüfter und Netzteilstatus, sofern die Hardware diese meldet.</p><p><b>Plattform:</b> Viele Catalyst IOS / IOS-XE Plattformen; Ausgabe modellabhängig.</p><p><b>Syntax:</b> <code>show environment</code></p><pre><code>show environment
+show environment all</code></pre><p><b>Praxis:</b> Bei Temperatur- oder Lüfteralarmen Luftstrom, Rack-Temperatur, Netzteile und Hardware-Logs prüfen.</p></article>
+<article class="article searchable"><h3>logging host</h3><p><b>Zweck:</b> Sendet Systemmeldungen an einen zentralen Syslog-Server.</p><p><b>Plattform:</b> IOS / IOS-XE; Transportoptionen und VRF-Syntax variieren.</p><p><b>Syntax:</b> <code>logging host SERVER-IP</code></p><pre><code>service timestamps log datetime msec
+logging host 192.0.2.50
+logging trap informational
+show logging</code></pre><p><b>Hinweis:</b> Syslog-Server-Erreichbarkeit, Zeitsynchronisation, ACLs und passende Severity konfigurieren. Beispieladresse ist ein Dokumentationsnetz.</p></article>
+<article class="article searchable"><h3>ntp server</h3><p><b>Zweck:</b> Konfiguriert einen NTP-Zeitserver für die Gerätesynchronisation.</p><p><b>Plattform:</b> IOS / IOS-XE; Authentifizierung, VRF und Source-Interface-Optionen abhängig von Plattform.</p><p><b>Syntax:</b> <code>ntp server SERVER-IP</code></p><pre><code>ntp server 192.0.2.123
+show ntp status
+show ntp associations</code></pre><p><b>Praxis:</b> Korrekte Uhrzeit ist essenziell für Logs, Zertifikate, AAA und Troubleshooting. Beispieladresse durch internen NTP-Server ersetzen.</p></article>
+<article class="article searchable"><h3>snmp-server</h3><p><b>Zweck:</b> Konfiguriert SNMP-Überwachung; bevorzugt SNMPv3 mit Authentifizierung und Verschlüsselung.</p><p><b>Plattform:</b> IOS / IOS-XE; Syntax und Algorithmen nach Release und Sicherheitsrichtlinie.</p><p><b>Syntax:</b> <code>snmp-server group</code>, <code>snmp-server user</code> und <code>snmp-server host</code>.</p><pre><code>snmp-server group NMS-GROUP v3 priv
+snmp-server user NMS-USER NMS-GROUP v3 auth sha AUTH-PASSWORD priv aes 128 PRIV-PASSWORD
+snmp-server host 192.0.2.60 version 3 priv NMS-USER
+show snmp user
+show snmp group</code></pre><p><b>Sicherheit:</b> Platzhalter ersetzen, Zugriff per ACL begrenzen, SNMPv1/v2c Community Strings vermeiden und tatsächliche Syntax mit IOS-XE-Release prüfen.</p></article>
 <div class="sectionhead"><h2>Offizielle Cisco-Referenzen</h2></div>
 <ul>
 <li><a href="https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-command-reference-list.html" target="_blank" rel="noopener">Cisco IOS-XE Command References</a></li>
