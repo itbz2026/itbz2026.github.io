@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Backup & Recovery: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Backup & Recovery – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Backup & Recovery / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="backup-recovery.html">← Zur Hauptseite Backup & Recovery</a><div class="sectionhead"><h1>Backup & Recovery – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>Backup-Design und 3-2-1-1-0</h3><p>Mehrere Kopien auf unterschiedlichen Medien, eine externe Kopie, eine offline/immutable Kopie und verifizierte Wiederherstellung reduzieren Ausfall- und Ransomware-Risiken.</p><pre><code># Beispiel-Inventar dokumentieren:
+# System | Daten | RPO | RTO | Backupziel | Aufbewahrung | Restore-Test</code></pre><p><b>Parameter und Hinweise:</b> 3-2-1-1-0 ist ein Designprinzip. Umsetzung nach Datenklassifizierung, Risiko, Kosten und Compliance planen.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>RPO, RTO und Aufbewahrung</h3><p>RPO beschreibt maximal akzeptierten Datenverlust in Zeit; RTO die angestrebte Wiederanlaufzeit. Aufbewahrung richtet sich nach Geschäft und Recht.</p><pre><code># Beispiel:
+# RPO = 4 Stunden
+# RTO = 8 Stunden
+# tägliche Sicherung + monatliche Langzeitkopie</code></pre><p><b>Parameter und Hinweise:</b> RPO/RTO pro Anwendung mit Verantwortlichen festlegen und durch Restore-Tests messen.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>Windows Server Backup</h3><p>Windows Server Backup kann System State, Bare Metal Recovery, Volumes und Dateien sichern. Zielmedium und Wiederherstellungsplan vorher prüfen.</p><pre><code>wbadmin get versions
+wbadmin get status
+wbadmin start backup -backupTarget:E: -include:C: -quiet
+wbadmin get items -version:MM/DD/YYYY-HH:MM</code></pre><p><b>Parameter und Hinweise:</b> Beispielsyntax abhängig von installierten Features und Ziel. Für produktive Jobs Logs, Exitcodes und Restore regelmäßig prüfen.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>Linux-Dateibackup mit rsync</h3><p>rsync synchronisiert Dateien effizient. --delete löscht Zielobjekte, die auf der Quelle fehlen, und muss mit Dry-Run geprüft werden.</p><pre><code>rsync -aHAX --numeric-ids --dry-run /srv/data/ /backup/data/
+rsync -aHAX --numeric-ids /srv/data/ /backup/data/
+rsync -av --delete --dry-run /srv/data/ /backup/data/</code></pre><p><b>Parameter und Hinweise:</b> Quell- und Zielpfad mit abschließendem Slash bewusst wählen. --delete nur nach Prüfung und mit unabhängiger Backupkopie einsetzen.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>Datenbank-Backups</h3><p>Datenbanken benötigen konsistente, applikationsgerechte Sicherungen. Native Dumps, Transaktionslogs und Recovery-Modus beachten.</p><pre><code># PostgreSQL
+pg_dump -Fc -d APPDB -f appdb.dump
+pg_restore --list appdb.dump
+# MariaDB
+mariadb-dump --single-transaction --routines --triggers APPDB > appdb.sql</code></pre><p><b>Parameter und Hinweise:</b> Zugangsdaten nicht in Kommandozeilen-History speichern. Restore in isolierter Testumgebung validieren.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>VM- und Container-Backups</h3><p>VM-Backups müssen Snapshot-/Quiescing-Verhalten, Gastagenten und Applikationskonsistenz berücksichtigen. Containerdaten separat sichern.</p><pre><code># Proxmox
+pvesm status
+vzdump 100 --storage BACKUPSTORE --mode snapshot
+# Docker
+ docker volume ls</code></pre><p><b>Parameter und Hinweise:</b> Snapshots ersetzen keine unabhängigen Backups. Datenbank-Volumes nicht unkoordiniert kopieren.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>Restore-Tests</h3><p>Mindestens einzelne Datei, Anwendung/Datenbank und vollständiges System in isolierter Umgebung wiederherstellen.</p><pre><code># Testprotokoll:
+# Backup-ID:
+# Wiederherstellungsziel:
+# Start / Ende:
+# Datenintegrität:
+# Applikationstest:
+# Gemessene RTO:
+# Ergebnis / Maßnahmen:</code></pre><p><b>Parameter und Hinweise:</b> Restore-Test gilt erst als erfolgreich, wenn Datenintegrität und Anwendungsfunktion geprüft wurden.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Immutable und Offline-Kopien</h3><p>Immutable Storage verhindert Änderung/Löschung innerhalb einer festgelegten Retention; Offline-Kopien sind nicht dauerhaft erreichbar.</p><pre><code># Prüfpunkte:
+# getrennte Admin-Identitäten
+# MFA und Vier-Augen-Prinzip
+# Object Lock / Retention
+# getrennte Credentials
+# regelmäßige Restore-Proben</code></pre><p><b>Parameter und Hinweise:</b> Retention, Legal Hold und Löschfristen sorgfältig abstimmen. Unveränderlichkeit schützt nicht vor Fehlkonfiguration oder Datenkorruption vor dem Backup.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>Disaster Recovery Runbook</h3><p>Abhängigkeiten und Wiederherstellungsreihenfolge dokumentieren: Identität, DNS, Netzwerk, Storage, Plattform, Datenbanken und Anwendungen.</p><pre><code># Notfall-Runbook
+1. Lagebild und Verantwortliche festlegen
+2. Saubere Wiederherstellungsumgebung bereitstellen
+3. Identität / DNS / Netzwerk wiederherstellen
+4. Storage und Hypervisor bereitstellen
+5. Datenbanken und Anwendungen wiederherstellen
+6. Funktion und Datenintegrität testen
+7. Fachbereiche informieren</code></pre><p><b>Parameter und Hinweise:</b> Runbook regelmäßig mit realistischen Übungen testen und nach jeder Infrastrukturänderung aktualisieren.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Backup & Recovery · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
