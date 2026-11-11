@@ -52,5 +52,15 @@ show ip route eigrp</code></pre><div class="warn">EIGRP-Unterstützung und klass
 interface vlan 10
  ip helper-address 192.168.100.10
 end
-show running-config interface vlan 10</code></pre><p><code>ip helper-address</code> wird auf dem Client-Gateway/SVI gesetzt und leitet DHCP-Broadcasts an den DHCP-Server weiter. Routing und Firewall-Regeln müssen den Rückweg erlauben.</p></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
+show running-config interface vlan 10</code></pre><p><code>ip helper-address</code> wird auf dem Client-Gateway/SVI gesetzt und leitet DHCP-Broadcasts an den DHCP-Server weiter. Routing und Firewall-Regeln müssen den Rückweg erlauben.</p></article><article class="article searchable"><span class="tag">BGP – Grundlagen</span><h3>BGP-Nachbarschaften und Routen prüfen</h3><p>BGP wird häufig zwischen autonomen Systemen eingesetzt. Vor Änderungen AS-Nummern, Neighbor-IP, Update-Source, Policies und Prefix-Filter prüfen.</p><pre><code>show ip bgp summary
+show ip bgp
+show ip bgp neighbors
+show ip route bgp
+show ip protocols</code></pre><div class="note">BGP-Konfiguration ist stark abhängig von Plattform, IOS/IOS XE-Version und Design. Prefix-Listen, Route-Maps und maximale Prefix-Anzahl vor produktiver Aktivierung planen.</div></article>
+<article class="article searchable"><span class="tag">Routing-Diagnose</span><h3>Route-Entscheidung nachvollziehen</h3><p>Prüfen, ob Zielnetz bekannt ist, welcher Next Hop gewählt wurde und ob die Ausgangsschnittstelle erreichbar ist.</p><pre><code>show ip route &lt;DESTINATION-IP&gt;
+show ip cef &lt;DESTINATION-IP&gt;
+show ip arp
+traceroute &lt;DESTINATION-IP&gt;
+ping &lt;DESTINATION-IP&gt; source &lt;SOURCE-INTERFACE&gt;</code></pre><div class="note">CEF- und Source-Ping-Syntax kann je nach Plattform variieren. Rückweg, ACLs und VRF-Zuordnung ebenfalls prüfen.</div></article>
+<footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
