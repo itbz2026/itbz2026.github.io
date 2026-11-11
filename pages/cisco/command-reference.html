@@ -245,6 +245,45 @@ snmp-server user NMS-USER NMS-GROUP v3 auth sha AUTH-PASSWORD priv aes 128 PRIV-
 snmp-server host 192.0.2.60 version 3 priv NMS-USER
 show snmp user
 show snmp group</code></pre><p><b>Sicherheit:</b> Platzhalter ersetzen, Zugriff per ACL begrenzen, SNMPv1/v2c Community Strings vermeiden und tatsächliche Syntax mit IOS-XE-Release prüfen.</p></article>
+
+<div class="sectionhead"><h2>CLI-Filter, Ausgabe und sichere Änderungen</h2><p>Damit du große Konfigurationen schnell durchsuchen und Änderungen kontrolliert durchführen kannst.</p></div>
+<article class="article searchable"><h3>| include</h3><p><b>Zweck:</b> Filtert die Ausgabe auf Zeilen, die einem Text oder regulären Ausdruck entsprechen.</p><p><b>Plattform:</b> IOS / IOS-XE; Filterunterstützung hängt vom jeweiligen Show-Befehl ab.</p><p><b>Syntax:</b> <code>SHOW-BEFEHL | include SUCHTEXT</code></p><p><b>Parameter:</b> <code>SUCHTEXT</code> ist der gesuchte Ausdruck; mehrere Alternativen können je nach CLI-RegEx mit <code>|</code> innerhalb des Suchmusters kombiniert werden.</p><pre><code>show running-config | include hostname
+show ip interface brief | include up
+show ip route | include 0.0.0.0</code></pre><p><b>Auswertung:</b> Keine Treffer können bedeuten, dass der Text nicht existiert oder anders geschrieben ist – nicht automatisch, dass das Feature defekt ist.</p></article>
+<article class="article searchable"><h3>| exclude</h3><p><b>Zweck:</b> Blendet Zeilen aus, die einem Suchmuster entsprechen.</p><p><b>Plattform:</b> IOS / IOS-XE; abhängig vom Show-Befehl.</p><p><b>Syntax:</b> <code>SHOW-BEFEHL | exclude SUCHTEXT</code></p><pre><code>show running-config | exclude !
+show ip route | exclude directly</code></pre><p><b>Praxis:</b> Nützlich, um Kommentarzeilen oder bekannte Einträge aus einer langen Ausgabe auszublenden. Bei Diagnose nicht zu viele Zeilen herausfiltern.</p></article>
+<article class="article searchable"><h3>| section</h3><p><b>Zweck:</b> Zeigt einen passenden Konfigurationsabschnitt einschließlich der zugehörigen eingerückten Zeilen.</p><p><b>Plattform:</b> IOS / IOS-XE; Verfügbarkeit je nach Plattform und CLI-Parser.</p><p><b>Syntax:</b> <code>show running-config | section SUCHTEXT</code></p><pre><code>show running-config | section interface GigabitEthernet1/0/10
+show running-config | section router ospf
+show running-config | section line vty</code></pre><p><b>Praxis:</b> Ideal, um ein Interface, einen Routing-Prozess oder die VTY-Konfiguration vollständig zu lesen.</p></article>
+<article class="article searchable"><h3>terminal length 0</h3><p><b>Zweck:</b> Deaktiviert für die aktuelle CLI-Sitzung die seitenweise Ausgabe.</p><p><b>Plattform:</b> IOS / IOS-XE; auf NX-OS existieren vergleichbare, aber nicht in jedem Detail identische Terminaloptionen.</p><p><b>Syntax:</b> <code>terminal length 0</code></p><pre><code>terminal length 0
+show running-config
+terminal length 24</code></pre><p><b>Hinweis:</b> Der Wert gilt normalerweise für die Sitzung. Setze danach bei Bedarf wieder eine sinnvolle Seitenlänge.</p></article>
+<article class="article searchable"><h3>terminal monitor</h3><p><b>Zweck:</b> Zeigt Logging-Meldungen in einer aktuellen VTY-/SSH-Sitzung an.</p><p><b>Plattform:</b> IOS / IOS-XE; Konsolen- und VTY-Verhalten unterscheiden sich.</p><p><b>Syntax:</b> <code>terminal monitor</code>; zum Abschalten <code>terminal no monitor</code> auf Plattformen, die diese Form unterstützen.</p><pre><code>terminal monitor
+show logging</code></pre><p><b>Praxis:</b> Nützlich, wenn du während einer Änderung Link-Flaps, HSRP-Wechsel oder Routing-Meldungen beobachten möchtest.</p></article>
+<article class="article searchable"><h3>do</h3><p><b>Zweck:</b> Führt einen EXEC-Show- oder Diagnosebefehl aus einem Konfigurationsmodus aus, ohne diesen zu verlassen.</p><p><b>Plattform:</b> IOS / IOS-XE; nicht jeder Modus und jede Plattform unterstützt alle Befehle.</p><p><b>Syntax:</b> <code>do EXEC-BEFEHL</code></p><pre><code>configure terminal
+interface GigabitEthernet1/0/10
+do show interfaces status
+do show running-config interface GigabitEthernet1/0/10</code></pre><p><b>Hinweis:</b> <code>do</code> ist ein IOS/IOS-XE-Konzept; nicht ungeprüft auf NX-OS oder andere Cisco-Betriebssysteme übertragen.</p></article>
+<article class="article searchable"><h3>show running-config interface</h3><p><b>Zweck:</b> Zeigt nur die aktive Konfiguration eines bestimmten Interfaces.</p><p><b>Plattform:</b> IOS / IOS-XE; Syntax kann bei einzelnen Plattformen variieren.</p><p><b>Syntax:</b> <code>show running-config interface INTERFACE</code></p><pre><code>show running-config interface GigabitEthernet1/0/10
+show running-config interface Vlan20</code></pre><p><b>Praxis:</b> Vergleiche die Konfiguration mit dem erwarteten Access-/Trunk-/Routed-Port-Design und prüfe, ob eine ACL oder Sicherheitsfunktion gesetzt ist.</p></article>
+<article class="article searchable"><h3>clear counters</h3><p><b>Zweck:</b> Setzt Interface-Zähler zurück, damit neue Fehler während eines definierten Beobachtungsfensters sichtbar werden.</p><p><b>Plattform:</b> IOS / IOS-XE; Bestätigung und Umfang variieren.</p><p><b>Syntax:</b> <code>clear counters [INTERFACE]</code></p><pre><code>show interfaces counters errors
+clear counters GigabitEthernet1/0/10
+show interfaces counters errors</code></pre><p><b>Achtung:</b> Vorher bestehende Zähler dokumentieren. Das Löschen entfernt Diagnosehistorie aus den Countern und sollte nicht ohne Grund erfolgen.</p></article>
+<article class="article searchable"><h3>archive / write-memory</h3><p><b>Zweck:</b> Aktiviert auf unterstützten IOS/IOS-XE-Geräten die Konfigurationsarchivierung, sodass Versionen der Konfiguration gespeichert und verglichen werden können.</p><p><b>Plattform:</b> IOS / IOS-XE; Speicherziel, Syntax und Lizenz-/Dateisystembedingungen prüfen.</p><p><b>Syntax:</b> <code>archive</code>, darin beispielsweise <code>path URL</code> und <code>write-memory</code>.</p><pre><code>configure terminal
+archive
+ path flash:config-archive
+ maximum 10
+ write-memory
+end
+show archive</code></pre><p><b>Hinweis:</b> Dies ist ein Basisbeispiel für lokales Flash. Vor Nutzung verfügbaren Speicher und die genaue Syntax der Plattform prüfen; ein externes Backup bleibt zusätzlich sinnvoll.</p></article>
+<article class="article searchable"><h3>show archive</h3><p><b>Zweck:</b> Listet gespeicherte Konfigurationsarchive auf, sofern Archive konfiguriert sind.</p><p><b>Plattform:</b> IOS / IOS-XE mit Archive-Unterstützung.</p><p><b>Syntax:</b> <code>show archive</code></p><pre><code>show archive
+show running-config</code></pre><p><b>Praxis:</b> Prüfe, ob vor einer geplanten Änderung ein aktueller Wiederherstellungspunkt existiert.</p></article>
+<article class="article searchable"><h3>show users</h3><p><b>Zweck:</b> Zeigt aktive CLI-Sitzungen auf dem Gerät.</p><p><b>Plattform:</b> IOS / IOS-XE.</p><p><b>Syntax:</b> <code>show users</code></p><pre><code>show users
+show line</code></pre><p><b>Praxis:</b> Vor Wartungsarbeiten prüfen, ob weitere Administratoren angemeldet sind. Andere Sitzungen nicht ohne Abstimmung beenden.</p></article>
+<article class="article searchable"><h3>reload in</h3><p><b>Zweck:</b> Plant einen zeitverzögerten Neustart. Kann als Sicherheitsnetz bei Remote-Änderungen dienen, wenn nach erfolgreicher Prüfung der Neustart abgebrochen wird.</p><p><b>Plattform:</b> IOS / IOS-XE; genaue Optionen und Verhalten unterscheiden sich nach Plattform.</p><p><b>Syntax:</b> <code>reload in MINUTES</code>; Abbruch häufig mit <code>reload cancel</code>.</p><pre><code>reload in 10
+! Änderungen durchführen und Managementzugriff testen
+reload cancel
+show reload</code></pre><p><b>Warnung:</b> Nur verwenden, wenn Neustartzeit, Out-of-band-Zugriff und gespeicherte Konfiguration klar sind. Ein Reload kann laufende Dienste unterbrechen. Niemals ungeprüft als allgemeines Rollback einsetzen.</p></article>
 <div class="sectionhead"><h2>Offizielle Cisco-Referenzen</h2></div>
 <ul>
 <li><a href="https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-command-reference-list.html" target="_blank" rel="noopener">Cisco IOS-XE Command References</a></li>
