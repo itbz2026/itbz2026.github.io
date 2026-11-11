@@ -1378,7 +1378,7 @@
         "Numerische Container-ID."
       ]
     ],
-    "example": "pct config  CTID",
+    "example": "pct config 101",
     "verify": "Status mit pct status <CTID> und Ressourcen mit pct resource <CTID> prüfen.",
     "notes": "Platzhalter durch eine echte Container-ID ersetzen.",
     "comment": "Liest die Konfiguration eines LXC-Containers, etwa Netzwerk, Mountpoints, CPU, RAM und Features.",
@@ -1410,7 +1410,7 @@
   {
     "platform": "Proxmox VE",
     "category": "Cluster",
-    "risk": "low",
+    "risk": "high",
     "name": "pvecm expected",
     "purpose": "Zeigt bzw. setzt die erwartete Stimmenzahl für Corosync-Quorum.",
     "syntax": "pvecm expected <VOTES>",
