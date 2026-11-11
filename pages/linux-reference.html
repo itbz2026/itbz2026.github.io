@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Linux: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Linux – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Linux / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="linux.html">← Zur Hauptseite Linux</a><div class="sectionhead"><h1>Linux – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>Dateisystem und Storage</h3><p>Dateisystemtyp, Mounts, Speicherplatz und Inodes getrennt prüfen. Volle Inodes können Schreibfehler trotz freiem Speicher verursachen.</p><pre><code>lsblk -f
+df -hT
+df -ih
+findmnt
+blkid
+sudo du -xhd1 /var</code></pre><p><b>Parameter und Hinweise:</b> df zeigt Dateisystembelegung; du zeigt Verzeichnisverbrauch; lsblk zeigt Blockgeräte und Partitionen.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>systemd und Dienste</h3><p>systemctl steuert systemd-Units. enable konfiguriert Autostart, start startet sofort; beides sind unterschiedliche Aktionen.</p><pre><code>systemctl status ssh
+systemctl start ssh
+systemctl enable ssh
+systemctl enable --now ssh
+systemctl list-units --failed
+systemctl cat ssh</code></pre><p><b>Parameter und Hinweise:</b> --now kombiniert enable/disable mit sofortiger Aktion. Vor Änderungen Unit-Datei und Abhängigkeiten prüfen.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>Journal und Logs</h3><p>journalctl filtert systemd-Journal nach Dienst, Boot, Priorität und Zeitraum.</p><pre><code>journalctl -b
+journalctl -u ssh --since today
+journalctl -p warning..alert
+journalctl -f
+journalctl --disk-usage</code></pre><p><b>Parameter und Hinweise:</b> -b aktueller Boot; -u Dienst; -p Priorität; -f Follow. Logs können sensible Daten enthalten.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>Netzwerk mit iproute2</h3><p>ip ersetzt viele ältere Werkzeuge wie ifconfig und route. Änderungen mit ip link/ip addr/ip route sind häufig temporär.</p><pre><code>ip -br link
+ip -br addr
+ip route
+ip neigh
+ip link show
+resolvectl status</code></pre><p><b>Parameter und Hinweise:</b> ip addr add und ip route add ändern den Laufzeitstatus; persistente Konfiguration erfolgt distributionsabhängig, z. B. NetworkManager oder systemd-networkd.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>Paketverwaltung APT</h3><p>APT verwaltet Debian-Pakete und Abhängigkeiten. Erst Paketlisten aktualisieren, dann geplante Upgrades prüfen.</p><pre><code>sudo apt update
+apt list --upgradable
+sudo apt upgrade
+apt-cache policy openssh-server
+apt show nginx
+sudo apt install nginx
+sudo apt remove nginx</code></pre><p><b>Parameter und Hinweise:</b> apt update aktualisiert Paketlisten, installiert aber keine Updates. apt full-upgrade kann Pakete entfernen, daher Änderungsvorschau lesen.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Benutzer und Rechte</h3><p>Linux-Rechte bestehen aus Owner, Group und Other. sudo delegiert privilegierte Befehle; Gruppenmitgliedschaft erfordert meist neue Anmeldung.</p><pre><code>id
+getent passwd USER
+getent group sudo
+sudo usermod -aG sudo USER
+stat /etc/ssh/sshd_config
+chmod 640 FILE
+chown root:root FILE</code></pre><p><b>Parameter und Hinweise:</b> -aG fügt Gruppen hinzu, ohne bestehende Zusatzgruppen zu ersetzen. chmod rekursiv nur mit bewusstem Zielpfad verwenden.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>SSH sicher betreiben</h3><p>SSH-Zugriff über Schlüssel, eingeschränkte Konten und aktuelle Kryptografie schützen. Konfiguration vor Reload validieren.</p><pre><code>ssh-keygen -t ed25519
+ssh-copy-id USER@HOST
+sshd -t
+sudo systemctl reload ssh
+sudo journalctl -u ssh -n 50</code></pre><p><b>Parameter und Hinweise:</b> SSH-Server-Konfigurationspfad meist /etc/ssh/sshd_config. Vor Abschalten von Passwortauthentifizierung einen zweiten getesteten Schlüsselzugang bereithalten.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Firewall nftables und UFW</h3><p>Firewallregeln nur mit bekanntem Regelwerk ändern. Remote-SSH zuerst erlauben und Lockout vermeiden.</p><pre><code>sudo ufw status verbose
+sudo ufw allow from 192.0.2.0/24 to any port 22 proto tcp
+sudo ufw enable
+sudo nft list ruleset</code></pre><p><b>Parameter und Hinweise:</b> UFW ist Frontend; nftables ist Linux-Netfilter-Regelwerk. Nicht mehrere konkurrierende Firewallmanager parallel konfigurieren.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>Prozesse und Performance</h3><p>CPU, RAM, Load Average, Prozesse und offene Dateien gemeinsam bewerten.</p><pre><code>top
+ps aux --sort=-%cpu | head
+free -h
+uptime
+vmstat 1 5
+iostat -xz 1 5
+ss -tulpn</code></pre><p><b>Parameter und Hinweise:</b> Load Average ist keine direkte CPU-Prozentzahl. iostat gehört zum sysstat-Paket.</p></article>
+<article class="article searchable"><span class="tag">10 · Referenz</span><h3>Cron und Timer</h3><p>Wiederkehrende Jobs mit Cron oder systemd-Timern planen. Ausführungsumgebung und Fehlerprotokollierung berücksichtigen.</p><pre><code>crontab -l
+sudo crontab -e
+systemctl list-timers --all
+systemctl status apt-daily.timer</code></pre><p><b>Parameter und Hinweise:</b> Cron hat eine reduzierte Umgebung; absolute Pfade verwenden. Kritische Jobs mit Logging, Exit-Code-Prüfung und Monitoring versehen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Linux · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
