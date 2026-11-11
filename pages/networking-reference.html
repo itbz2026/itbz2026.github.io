@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Networking: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Networking – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Networking / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="networking.html">← Zur Hauptseite Networking</a><div class="sectionhead"><h1>Networking – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>IPv4-Subnetting und CIDR</h3><p>CIDR-Präfix bestimmt Netz- und Hostanteil. Planung umfasst Netzadresse, Broadcast, nutzbare Hosts und reservierte Infrastrukturadressen.</p><pre><code># Beispielnetz: 192.0.2.0/24
+# /24 = 255.255.255.0, 256 Adressen, klassisch 254 Hostadressen
+# /26 = 255.255.255.192, 64 Adressen je Subnetz
+# /30 = 255.255.255.252, 4 Adressen, klassisch 2 Hosts</code></pre><p><b>Parameter und Hinweise:</b> /31 wird auf Punkt-zu-Punkt-Verbindungen unterstützt; /32 bezeichnet eine einzelne Hostroute. IPv6 kennt kein Broadcast.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>IPv6-Grundlagen</h3><p>IPv6 verwendet 128-Bit-Adressen, Präfixe, Link-Local-Adressen und Neighbor Discovery. SLAAC und DHCPv6 können je nach Netzdesign eingesetzt werden.</p><pre><code>ipconfig /all
+ping -6 2001:db8::1
+route print -6
+# Linux
+ip -6 addr
+ip -6 route
+ip -6 neigh</code></pre><p><b>Parameter und Hinweise:</b> 2001:db8::/32 ist für Dokumentationsbeispiele reserviert. Link-Local-Adressen beginnen mit fe80::/10 und sind nur auf dem lokalen Link gültig.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>DNS-Diagnose</h3><p>DNS arbeitet typischerweise über UDP/53, bei bestimmten Antworten und Transfers auch TCP/53. Recordtypen gezielt abfragen.</p><pre><code>nslookup -type=MX example.com
+nslookup -type=SRV _ldap._tcp.example.local
+Resolve-DnsName example.com -Type A
+Resolve-DnsName example.com -Type AAAA
+dig +trace example.com
+dig @192.0.2.53 example.com</code></pre><p><b>Parameter und Hinweise:</b> A=IPv4, AAAA=IPv6, CNAME=Alias, MX=Mailserver, PTR=Reverse Lookup, TXT=Text, SRV=Dienstlokalisierung.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>DHCP DORA und Relay</h3><p>DHCPv4-Lease durchläuft Discover, Offer, Request, Acknowledge. Relay-Agent leitet Broadcast-Anfragen über Router zu DHCP-Servern weiter.</p><pre><code>ipconfig /release
+ipconfig /renew
+ipconfig /all
+# Linux
+sudo dhclient -v -r eth0
+sudo dhclient -v eth0</code></pre><p><b>Parameter und Hinweise:</b> DHCP-Optionen umfassen unter anderem Router (003), DNS (006), DNS-Suffix (015). DHCP Snooping schützt Layer-2-Netze gegen unerlaubte DHCP-Server.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>TCP, UDP und Ports</h3><p>TCP bietet verbindungsorientierte, zuverlässige Übertragung; UDP ist verbindungslos und hat geringeren Protokollaufwand. Portnummern identifizieren Anwendungen.</p><pre><code>Test-NetConnection server.example.com -Port 443
+Get-NetTCPConnection -State Listen
+ss -tulpn
+nc -vz server.example.com 22
+curl -I https://example.com</code></pre><p><b>Parameter und Hinweise:</b> Ein offener TCP-Port beweist nicht, dass die Anwendung korrekt funktioniert. TLS, Authentifizierung und Applikationslogs separat prüfen.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Routing und Default Gateway</h3><p>Router leiten Pakete anhand der Routingtabelle weiter. Longest Prefix Match wählt die spezifischste passende Route.</p><pre><code>route print
+Get-NetRoute
+ip route
+ip route get 1.1.1.1
+tracert 192.0.2.1
+traceroute 192.0.2.1</code></pre><p><b>Parameter und Hinweise:</b> Default Route ist 0.0.0.0/0 für IPv4 und ::/0 für IPv6. Statische Routen benötigen korrekten Next Hop oder Ausgangsinterface.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>NAT und PAT</h3><p>NAT verändert IP-Adressen; PAT übersetzt zusätzlich Ports und ermöglicht mehreren internen Hosts eine öffentliche Adresse. NAT ersetzt keine Firewall.</p><pre><code># Cisco IOS Beispiel (Platzhalter):
+show ip nat translations
+show ip nat statistics
+# Linux Status prüfen
+nft list ruleset
+# Windows NAT (Host/Hyper-V Szenario)
+Get-NetNat</code></pre><p><b>Parameter und Hinweise:</b> NAT-Regeln sind plattformabhängig. Vor Änderungen Inside/Outside-Zonen, ACLs, Rückroute und Portweiterleitungen dokumentieren.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>WLAN-Grundlagen</h3><p>WLAN nutzt 2,4-, 5- und 6-GHz-Bänder abhängig von Region und Hardware. SSID, Authentifizierung, Kanalplanung und Roaming beeinflussen Qualität.</p><pre><code>netsh wlan show interfaces
+netsh wlan show networks mode=bssid
+# Linux
+nmcli device wifi list
+iw dev</code></pre><p><b>Parameter und Hinweise:</b> WPA3 bevorzugen, WPS vermeiden und Managementzugriff vom Clientnetz trennen. 6 GHz setzt kompatible Clients und passende Sicherheitskonfiguration voraus.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>MTU, VLAN und Trunk</h3><p>MTU beeinflusst maximale Paketgröße. VLANs trennen Layer-2-Broadcast-Domänen; Trunks transportieren mehrere VLANs zwischen Netzwerkgeräten.</p><pre><code>ping -f -l 1472 192.0.2.1
+# Cisco IOS
+show vlan brief
+show interfaces trunk
+show interfaces switchport
+# Linux
+ip -d link show</code></pre><p><b>Parameter und Hinweise:</b> Ethernet-MTU 1500 ist üblich, aber nicht universell. VLAN-ID, Native VLAN und erlaubte VLAN-Liste an beiden Trunk-Enden abstimmen.</p></article>
+<article class="article searchable"><span class="tag">10 · Referenz</span><h3>Packet Capture</h3><p>Paketmitschnitte helfen bei DNS-, TCP-, DHCP- und TLS-Problemen. Capture-Filter klein halten und Datenschutz beachten.</p><pre><code># Linux
+tcpdump -ni eth0 host 192.0.2.10
+sudo tcpdump -ni eth0 port 53
+# Windows
+pktmon start --capture --pkt-size 0
+pktmon stop
+pktmon etl2pcap PktMon.etl --out capture.pcapng</code></pre><p><b>Parameter und Hinweise:</b> Mitschnitte können personenbezogene Daten und Zugangsinformationen enthalten. Nur autorisiert erfassen, sicher speichern und nach Analyse löschen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Networking · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
