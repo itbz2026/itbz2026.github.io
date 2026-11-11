@@ -1,80 +1,94 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Schnellreferenz für Windows, PowerShell, Linux, Netzwerk, Active Directory und Docker."><title>Command Reference | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
-<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html" aria-current="page">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Command Reference</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Command Reference</h1><p>Wichtige Admin-Befehle auf einen Blick</p></div>
-<article class="article searchable"><span class="tag">Windows</span><h3>System und Netzwerk</h3><div class="tablewrap"><table><tr><th>Aufgabe</th><th>Befehl</th></tr><tr><td>IP-Konfiguration</td><td><code>ipconfig /all</code></td></tr><tr><td>DNS-Cache leeren</td><td><code>ipconfig /flushdns</code></td></tr><tr><td>Routingtabelle</td><td><code>route print</code></td></tr><tr><td>Verbindungen</td><td><code>netstat -ano</code></td></tr><tr><td>Prozesse</td><td><code>tasklist</code></td></tr><tr><td>Dienste</td><td><code>services.msc</code></td></tr><tr><td>Ereignisanzeige</td><td><code>eventvwr.msc</code></td></tr><tr><td>Systeminformationen</td><td><code>systeminfo</code></td></tr><tr><td>Systemdateien prüfen</td><td><code>sfc /scannow</code></td></tr></table></div></article>
-<article class="article searchable"><span class="tag">PowerShell</span><h3>Systemadministration</h3><pre><code>Get-ComputerInfo
-Get-Service
-Get-Process
-Get-WinEvent -LogName System -MaxEvents 50
-Get-NetIPConfiguration
-Get-NetTCPConnection
-Test-NetConnection HOST -Port 443
-Get-Volume
-Get-HotFix</code></pre></article>
-<article class="article searchable"><span class="tag">Active Directory</span><h3>AD PowerShell und Diagnose</h3><pre><code>Get-ADDomain
-Get-ADForest
-Get-ADUser -Identity USER -Properties *
-Get-ADGroupMember -Identity GROUP
-Get-ADComputer -Filter *
-Get-ADDomainController -Filter *
-Get-GPO -All
-gpupdate /force
-gpresult /h C:\Temp\gpresult.html
-repadmin /replsummary
-dcdiag /v
-netdom query fsmo</code></pre><p>AD-Cmdlets benötigen das ActiveDirectory-Modul und passende Berechtigungen. GPO-Cmdlets benötigen das GroupPolicy-Modul.</p></article>
-<article class="article searchable"><span class="tag">Linux</span><h3>System, Storage und Dienste</h3><pre><code>uname -a
-hostnamectl
-uptime
-top
-free -h
-df -hT
-lsblk -f
-findmnt
-systemctl status SERVICE
-systemctl --failed
-journalctl -xe
-journalctl -u SERVICE
-apt update
-apt upgrade</code></pre></article>
-<article class="article searchable"><span class="tag">Linux Netzwerk</span><h3>Netzwerk und Prozesse</h3><pre><code>ip addr
-ip route
-ip neigh
-ss -tulpn
-ping -c 4 HOST
-dig HOST
-getent hosts HOST
-curl -I https://HOST
-traceroute HOST
-ps aux
-pgrep -a PROCESS</code></pre></article>
-<article class="article searchable"><span class="tag">Cisco IOS</span><h3>Switching und Routing</h3><pre><code>show version
-show running-config
-show ip interface brief
-show interfaces status
-show vlan brief
-show interfaces trunk
-show spanning-tree
-show mac address-table
-show etherchannel summary
-show ip route
-show arp
-show access-lists
-show cdp neighbors detail
-show lldp neighbors detail</code></pre></article>
-<article class="article searchable"><span class="tag">Docker</span><h3>Container und Compose</h3><pre><code>docker ps -a
-docker images
-docker pull IMAGE:TAG
-docker logs -f CONTAINER
-docker exec -it CONTAINER sh
-docker inspect CONTAINER
-docker stats
-docker network ls
-docker volume ls
-docker compose config
-docker compose up -d
-docker compose ps
-docker compose logs -f
-docker compose down</code></pre></article>
-<article class="article searchable"><span class="tag">Port Reference</span><h3>Häufige Netzwerkports</h3><div class="tablewrap"><table><tr><th>Port</th><th>Protokoll</th><th>Dienst</th></tr><tr><td>20/21</td><td>TCP</td><td>FTP Daten / Steuerung</td></tr><tr><td>22</td><td>TCP</td><td>SSH</td></tr><tr><td>25</td><td>TCP</td><td>SMTP</td></tr><tr><td>53</td><td>TCP/UDP</td><td>DNS</td></tr><tr><td>67/68</td><td>UDP</td><td>DHCP</td></tr><tr><td>80/443</td><td>TCP</td><td>HTTP/HTTPS</td></tr><tr><td>110/143</td><td>TCP</td><td>POP3/IMAP</td></tr><tr><td>123</td><td>UDP</td><td>NTP</td></tr><tr><td>161/162</td><td>UDP</td><td>SNMP</td></tr><tr><td>389/636</td><td>TCP/UDP, TCP</td><td>LDAP/LDAPS</td></tr><tr><td>445</td><td>TCP</td><td>SMB</td></tr><tr><td>3389</td><td>TCP/UDP</td><td>RDP</td></tr><tr><td>5985/5986</td><td>TCP</td><td>WinRM HTTP/HTTPS</td></tr></table></div><p>Portangaben sind Standardwerte. Dienste können abweichend konfiguriert sein; Firewallfreigaben nur nach Bedarf vornehmen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Command Reference · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
-</body></html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Erweiterte IT Command Reference mit Suchfunktion, Filtern, Syntax, Parametern, Praxisbeispielen und Prüfkommandos für Windows, PowerShell, Active Directory, Linux, Cisco, Proxmox und Docker.">
+<title>Advanced Command Explorer | IT Knowledge Base</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="layout">
+  <aside></aside>
+  <main class="command-page">
+    <div class="top"><span>IT Knowledge Base / Command Reference / Advanced Explorer</span></div>
+    <a class="back" href="../index.html">← Zur Übersicht</a>
+    <header class="command-hero">
+      <div class="command-kicker">ADMINISTRATION · CLI · TROUBLESHOOTING</div>
+      <h1>Advanced Command Explorer</h1>
+      <p>Eine zentrale, durchsuchbare Befehlsdatenbank für den IT-Alltag – mit Syntax, Parametern, Beispielen, Verifikation und Sicherheitshinweisen.</p>
+      <div class="command-stats">
+        <div><strong id="stat-total">—</strong><span>Commands</span></div>
+        <div><strong id="stat-platforms">—</strong><span>Platforms</span></div>
+        <div><strong id="stat-categories">—</strong><span>Tasks</span></div>
+      </div>
+    </header>
+
+    <section class="command-toolbar" aria-label="Command filters">
+      <label class="command-search-label" for="command-search">Befehle durchsuchen</label>
+      <input id="command-search" type="search" placeholder="z. B. DNS, VLAN, Get-Service, qm list …" autocomplete="off">
+      <div class="command-filters">
+        <label>Plattform
+          <select id="platform-filter"><option value="">Alle Plattformen</option></select>
+        </label>
+        <label>Aufgabe
+          <select id="category-filter"><option value="">Alle Aufgaben</option></select>
+        </label>
+        <label>Risiko
+          <select id="risk-filter">
+            <option value="">Alle Risikostufen</option>
+            <option value="low">Standard</option>
+            <option value="medium">Ändernd</option>
+            <option value="high">Kritisch</option>
+          </select>
+        </label>
+        <button type="button" id="reset-filters" class="command-reset">Filter zurücksetzen</button>
+      </div>
+      <div class="command-results-line"><span id="result-count" aria-live="polite">Befehle werden geladen …</span><span>Codeblöcke lassen sich einzeln kopieren.</span></div>
+    </section>
+
+    <section class="command-syntax">
+      <details>
+        <summary>Syntax-Legende und sichere Verwendung</summary>
+        <div class="syntax-grid">
+          <div><code>&lt;VALUE&gt;</code><span>Pflichtwert – durch eigenen Wert ersetzen.</span></div>
+          <div><code>[OPTION]</code><span>Optionaler Parameter.</span></div>
+          <div><code>{A | B}</code><span>Eine der angegebenen Optionen auswählen.</span></div>
+          <div><code>...</code><span>Weitere Werte; nicht wörtlich eingeben.</span></div>
+        </div>
+        <p>Platzhalter wie <code>&lt;HOST&gt;</code>, <code>&lt;VMID&gt;</code> oder <code>&lt;INTERFACE&gt;</code> vor dem Ausführen ersetzen. Eckige Klammern und Syntaxalternativen gehören normalerweise nicht in den ausführbaren Befehl. Die genaue Syntax hängt von Produkt, Version, Rolle und Berechtigungen ab.</p>
+        <p class="command-warning"><strong>Wichtig:</strong> Ändernde oder destruktive Befehle zuerst in einer Testumgebung prüfen. Vor Änderungen an Netzwerk, Storage, Firewall, Identitäten oder virtuellen Maschinen ein geprüftes Backup und einen Rückweg sicherstellen.</p>
+      </details>
+    </section>
+
+    <section id="command-list" class="command-list" aria-live="polite">
+      <div class="command-loading">Command-Datenbank wird geladen …</div>
+    </section>
+
+    <section class="command-reference-notes">
+      <h2>So verwendest du diese Referenz</h2>
+      <ol>
+        <li>Plattform und Aufgabe auswählen oder nach einem Befehl suchen.</li>
+        <li>Syntax und Parameter prüfen; Platzhalter ersetzen.</li>
+        <li>Beispiel an die eigene Umgebung anpassen.</li>
+        <li>Nach der Ausführung das angegebene Prüfkommando verwenden.</li>
+        <li>Bei Fehlern die zugehörigen Logs und den Troubleshooting-Artikel prüfen.</li>
+      </ol>
+      <h2>Weitere Referenzen</h2>
+      <div class="command-links">
+        <a href="cisco/command-reference.html">Cisco IOS Command Reference</a>
+        <a href="cisco/nxos-command-reference.html">Cisco NX-OS Reference</a>
+        <a href="linux-reference.html">Linux Command Reference</a>
+        <a href="windows-server-reference.html">Windows Server Reference</a>
+        <a href="active-directory-reference.html">Active Directory Reference</a>
+        <a href="proxmox.html">Proxmox VE Reference</a>
+        <a href="docker-reference.html">Docker Reference</a>
+      </div>
+    </section>
+    <footer>IT Knowledge Base · Advanced Command Explorer · DE explanations / EN technical syntax</footer>
+  </main>
+</div>
+<script src="/assets/js/navigation.js" defer></script>
+<script src="/assets/js/command-explorer.js" defer></script>
+</body>
+</html>
