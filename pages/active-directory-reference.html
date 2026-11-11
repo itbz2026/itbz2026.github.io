@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Active Directory: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Active Directory – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Active Directory / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="active-directory.html">← Zur Hauptseite Active Directory</a><div class="sectionhead"><h1>Active Directory – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>AD-Modul und Domäneninventar</h3><p>Das ActiveDirectory-Modul stellt Cmdlets für Domänen, Forests, Benutzer, Gruppen, Computer und Replikation bereit.</p><pre><code>Import-Module ActiveDirectory
+Get-ADDomain
+Get-ADForest
+Get-ADDomainController -Filter *
+Get-ADRootDSE</code></pre><p><b>Parameter und Hinweise:</b> -Server wählt einen bestimmten DC; -Credential übergibt bei Bedarf ein Credential-Objekt. Für Schreiboperationen passende Rechte erforderlich.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>Benutzer-Lifecycle</h3><p>Benutzerobjekte erstellen, Attribute pflegen, aktivieren/deaktivieren und kontrolliert aus OUs verschieben.</p><pre><code>New-ADUser -Name 'Max Mustermann' -SamAccountName 'mmustermann' -Path 'OU=Users,DC=example,DC=local' -Enabled $false
+Set-ADUser mmustermann -Department 'IT'
+Enable-ADAccount mmustermann
+Disable-ADAccount mmustermann
+Move-ADObject -Identity (Get-ADUser mmustermann) -TargetPath 'OU=Disabled,DC=example,DC=local'</code></pre><p><b>Parameter und Hinweise:</b> -Path gibt den Distinguished Name der Ziel-OU an; -Enabled $false erstellt zunächst deaktiviert. Kennwort separat sicher setzen und Onboarding prüfen.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>Gruppen und Mitgliedschaften</h3><p>Berechtigungen über Sicherheitsgruppen vergeben. AGDLP: Accounts → Global Groups → Domain Local Groups → Permissions.</p><pre><code>Get-ADGroup -Filter *
+Get-ADGroupMember 'GG_IT'
+Add-ADGroupMember -Identity 'GG_IT' -Members mmustermann
+Remove-ADGroupMember -Identity 'GG_IT' -Members mmustermann -Confirm
+Get-ADPrincipalGroupMembership mmustermann</code></pre><p><b>Parameter und Hinweise:</b> -Recursive zeigt verschachtelte Mitgliedschaften. Vor Entzug oder Änderung Auswirkungen auf produktive Zugriffe prüfen.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>Kennwort und Kontosperre</h3><p>Kennwort zurücksetzen, Konto entsperren und Sperrstatus untersuchen. Kennwörter nicht in Skripten oder Klartextdateien speichern.</p><pre><code>Set-ADAccountPassword mmustermann -Reset -NewPassword (Read-Host -AsSecureString)
+Unlock-ADAccount mmustermann
+Search-ADAccount -LockedOut
+Search-ADAccount -PasswordExpired
+Get-ADDefaultDomainPasswordPolicy</code></pre><p><b>Parameter und Hinweise:</b> -Reset setzt das Kennwort administrativ zurück; -NewPassword erwartet SecureString. Fine-Grained Password Policies mit Get-ADFineGrainedPasswordPolicy prüfen.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>GPO-Verwaltung</h3><p>GPOs zentral erstellen, sichern, verknüpfen und mit Resultant Set of Policy überprüfen. Änderungen zunächst mit Test-OU validieren.</p><pre><code>Get-GPO -All
+Get-GPInheritance -Target 'OU=Workstations,DC=example,DC=local'
+Backup-GPO -All -Path 'D:\GPO-Backup'
+Get-GPResultantSetOfPolicy -Computer PC01 -ReportType Html -Path 'C:\Temp\rsop.html'
+gpupdate /force
+gpresult /h C:\Temp\gpresult.html</code></pre><p><b>Parameter und Hinweise:</b> GPO-Link-Reihenfolge, Security Filtering, WMI-Filter, Block Inheritance und Enforced beeinflussen die Verarbeitung.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Sites und Subnets</h3><p>AD Sites bilden IP-Standorte ab und steuern DC-Lokalisierung sowie Replikationspfade. Subnetze müssen korrekt einer Site zugeordnet sein.</p><pre><code>Get-ADReplicationSite -Filter *
+Get-ADReplicationSubnet -Filter *
+Get-ADReplicationSiteLink -Filter *
+nltest /dsgetsite
+nltest /dsgetdc:example.local</code></pre><p><b>Parameter und Hinweise:</b> Ein fehlendes oder falsch zugeordnetes Subnetz kann Clients zu entfernten Domain Controllern führen.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>FSMO-Rollen</h3><p>Fünf FSMO-Rollen: Schema Master, Domain Naming Master, RID Master, PDC Emulator und Infrastructure Master.</p><pre><code>netdom query fsmo
+Get-ADForest | Select-Object SchemaMaster,DomainNamingMaster
+Get-ADDomain | Select-Object PDCEmulator,RIDMaster,InfrastructureMaster</code></pre><p><b>Parameter und Hinweise:</b> Transfer ist bei erreichbarem Rolleninhaber der Normalfall. Seize nur nach Ausfall und mit Microsoft-Verfahren; alten DC nicht ungeprüft wieder online bringen.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Replikation und Diagnose</h3><p>Replikationstopologie und Fehler zuerst diagnostizieren. DNS, RPC, Zeit, Netzwerk und DC-Zustand sind häufige Ursachen.</p><pre><code>repadmin /replsummary
+repadmin /showrepl * /csv
+repadmin /queue
+dcdiag /test:dns /v
+Get-ADReplicationFailure -Target * -Scope Forest</code></pre><p><b>Parameter und Hinweise:</b> /syncall erzwingt Synchronisation und sollte erst nach Ursachenprüfung eingesetzt werden. Replikationsfehler nicht mit blindem Metadaten-Cleanup beheben.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>DNS-SRV und Kerberos</h3><p>AD benötigt DNS-SRV-Records für LDAP und Kerberos. Zeitabweichungen können Kerberos-Anmeldungen verhindern.</p><pre><code>Resolve-DnsName -Type SRV _ldap._tcp.dc._msdcs.example.local
+Resolve-DnsName -Type SRV _kerberos._tcp.example.local
+w32tm /query /status
+klist
+nltest /dsgetdc:example.local</code></pre><p><b>Parameter und Hinweise:</b> DNS-Client auf Domain Membern zeigt auf interne AD-DNS-Server. Externe Namensauflösung über Forwarder konfigurieren, nicht öffentliche DNS-Server direkt auf Clients setzen.</p></article>
+<article class="article searchable"><span class="tag">10 · Referenz</span><h3>AD-Sicherheit und Audit</h3><p>Least Privilege, Tiering, geschützte Admin-Konten, LAPS und Überwachung privilegierter Gruppen reduzieren Risiken.</p><pre><code>Get-ADGroupMember 'Domain Admins'
+Get-ADGroupMember 'Enterprise Admins'
+Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00
+Get-ADUser -Filter * -Properties PasswordLastSet,LastLogonDate</code></pre><p><b>Parameter und Hinweise:</b> LastLogonDate ist repliziert und verzögert; für exakte letzte Anmeldung die nicht replizierten lastLogon-Werte aller DCs auswerten.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Active Directory · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
