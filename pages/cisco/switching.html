@@ -234,20 +234,6 @@ show lacp neighbor
 show pagp neighbor
 show interfaces port-channel 1</code></pre><p><b>Typische Fehler:</b> Unterschiedliche Allowed-/Native-VLANs, Access-/Trunk-Modus, Geschwindigkeit, Duplex, LACP-Modus oder Layer-2-/Layer-3-Konfiguration.</p></article>
 
-<div class="sectionhead" id="errdisable"><h2>15. Err-disabled Ports und Port-Recovery</h2></div>
-<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Err-disabled Ursache ermitteln</h3><p>Ein Port kann durch Schutzfunktionen wie BPDU Guard, Port Security, UDLD oder Link-Flap Detection deaktiviert werden. Erst Ursache finden, dann den Port wieder aktivieren.</p><pre><code>show interfaces status err-disabled
-show interfaces status
-show errdisable recovery
-show logging | include ERR_DISABLE|BPDU|PSECURE|UDLD
-show interfaces gi1/0/10
-show port-security interface gi1/0/10</code></pre><div class="note">Verfügbare Filter und Detailbefehle unterscheiden sich je nach Catalyst-Modell und IOS/IOS XE Release. Logs und Interface-Details gemeinsam auswerten.</div></article>
-<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Port nach Fehlerbehebung reaktivieren</h3><p>Nach Behebung der Ursache den betroffenen Port kontrolliert neu starten.</p><pre><code>configure terminal
-interface gi1/0/10
-shutdown
-no shutdown
-end
-show interfaces gi1/0/10
-show interfaces status</code></pre><div class="warn"><b>Achtung:</b> Nicht einfach wiederholt <code>shutdown/no shutdown</code> ausführen. Bei aktiver Schutzverletzung wird der Port erneut deaktiviert. Automatische Errdisable-Recovery nur gezielt und passend zur Fehlerursache konfigurieren.</div></article>
 <div class="sectionhead" id="l2"><h2>9. MAC, CDP, LLDP, UDLD und ARP</h2></div>
 <article class="article searchable"><span class="tag">MAC</span><h3>MAC Address Table</h3><p><b>Zweck:</b> Ordnet gelernte MAC-Adressen VLANs und Ports zu.</p><pre><code>show mac address-table
 show mac address-table dynamic
@@ -421,6 +407,20 @@ show etherchannel summary
 show mac address-table dynamic
 show logging</code></pre><p><b>Praxis:</b> Vorher-Ausgaben sichern, eine Änderung nach der anderen durchführen, Funktion testen, Nachher-Ausgaben vergleichen und erst danach speichern.</p></article>
 
+<div class="sectionhead" id="errdisable"><h2>15. Err-disabled Ports und Port-Recovery</h2></div>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Err-disabled Ursache ermitteln</h3><p>Ein Port kann durch Schutzfunktionen wie BPDU Guard, Port Security, UDLD oder Link-Flap Detection deaktiviert werden. Erst Ursache finden, dann den Port wieder aktivieren.</p><pre><code>show interfaces status err-disabled
+show interfaces status
+show errdisable recovery
+show logging | include ERR_DISABLE|BPDU|PSECURE|UDLD
+show interfaces gi1/0/10
+show port-security interface gi1/0/10</code></pre><div class="note">Verfügbare Filter und Detailbefehle unterscheiden sich je nach Catalyst-Modell und IOS/IOS XE Release. Logs und Interface-Details gemeinsam auswerten.</div></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Port nach Fehlerbehebung reaktivieren</h3><p>Nach Behebung der Ursache den betroffenen Port kontrolliert neu starten.</p><pre><code>configure terminal
+interface gi1/0/10
+shutdown
+no shutdown
+end
+show interfaces gi1/0/10
+show interfaces status</code></pre><div class="warn"><b>Achtung:</b> Nicht einfach wiederholt <code>shutdown/no shutdown</code> ausführen. Bei aktiver Schutzverletzung wird der Port erneut deaktiviert. Automatische Errdisable-Recovery nur gezielt und passend zur Fehlerursache konfigurieren.</div></article>
 <div class="sectionhead"><h2>Offizielle Cisco-Dokumentation</h2></div>
 <ul><li><a href="https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-26/products-installation-and-configuration-guides-list.html" target="_blank" rel="noopener">Cisco IOS XE Configuration Guides</a></li><li><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/vlan/vlan-configuration-guide/configure-vlan-trunks.html" target="_blank" rel="noopener">Cisco VLAN / 802.1Q Trunk Guide</a></li><li><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/stp/stp-configuration-guide/m-stp.html" target="_blank" rel="noopener">Cisco Spanning Tree Guide</a></li></ul>
 <div id="empty" class="note" hidden>Keine passenden Switching-Themen oder Befehle gefunden.</div>
