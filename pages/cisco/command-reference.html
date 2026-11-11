@@ -62,6 +62,127 @@ show ip ospf neighbor detail</code></pre><p><b>Prüfen:</b> Bei fehlenden Nachba
 <article class="article searchable"><h3>show ap summary</h3><p><b>Zweck:</b> Zeigt erkannte Access Points und ihren Join-Status am Controller.</p><p><b>Plattform:</b> Catalyst 9800 Wireless Controller; nicht als allgemeiner Switch-Befehl verwenden.</p><p><b>Syntax:</b> <code>show ap summary</code></p><pre><code>show ap summary
 show ap name AP-NAME config general</code></pre><p><b>Parameter:</b> Der AP-Name wird bei Detailabfragen ergänzt; exakte Unterbefehle hängen vom IOS-XE-Release ab.</p></article>
 <article class="article searchable"><h3>show wireless client summary</h3><p><b>Zweck:</b> Übersicht der verbundenen WLAN-Clients.</p><p><b>Plattform:</b> Catalyst 9800; Syntax und Detailoptionen releaseabhängig.</p><p><b>Syntax:</b> <code>show wireless client summary</code></p><pre><code>show wireless client summary</code></pre><p><b>Praxis:</b> Bei Client-Problemen anschließend mit MAC-Adresse gezielte Detail- und Policy-Informationen abrufen.</p></article>
+
+<div class="sectionhead"><h2>Switching – VLAN, STP und EtherChannel</h2><p>Layer-2-Konfiguration, Redundanz und Port-Bündelung.</p></div>
+<article class="article searchable"><h3>vlan VLAN-ID</h3><p><b>Zweck:</b> Erstellt ein VLAN in der VLAN-Datenbank und öffnet dessen Konfigurationsmodus.</p><p><b>Plattform:</b> Catalyst IOS / IOS-XE im klassischen VLAN-Konfigurationsmodus; VTP-Server-/Client-Verhalten und VLAN-Verwaltung sind abhängig von Plattform und VTP-Version.</p><p><b>Syntax:</b> <code>vlan VLAN-ID</code> anschließend optional <code>name VLAN-NAME</code>.</p><p><b>Parameter:</b> <code>VLAN-ID</code> ist die VLAN-Nummer; <code>VLAN-NAME</code> ist eine frei gewählte Bezeichnung ohne Leerzeichen oder mit unterstützter Syntax.</p><pre><code>configure terminal
+vlan 20
+ name CLIENTS
+exit
+interface GigabitEthernet1/0/10
+ switchport mode access
+ switchport access vlan 20</code></pre><p><b>Prüfen:</b> <code>show vlan brief</code>. VLAN-ID und Port-Zuordnung müssen stimmen.</p></article>
+<article class="article searchable"><h3>vtp mode</h3><p><b>Zweck:</b> Legt die Rolle eines Switches im VLAN Trunking Protocol fest.</p><p><b>Plattform:</b> Unterstützte Catalyst IOS / IOS-XE Switches; VTP-Version, Plattform und Release beachten.</p><p><b>Syntax:</b> <code>vtp mode { server | client | transparent | off }</code> – verfügbare Optionen variieren nach Version und Plattform.</p><p><b>Parameter:</b> <code>server</code> verwaltet/verteilt VLAN-Informationen; <code>client</code> übernimmt sie; <code>transparent</code> verwaltet VLANs lokal und leitet VTP-Anzeigen weiter; <code>off</code> deaktiviert VTP-Verarbeitung, sofern unterstützt.</p><pre><code>vtp domain CAMPUS
+vtp version 3
+vtp mode server
+show vtp status</code></pre><p><b>Achtung:</b> Vor dem Anschluss eines gebrauchten Switches VTP-Version, Domain, Passwort und Configuration Revision prüfen. Eine falsche VTP-Umgebung kann VLAN-Informationen überschreiben.</p></article>
+<article class="article searchable"><h3>spanning-tree mode</h3><p><b>Zweck:</b> Wählt den Spanning-Tree-Modus zur Vermeidung von Layer-2-Schleifen.</p><p><b>Plattform:</b> Catalyst IOS / IOS-XE; unterstützte Modi sind modell- und releaseabhängig.</p><p><b>Syntax:</b> <code>spanning-tree mode { rapid-pvst | pvst | mst }</code></p><p><b>Parameter:</b> <code>rapid-pvst</code> = Rapid Per-VLAN Spanning Tree; <code>pvst</code> = Per-VLAN Spanning Tree; <code>mst</code> = Multiple Spanning Tree.</p><pre><code>configure terminal
+spanning-tree mode rapid-pvst
+show spanning-tree summary
+show spanning-tree vlan 20</code></pre><p><b>Hinweis:</b> Modusänderungen in produktiven Layer-2-Netzen sorgfältig planen und mit allen Switches abstimmen.</p></article>
+<article class="article searchable"><h3>spanning-tree vlan root</h3><p><b>Zweck:</b> Beeinflusst die Root-Bridge-Wahl für ein VLAN.</p><p><b>Plattform:</b> Catalyst IOS / IOS-XE mit PVST/Rapid-PVST.</p><p><b>Syntax:</b> <code>spanning-tree vlan VLAN-ID root { primary | secondary }</code></p><p><b>Parameter:</b> <code>VLAN-ID</code> = betroffenes VLAN; <code>primary</code> versucht, den Switch zur Root Bridge zu machen; <code>secondary</code> setzt einen vorgesehenen Ersatzwert.</p><pre><code>spanning-tree vlan 20 root primary
+spanning-tree vlan 20 root secondary
+show spanning-tree vlan 20</code></pre><p><b>Praxis:</b> Root Bridge bewusst im Distribution-/Core-Design platzieren, nicht zufällig durch Standardprioritäten entstehen lassen.</p></article>
+<article class="article searchable"><h3>channel-group</h3><p><b>Zweck:</b> Fügt einen physischen Port einer EtherChannel-/Port-Channel-Gruppe hinzu.</p><p><b>Plattform:</b> Catalyst IOS / IOS-XE; verfügbare Protokolle und Nummernbereiche modellabhängig.</p><p><b>Syntax:</b> <code>channel-group GROUP-ID mode { active | passive | on | desirable | auto }</code></p><p><b>Parameter:</b> <code>GROUP-ID</code> = Port-Channel-Nummer; <code>active/passive</code> = LACP; <code>on</code> = statisch ohne Aushandlung; <code>desirable/auto</code> = PAgP, sofern unterstützt.</p><pre><code>interface range GigabitEthernet1/0/47-48
+ channel-group 1 mode active
+exit
+interface Port-channel1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+show etherchannel summary</code></pre><p><b>Wichtig:</b> Mitglieder müssen kompatible Geschwindigkeit, Duplex, VLAN-/Trunk-Einstellungen und Layer-2-/Layer-3-Eigenschaften besitzen.</p></article>
+<article class="article searchable"><h3>show spanning-tree</h3><p><b>Zweck:</b> Zeigt STP-Root, Portrollen, Portzustände und Timer.</p><p><b>Plattform:</b> Catalyst IOS / IOS-XE; Ausgabe abhängig vom STP-Modus.</p><p><b>Syntax:</b> <code>show spanning-tree [ vlan VLAN-ID ]</code></p><p><b>Parameter:</b> Optional <code>vlan VLAN-ID</code> für ein bestimmtes VLAN.</p><pre><code>show spanning-tree
+show spanning-tree vlan 20
+show spanning-tree root</code></pre><p><b>Auswertung:</b> Root-, Designated- und Alternate-Ports sowie Forwarding/Blocking-Zustände prüfen.</p></article>
+<div class="sectionhead"><h2>Routing – Static, OSPF, EIGRP, BGP und IPv6</h2></div>
+<article class="article searchable"><h3>ip route</h3><p><b>Zweck:</b> Erstellt eine statische IPv4-Route.</p><p><b>Plattform:</b> IOS / IOS-XE; Syntax und VRF-Optionen können abweichen.</p><p><b>Syntax:</b> <code>ip route PREFIX MASK { NEXT-HOP | EXIT-INTERFACE } [ DISTANCE ]</code></p><p><b>Parameter:</b> <code>PREFIX</code> = Zielnetz; <code>MASK</code> = Subnetzmaske; <code>NEXT-HOP</code> = IP des nächsten Routers; <code>EXIT-INTERFACE</code> = Ausgangsinterface; <code>DISTANCE</code> = optionale Administrative Distance.</p><pre><code>ip route 192.168.20.0 255.255.255.0 192.168.12.2
+ip route 0.0.0.0 0.0.0.0 192.168.12.1
+show ip route static</code></pre><p><b>Prüfen:</b> Next Hop muss erreichbar sein; danach Route in <code>show ip route</code> kontrollieren.</p></article>
+<article class="article searchable"><h3>router ospf</h3><p><b>Zweck:</b> Startet einen OSPF-Routingprozess und wechselt in dessen Konfigurationsmodus.</p><p><b>Plattform:</b> IOS / IOS-XE; OSPFv2/OSPFv3 und unterstützte Optionen sind releaseabhängig.</p><p><b>Syntax:</b> <code>router ospf PROCESS-ID</code></p><p><b>Parameter:</b> <code>PROCESS-ID</code> ist lokal auf dem Router und muss nicht auf allen Routern gleich sein.</p><pre><code>router ospf 10
+ router-id 1.1.1.1
+ network 10.10.10.0 0.0.0.255 area 0
+ passive-interface GigabitEthernet0/0
+show ip ospf neighbor
+show ip route ospf</code></pre><p><b>Hinweis:</b> Die Wildcard-Maske im <code>network</code>-Befehl ist keine normale Subnetzmaske. Interfaces und Area-Zuordnung sorgfältig prüfen.</p></article>
+<article class="article searchable"><h3>network (OSPF)</h3><p><b>Zweck:</b> Aktiviert OSPF auf Interfaces, deren IP-Adresse zur angegebenen Wildcard-Maske passt, und ordnet sie einer Area zu.</p><p><b>Plattform:</b> IOS / IOS-XE OSPFv2.</p><p><b>Syntax:</b> <code>network IP-ADDRESS WILDCARD-MASK area AREA-ID</code></p><p><b>Parameter:</b> <code>IP-ADDRESS</code> = Vergleichsadresse; <code>WILDCARD-MASK</code> = inverse Maske; <code>AREA-ID</code> = OSPF-Area, oft <code>0</code> für Backbone.</p><pre><code>router ospf 10
+ network 10.10.10.0 0.0.0.255 area 0
+ network 10.10.20.0 0.0.0.255 area 0</code></pre><p><b>Alternative:</b> Auf Plattformen/Designs mit Interface-basierter Konfiguration kann OSPF direkt am Interface aktiviert werden.</p></article>
+<article class="article searchable"><h3>passive-interface</h3><p><b>Zweck:</b> Unterbindet das Senden von Routing-Hellos auf einem Interface, während das angeschlossene Netz – abhängig vom Protokoll – weiterhin angekündigt werden kann.</p><p><b>Plattform:</b> IOS / IOS-XE Routing-Protokolle; Verhalten protokollspezifisch.</p><p><b>Syntax:</b> <code>passive-interface { INTERFACE | default }</code></p><p><b>Parameter:</b> Interface gezielt passiv setzen oder mit <code>default</code> alle Interfaces standardmäßig passiv schalten; benötigte Nachbarschaften anschließend explizit aktivieren.</p><pre><code>router ospf 10
+ passive-interface default
+ no passive-interface GigabitEthernet0/1</code></pre><p><b>Sicherheit:</b> Verhindert unerwünschte Nachbarbildung in Benutzer- und Access-Netzen.</p></article>
+<article class="article searchable"><h3>router eigrp</h3><p><b>Zweck:</b> Startet EIGRP im klassischen AS-basierten Konfigurationsmodus.</p><p><b>Plattform:</b> IOS / IOS-XE; Named Mode, Classic Mode, IPv4/IPv6 und Feature-Unterstützung unterscheiden sich nach Release.</p><p><b>Syntax:</b> <code>router eigrp AS-NUMBER</code></p><p><b>Parameter:</b> <code>AS-NUMBER</code> = EIGRP Autonomous-System-Nummer; Nachbarn benötigen kompatible AS-Konfiguration.</p><pre><code>router eigrp 100
+ network 10.10.10.0 0.0.0.255
+ no auto-summary
+show ip eigrp neighbors
+show ip route eigrp</code></pre><p><b>Hinweis:</b> Für neue Deployments die passende EIGRP-Konfigurationsart der konkreten IOS-XE-Version prüfen.</p></article>
+<article class="article searchable"><h3>router bgp</h3><p><b>Zweck:</b> Startet einen BGP-Prozess mit lokaler Autonomous-System-Nummer.</p><p><b>Plattform:</b> IOS / IOS-XE; BGP-Funktionen und Skalierungsgrenzen modell-/lizenz-/releaseabhängig.</p><p><b>Syntax:</b> <code>router bgp LOCAL-AS</code></p><p><b>Parameter:</b> <code>LOCAL-AS</code> = lokale AS-Nummer; Nachbarn werden mit <code>neighbor PEER-IP remote-as PEER-AS</code> definiert.</p><pre><code>router bgp 65001
+ bgp log-neighbor-changes
+ neighbor 192.0.2.2 remote-as 65002
+ address-family ipv4
+  network 10.10.10.0 mask 255.255.255.0
+  neighbor 192.0.2.2 activate
+ exit-address-family
+show ip bgp summary</code></pre><p><b>Achtung:</b> BGP-Policies (Prefix-Lists, Route-Maps, Max-Prefix, Communities) vor Produktivbetrieb planen. Ein falsches Advertisement kann große Routing-Auswirkungen haben.</p></article>
+<article class="article searchable"><h3>ipv6 route</h3><p><b>Zweck:</b> Erstellt eine statische IPv6-Route.</p><p><b>Plattform:</b> IOS / IOS-XE mit IPv6-Routing aktiviert.</p><p><b>Syntax:</b> <code>ipv6 route IPV6-PREFIX/PREFIX-LENGTH NEXT-HOP [ DISTANCE ]</code></p><p><b>Parameter:</b> IPv6-Zielpräfix mit Präfixlänge; Next Hop als IPv6-Adresse oder – je nach Link-Local-Verwendung – Interface plus Next Hop.</p><pre><code>ipv6 unicast-routing
+ipv6 route 2001:db8:20::/64 2001:db8:12::2
+show ipv6 route static</code></pre><p><b>Hinweis:</b> <code>2001:db8::/32</code> ist ein Dokumentationspräfix und nicht für öffentliche Produktivadressierung vorgesehen.</p></article>
+<div class="sectionhead"><h2>Network Services – DHCP, DNS, NAT und QoS</h2></div>
+<article class="article searchable"><h3>ip helper-address</h3><p><b>Zweck:</b> Leitet ausgewählte UDP-Broadcast-Anfragen, typischerweise DHCP/BOOTP, an einen Server in einem anderen Subnetz weiter.</p><p><b>Plattform:</b> IOS / IOS-XE Layer-3-Interfaces.</p><p><b>Syntax:</b> <code>ip helper-address SERVER-IP</code></p><p><b>Parameter:</b> <code>SERVER-IP</code> = IPv4-Adresse des DHCP-/Relay-Ziels; weitere UDP-Dienste können je nach Konfiguration ebenfalls weitergeleitet werden.</p><pre><code>interface Vlan20
+ ip address 192.168.20.1 255.255.255.0
+ ip helper-address 192.168.100.10
+show running-config interface Vlan20</code></pre><p><b>Prüfen:</b> Client-VLAN, Routing zum DHCP-Server, Rückroute und DHCP-Scope kontrollieren.</p></article>
+<article class="article searchable"><h3>ip nat inside / ip nat outside</h3><p><b>Zweck:</b> Markiert Interfaces für die Inside-/Outside-Richtung von klassischem IOS NAT.</p><p><b>Plattform:</b> IOS / IOS-XE Router mit NAT-Unterstützung; Syntax und Funktionsumfang plattformabhängig.</p><p><b>Syntax:</b> <code>ip nat inside</code> oder <code>ip nat outside</code> im Interface-Konfigurationsmodus.</p><p><b>Parameter:</b> Keine; die Rolle wird durch die Position des Interfaces im NAT-Design bestimmt.</p><pre><code>interface GigabitEthernet0/0
+ ip address 192.168.1.1 255.255.255.0
+ ip nat inside
+interface GigabitEthernet0/1
+ ip address 198.51.100.2 255.255.255.252
+ ip nat outside</code></pre><p><b>Hinweis:</b> Beispieladressen aus TEST-NET-Bereichen sind Dokumentationsadressen. Die eigentliche Übersetzung wird zusätzlich per NAT-Regel konfiguriert.</p></article>
+<article class="article searchable"><h3>ip nat inside source list</h3><p><b>Zweck:</b> Verknüpft eine ACL mit einer NAT-Übersetzung, häufig für PAT/Overload.</p><p><b>Plattform:</b> IOS / IOS-XE klassische NAT-Konfiguration.</p><p><b>Syntax:</b> <code>ip nat inside source list ACL-NUMBER interface OUTSIDE-INTERFACE overload</code></p><p><b>Parameter:</b> ACL definiert die internen Quellnetze; Outside-Interface liefert die übersetzte Adresse; <code>overload</code> erlaubt Port Address Translation.</p><pre><code>access-list 10 permit 192.168.1.0 0.0.0.255
+ip nat inside source list 10 interface GigabitEthernet0/1 overload
+show ip nat translations
+show ip nat statistics</code></pre><p><b>Achtung:</b> NAT ist keine Firewall. Sicherheitsregeln separat planen.</p></article>
+<article class="article searchable"><h3>class-map / policy-map / service-policy</h3><p><b>Zweck:</b> Bausteine des Modular QoS CLI (MQC) zum Klassifizieren, Behandeln und Anwenden von Traffic-Policies.</p><p><b>Plattform:</b> IOS / IOS-XE; unterstützte Match-/Action-Befehle und Hardware-Queues unterscheiden sich stark nach Plattform.</p><p><b>Syntax:</b> <code>class-map [match-all | match-any] NAME</code>, <code>policy-map NAME</code>, <code>service-policy { input | output } NAME</code>.</p><p><b>Parameter:</b> <code>match-all</code> verlangt alle Match-Kriterien, <code>match-any</code> mindestens eines; Policy-Map definiert Aktionen; Service-Policy bindet sie an eine Richtung des Interfaces.</p><pre><code>class-map match-any VOICE
+ match dscp ef
+policy-map QOS-OUT
+ class VOICE
+  priority percent 20
+interface GigabitEthernet0/1
+ service-policy output QOS-OUT
+show policy-map interface GigabitEthernet0/1</code></pre><p><b>Hinweis:</b> Dies ist ein vereinfachtes MQC-Beispiel. Vor Verwendung Hardware-QoS-Richtlinien und Bandbreitenplanung der Plattform prüfen.</p></article>
+<div class="sectionhead"><h2>Security – ACL, AAA und Zugriffsschutz</h2></div>
+<article class="article searchable"><h3>ip access-list extended</h3><p><b>Zweck:</b> Erstellt eine benannte Extended IPv4 ACL zur Filterung nach Quelle, Ziel und IP-Protokoll/Ports.</p><p><b>Plattform:</b> IOS / IOS-XE; ACL-Funktionen und TCAM-Ressourcen modellabhängig.</p><p><b>Syntax:</b> <code>ip access-list extended NAME</code>, darunter <code>permit|deny PROTOCOL SOURCE DESTINATION [OPERATOR PORT]</code>.</p><p><b>Parameter:</b> <code>permit/deny</code> erlaubt/verwirft; <code>PROTOCOL</code> z. B. ip, tcp, udp, icmp; SOURCE/DESTINATION können Host, Netz und Wildcard enthalten; Operatoren z. B. <code>eq</code>, <code>gt</code>, <code>lt</code>, <code>range</code>.</p><pre><code>ip access-list extended USERS-TO-SERVER
+ permit tcp 192.168.20.0 0.0.0.255 host 192.168.100.20 eq 443
+ deny ip any any log
+interface Vlan20
+ ip access-group USERS-TO-SERVER in
+show ip access-lists USERS-TO-SERVER</code></pre><p><b>Wichtig:</b> ACLs werden von oben nach unten ausgewertet; am Ende gilt implizit deny. Vor Aktivierung Managementzugriff und gewünschte Rückkommunikation prüfen.</p></article>
+<article class="article searchable"><h3>ip access-group</h3><p><b>Zweck:</b> Bindet eine IPv4-ACL an ein Layer-3-Interface.</p><p><b>Plattform:</b> IOS / IOS-XE; Richtung und Interface-Typ beachten.</p><p><b>Syntax:</b> <code>ip access-group ACL-NAME in|out</code></p><p><b>Parameter:</b> <code>in</code> filtert Pakete beim Eintritt ins Interface; <code>out</code> beim Verlassen.</p><pre><code>interface Vlan20
+ ip access-group USERS-TO-SERVER in
+show ip interface Vlan20</code></pre><p><b>Achtung:</b> Eine falsch platzierte ACL kann Management oder produktiven Datenverkehr sperren. Out-of-band-Zugriff oder Rollback bereithalten.</p></article>
+<article class="article searchable"><h3>aaa new-model</h3><p><b>Zweck:</b> Aktiviert AAA-basierte Authentifizierung, Autorisierung und Accounting-Konfiguration.</p><p><b>Plattform:</b> IOS / IOS-XE; Konfigurationsablauf und AAA-Methoden sind releaseabhängig.</p><p><b>Syntax:</b> <code>aaa new-model</code></p><p><b>Parameter:</b> Keine. Nach Aktivierung müssen passende Login-Methoden und lokale Fallbacks konfiguriert werden.</p><pre><code>username netadmin privilege 15 secret STRONG-SECRET
+aaa new-model
+aaa authentication login default local
+line vty 0 4
+ login authentication default</code></pre><p><b>Sicherheit:</b> Erst lokale Zugangsdaten testen und Konsolen-/Fallback-Zugriff sicherstellen, bevor zentrale AAA-Server eingebunden werden. Beispiel-Secret ersetzen; niemals produktive Passwörter in einer öffentlichen Wissensdatenbank speichern.</p></article>
+<article class="article searchable"><h3>ip ssh version 2</h3><p><b>Zweck:</b> Erzwingt SSH Version 2 für die sichere CLI-Fernverwaltung.</p><p><b>Plattform:</b> IOS / IOS-XE Geräte mit SSH-Unterstützung.</p><p><b>Syntax:</b> <code>ip ssh version 2</code></p><p><b>Voraussetzungen:</b> Hostname, Domain-Name, RSA-Schlüssel und lokaler Benutzer bzw. AAA-Authentifizierung.</p><pre><code>hostname SW1
+ip domain-name lab.example
+username netadmin privilege 15 secret REPLACE-ME
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ transport input ssh
+ login local
+show ip ssh</code></pre><p><b>Hinweis:</b> Kryptografische Mindestwerte und Schlüsselgenerierung nach aktueller Sicherheitsrichtlinie und Plattformfähigkeit wählen.</p></article>
+<div class="sectionhead"><h2>Monitoring und Diagnose</h2></div>
+<article class="article searchable"><h3>ping</h3><p><b>Zweck:</b> Prüft IP-Erreichbarkeit und grundlegende Round-Trip-Zeit zu einem Ziel.</p><p><b>Plattform:</b> IOS / IOS-XE; erweiterte Optionen und interaktiver Extended Ping variieren.</p><p><b>Syntax:</b> <code>ping DESTINATION</code>; erweiterte Form je nach Plattform mit Protokoll, Quellinterface/-adresse, Paketgröße, Anzahl und Timeout.</p><p><b>Parameter:</b> Zieladresse oder Hostname; erweiterte Parameter dienen u. a. zur Quelladressauswahl und Paketgrößenkontrolle.</p><pre><code>ping 192.168.20.1
+ping 192.168.20.1 source Vlan10
+traceroute 192.168.20.1</code></pre><p><b>Auswertung:</b> Ein erfolgreicher Ping beweist nicht, dass Anwendung oder TCP-Port funktionieren; ICMP kann gefiltert sein.</p></article>
+<article class="article searchable"><h3>traceroute</h3><p><b>Zweck:</b> Ermittelt den Layer-3-Pfad zu einem Ziel anhand der TTL/Hop-Limit-Antworten.</p><p><b>Plattform:</b> IOS / IOS-XE; erweiterte Optionen und Protokolle unterscheiden sich.</p><p><b>Syntax:</b> <code>traceroute DESTINATION</code></p><p><b>Parameter:</b> Ziel-IP oder Hostname; erweiterte Abfragen können Quellinterface, Probe-Anzahl, Timeout und maximale Hops erlauben.</p><pre><code>traceroute 192.168.20.10</code></pre><p><b>Hinweis:</b> Sternchen bedeuten nicht zwingend einen Fehler – Router können TTL-Exceeded- oder ICMP-Antworten filtern.</p></article>
+<article class="article searchable"><h3>show processes cpu</h3><p><b>Zweck:</b> Zeigt CPU-Auslastung und Prozessanteile.</p><p><b>Plattform:</b> IOS / IOS-XE; Ausgabe und Prozessnamen abhängig von Plattform und Release.</p><p><b>Syntax:</b> <code>show processes cpu [ sorted ]</code></p><p><b>Parameter:</b> <code>sorted</code> sortiert die Prozessanzeige, sofern unterstützt.</p><pre><code>show processes cpu
+show processes cpu sorted</code></pre><p><b>Praxis:</b> Momentaufnahme mit Verlauf und Ursache korrelieren; kurzfristige Spitzen allein sind kein Beweis für einen dauerhaften Fehler.</p></article>
+<article class="article searchable"><h3>show interfaces counters errors</h3><p><b>Zweck:</b> Zeigt Interface-Fehlerzähler wie CRC, Input Errors oder Output Drops.</p><p><b>Plattform:</b> Viele Catalyst IOS / IOS-XE Switches; genaue Felder variieren.</p><p><b>Syntax:</b> <code>show interfaces counters errors</code></p><pre><code>show interfaces counters errors
+show interfaces GigabitEthernet1/0/10</code></pre><p><b>Auswertung:</b> CRC/FCS-Fehler können auf Kabel, Transceiver oder physikalische Probleme hinweisen; Drops können Überlastung oder Queue-Probleme anzeigen.</p></article>
+<article class="article searchable"><h3>show cdp neighbors detail / show lldp neighbors detail</h3><p><b>Zweck:</b> Zeigt direkt verbundene Nachbargeräte und Portinformationen.</p><p><b>Plattform:</b> CDP auf Cisco-Plattformen; LLDP bei unterstützten Geräten und aktivierter Funktion.</p><p><b>Syntax:</b> <code>show cdp neighbors detail</code> oder <code>show lldp neighbors detail</code></p><p><b>Parameter:</b> <code>detail</code> zeigt zusätzliche Informationen wie Management-IP und Plattform, sofern angekündigt.</p><pre><code>show cdp neighbors detail
+show lldp neighbors detail</code></pre><p><b>Hinweis:</b> CDP/LLDP nur dort aktivieren, wo Nachbarerkennung betrieblich gewünscht und sicherheitlich vertretbar ist.</p></article>
+<div id="empty" class="note" hidden>Keine passenden Befehle gefunden. Prüfe die Schreibweise oder suche nach einem Stichwort.</div>
 <div class="note"><b>Qualitätsregel für diese Datenbank:</b> Jeder neue Befehl erhält dieselben Felder: Zweck, Plattform/Version, Syntax, Erklärung jedes Parameters, Beispiel, Verifikation, typische Fehler und Sicherheits-/Änderungshinweise. Komplexe Befehle bekommen zusätzlich vollständige Praxislabs mit mehreren Geräten.</div>
 <div class="sectionhead"><h2>Offizielle Cisco-Referenzen</h2></div>
 <ul>
