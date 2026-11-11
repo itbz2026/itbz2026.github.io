@@ -177,3 +177,44 @@ nav a.branch-active{color:#fff;background:#203653}
 .command-page .command-reference-notes{padding:16px}
 .command-page .command-reference-notes ol{margin:6px 0}
 @media(max-width:560px){.command-card-compact{padding:12px}.command-card-compact .command-code-wrap{align-items:stretch}.command-card-compact .copy-command{font-size:10px}}
+
+
+/* Site-wide technical, compact layout refresh */
+:root{--bg:#f5f7fa;--card:#fff;--ink:#182536;--muted:#627184;--blue:#245d91;--line:#dfe6ee;--nav:#14263d}
+body{font-size:14px;line-height:1.55}
+.layout{grid-template-columns:238px minmax(0,1fr)}
+.layout>aside{padding:20px 13px;background:#14263d}
+.brand{font-size:15px;padding:7px 9px 17px}
+.brand small{font-size:11px}
+.navtitle{padding:16px 9px 6px;font-size:10px;letter-spacing:.09em}
+nav a{font-size:12px;padding:7px 9px;border-radius:6px}
+.nav-children{margin:2px 0 7px 8px;padding-left:8px}
+.nav-children a{font-size:11px;padding:5px 8px}
+.nav-group-toggle{display:block;width:100%;padding:4px 8px 6px 17px;border:0;background:transparent;color:#9eb4ce;text-align:left;font:inherit;font-size:10px;cursor:pointer}
+.nav-group-toggle:hover{color:#fff;text-decoration:underline}
+.nav-children[hidden]{display:none}
+main{max-width:1240px;padding:26px clamp(16px,3.5vw,42px) 54px}
+.top{margin-bottom:18px;font-size:12px}
+.hero{padding:26px 29px;border-radius:13px;margin-bottom:22px}
+.hero h1{font-size:clamp(25px,3vw,35px);margin:7px 0}
+.hero p{font-size:13px;line-height:1.55}
+.sectionhead{margin:20px 0 12px}
+.sectionhead h1,.sectionhead h2{font-size:23px;letter-spacing:-.3px}
+.sectionhead p{font-size:12px}
+.grid{grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:10px}
+.category,.article{border-radius:10px;box-shadow:none}
+.category{min-height:0;padding:14px 15px}
+.category b{font-size:13px;margin:5px 0 2px}
+.category span,.muted{font-size:11px;line-height:1.45}
+.category:hover,.category:focus-visible{transform:translateY(-1px);box-shadow:0 5px 14px #14233e10}
+.article{padding:17px 18px;margin:10px 0}
+.article h2,.article h3{font-size:16px;margin-bottom:6px}
+.article h4{font-size:13px;margin:13px 0 4px}
+.article p,.article li{font-size:12px;line-height:1.55}
+.article ul,.article ol{padding-left:19px}
+pre{padding:11px 12px;border-radius:7px;font-size:11px;line-height:1.5}
+.note,.warn{padding:9px 11px;margin:10px 0;font-size:12px}
+.tag{font-size:10px;padding:2px 8px}
+footer{margin-top:30px;padding-top:13px;font-size:11px}
+.back{font-size:12px}
+@media(max-width:760px){.layout{display:block}.layout>aside{padding:9px 12px}.brand{padding:3px 8px 7px}.layout>aside nav{gap:1px}.nav-group-toggle{padding-left:17px}.hero{padding:21px 18px}.sectionhead h1,.sectionhead h2{font-size:21px}}
