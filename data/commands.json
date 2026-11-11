@@ -1,0 +1,974 @@
+[
+  {
+    "platform": "Windows CMD",
+    "category": "Network",
+    "risk": "low",
+    "name": "ipconfig /all",
+    "purpose": "Zeigt vollständige IPv4/IPv6-, DNS-, DHCP- und Adapterinformationen.",
+    "syntax": "ipconfig /all",
+    "params": [
+      [
+        "/all",
+        "Alle Adapter mit Details anzeigen."
+      ]
+    ],
+    "example": "ipconfig /all",
+    "verify": "Prüfe IPv4-Adresse, Subnetzmaske, Default Gateway, DHCP Server und DNS Servers.",
+    "notes": "In einer normalen CMD oder PowerShell ausführbar."
+  },
+  {
+    "platform": "Windows CMD",
+    "category": "Network",
+    "risk": "low",
+    "name": "ipconfig /flushdns",
+    "purpose": "Leert den lokalen DNS-Resolver-Cache.",
+    "syntax": "ipconfig /flushdns",
+    "params": [
+      [
+        "/flushdns",
+        "DNS-Cache leeren."
+      ]
+    ],
+    "example": "ipconfig /flushdns",
+    "verify": "ipconfig /displaydns",
+    "notes": "Hilfreich nach DNS-Änderungen oder bei veralteten Cache-Einträgen."
+  },
+  {
+    "platform": "Windows CMD",
+    "category": "Network",
+    "risk": "low",
+    "name": "route print",
+    "purpose": "Zeigt die lokale IPv4- und IPv6-Routingtabelle.",
+    "syntax": "route print",
+    "params": [
+      [
+        "-4",
+        "Nur IPv4-Routen anzeigen."
+      ],
+      [
+        "-6",
+        "Nur IPv6-Routen anzeigen."
+      ]
+    ],
+    "example": "route print -4",
+    "verify": "Default Route und Interface-Zuordnung kontrollieren.",
+    "notes": "Änderungen an persistenten Routen können Konnektivität unterbrechen."
+  },
+  {
+    "platform": "Windows CMD",
+    "category": "Processes",
+    "risk": "low",
+    "name": "netstat -ano",
+    "purpose": "Zeigt TCP/UDP-Endpunkte, Verbindungen und zugehörige Prozess-IDs.",
+    "syntax": "netstat [-a] [-n] [-o] [-p <PROTO>]",
+    "params": [
+      [
+        "-a",
+        "Alle Verbindungen und Listening Ports."
+      ],
+      [
+        "-n",
+        "Adressen und Ports numerisch anzeigen."
+      ],
+      [
+        "-o",
+        "PID des Prozesses anzeigen."
+      ],
+      [
+        "-p <PROTO>",
+        "Auf Protokoll filtern, z. B. TCP."
+      ]
+    ],
+    "example": "netstat -ano | findstr :443",
+    "verify": "tasklist /FI \"PID eq <PID>\"",
+    "notes": "Für Prozesszuordnung die PID aus der Ausgabe verwenden."
+  },
+  {
+    "platform": "Windows CMD",
+    "category": "System",
+    "risk": "low",
+    "name": "systeminfo",
+    "purpose": "Zeigt Betriebssystem-, Hardware-, Patch- und Bootinformationen.",
+    "syntax": "systeminfo",
+    "params": [
+      [
+        "/FO LIST",
+        "Ausgabe als Liste."
+      ],
+      [
+        "/FO CSV",
+        "Ausgabe als CSV."
+      ]
+    ],
+    "example": "systeminfo /FO LIST",
+    "verify": "OS Name, OS Version, System Type und Hotfixes kontrollieren.",
+    "notes": "Auf entfernten Systemen andere Abfragemethoden und Berechtigungen beachten."
+  },
+  {
+    "platform": "Windows CMD",
+    "category": "Repair",
+    "risk": "medium",
+    "name": "sfc /scannow",
+    "purpose": "Prüft geschützte Windows-Systemdateien und repariert erkannte Probleme.",
+    "syntax": "sfc /scannow",
+    "params": [
+      [
+        "/scannow",
+        "Alle geschützten Systemdateien prüfen und reparieren."
+      ]
+    ],
+    "example": "sfc /scannow",
+    "verify": "Ausgabe auswerten; Details stehen ggf. im CBS.log.",
+    "notes": "Als Administrator starten. Bei nicht reparierbaren Komponenten DISM prüfen."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "System",
+    "risk": "low",
+    "name": "Get-ComputerInfo",
+    "purpose": "Liefert umfangreiche Betriebssystem- und Systeminformationen.",
+    "syntax": "Get-ComputerInfo [-Property <STRING[]>]",
+    "params": [
+      [
+        "-Property",
+        "Nur ausgewählte Eigenschaften zurückgeben."
+      ]
+    ],
+    "example": "Get-ComputerInfo | Select-Object CsName, WindowsProductName, WindowsVersion, OsBuildNumber",
+    "verify": "Hostname, Edition, Version und Build vergleichen.",
+    "notes": "PowerShell-Cmdlet; Ausgabe lässt sich mit Select-Object gezielt begrenzen."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "Services",
+    "risk": "low",
+    "name": "Get-Service",
+    "purpose": "Listet Windows-Dienste und deren Status.",
+    "syntax": "Get-Service [[-Name] <STRING[]>]",
+    "params": [
+      [
+        "-Name",
+        "Dienstnamen oder Wildcards angeben."
+      ],
+      [
+        "-DisplayName",
+        "Nach Anzeigenamen filtern."
+      ]
+    ],
+    "example": "Get-Service -Name 'Dnscache','LanmanServer'",
+    "verify": "Status-Spalte prüfen; bei Bedarf Get-Service | Where-Object Status -eq 'Stopped'.",
+    "notes": "Dienstnamen sind nicht immer identisch mit Anzeigenamen."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "Processes",
+    "risk": "low",
+    "name": "Get-Process",
+    "purpose": "Zeigt laufende Prozesse und Ressourceninformationen.",
+    "syntax": "Get-Process [-Name <STRING[]>]",
+    "params": [
+      [
+        "-Name",
+        "Prozessname filtern."
+      ],
+      [
+        "-Id",
+        "Nach Prozess-ID filtern."
+      ]
+    ],
+    "example": "Get-Process -Name 'svchost' | Sort-Object CPU -Descending | Select-Object -First 10",
+    "verify": "PID und Prozessname mit Task Manager oder Get-Process -Id <PID> vergleichen.",
+    "notes": "CPU-Werte sind kumulierte Prozesszeiten, keine Momentaufnahme der CPU-Auslastung."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "Network",
+    "risk": "low",
+    "name": "Get-NetIPConfiguration",
+    "purpose": "Zeigt IP-Konfiguration, Gateway und DNS je Netzwerkinterface.",
+    "syntax": "Get-NetIPConfiguration [-InterfaceAlias <STRING>]",
+    "params": [
+      [
+        "-InterfaceAlias",
+        "Interface gezielt auswählen."
+      ],
+      [
+        "-Detailed",
+        "Zusätzliche DNS- und WINS-Informationen."
+      ]
+    ],
+    "example": "Get-NetIPConfiguration -Detailed",
+    "verify": "Mit ipconfig /all vergleichen.",
+    "notes": "Für detaillierte Adapterinformationen zusätzlich Get-NetAdapter und Get-NetIPAddress verwenden."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "Network",
+    "risk": "low",
+    "name": "Test-NetConnection",
+    "purpose": "Testet DNS-Auflösung, ICMP-Erreichbarkeit und TCP-Port-Konnektivität.",
+    "syntax": "Test-NetConnection <COMPUTERNAME> [-Port <INT>]",
+    "params": [
+      [
+        "-ComputerName",
+        "Zielhost oder IP-Adresse."
+      ],
+      [
+        "-Port",
+        "TCP-Zielport testen."
+      ],
+      [
+        "-TraceRoute",
+        "Route zum Ziel verfolgen."
+      ],
+      [
+        "-InformationLevel",
+        "Detailed oder Quiet."
+      ]
+    ],
+    "example": "Test-NetConnection server01.example.local -Port 443 -InformationLevel Detailed",
+    "verify": "TcpTestSucceeded, RemoteAddress und NameResolutionResults auswerten.",
+    "notes": "Ein fehlgeschlagener Ping bedeutet nicht zwingend, dass der TCP-Dienst nicht erreichbar ist."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "Logs",
+    "risk": "low",
+    "name": "Get-WinEvent",
+    "purpose": "Liest Windows Event Logs und ermöglicht gezielte Filterung.",
+    "syntax": "Get-WinEvent -LogName <LOGNAME> [-MaxEvents <COUNT>]",
+    "params": [
+      [
+        "-LogName",
+        "Logname, z. B. System oder Application."
+      ],
+      [
+        "-MaxEvents",
+        "Maximale Anzahl Einträge."
+      ],
+      [
+        "-FilterHashtable",
+        "Strukturierter Filter nach LogName, ID, Zeit etc."
+      ]
+    ],
+    "example": "Get-WinEvent -FilterHashtable @{LogName='System'; Level=2} -MaxEvents 30",
+    "verify": "TimeCreated, Id, ProviderName und Message prüfen.",
+    "notes": "Für große Logs bevorzugt FilterHashtable statt alle Events zu laden."
+  },
+  {
+    "platform": "Active Directory PowerShell",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "Get-ADDomain",
+    "purpose": "Zeigt Informationen zur aktuellen oder angegebenen AD-Domäne.",
+    "syntax": "Get-ADDomain [-Identity <DOMAIN>]",
+    "params": [
+      [
+        "-Identity",
+        "DNS-Name, NetBIOS-Name oder Distinguished Name."
+      ],
+      [
+        "-Server",
+        "Gezielten Domain Controller verwenden."
+      ]
+    ],
+    "example": "Get-ADDomain -Identity corp.example.local",
+    "verify": "DomainMode, PDCEmulator, RIDMaster und InfrastructureMaster prüfen.",
+    "notes": "Benötigt ActiveDirectory-Modul und geeignete Leseberechtigung."
+  },
+  {
+    "platform": "Active Directory PowerShell",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "Get-ADUser",
+    "purpose": "Liest Benutzerobjekte und ausgewählte Attribute.",
+    "syntax": "Get-ADUser -Identity <USER> [-Properties <PROPERTY[]>]",
+    "params": [
+      [
+        "-Identity",
+        "SamAccountName, DN, GUID oder SID."
+      ],
+      [
+        "-Properties",
+        "Zusätzliche Attribute laden; * lädt alle verfügbaren Attribute."
+      ],
+      [
+        "-Filter",
+        "Abfragefilter für mehrere Benutzer."
+      ]
+    ],
+    "example": "Get-ADUser -Identity jdoe -Properties Enabled,LastLogonDate,PasswordLastSet | Select-Object Name,Enabled,LastLogonDate,PasswordLastSet",
+    "verify": "Identität, Enabled, LastLogonDate und PasswordLastSet plausibilisieren.",
+    "notes": "Für Reports nur benötigte Attribute laden; LastLogonDate ist repliziert und nicht sekundengenau."
+  },
+  {
+    "platform": "Active Directory PowerShell",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "Get-ADGroupMember",
+    "purpose": "Listet direkte Mitglieder einer AD-Gruppe.",
+    "syntax": "Get-ADGroupMember -Identity <GROUP> [-Recursive]",
+    "params": [
+      [
+        "-Identity",
+        "Gruppenname, DN, GUID oder SID."
+      ],
+      [
+        "-Recursive",
+        "Verschachtelte Gruppenmitglieder auflösen."
+      ]
+    ],
+    "example": "Get-ADGroupMember -Identity 'Domain Admins' -Recursive | Select-Object Name,ObjectClass,SamAccountName",
+    "verify": "Mitgliedschaften mit Gruppenrichtlinie und delegierten Rollen abgleichen.",
+    "notes": "Privilegierte Gruppen regelmäßig prüfen und Änderungen auditieren."
+  },
+  {
+    "platform": "Active Directory PowerShell",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "Get-ADDomainController",
+    "purpose": "Ermittelt Domain Controller und deren Standort-/Rolleninformationen.",
+    "syntax": "Get-ADDomainController [-Filter *] [-Discover]",
+    "params": [
+      [
+        "-Filter *",
+        "Alle DCs zurückgeben."
+      ],
+      [
+        "-Discover",
+        "Geeigneten DC ermitteln."
+      ],
+      [
+        "-SiteName",
+        "Standort für Discovery vorgeben."
+      ]
+    ],
+    "example": "Get-ADDomainController -Filter * | Select-Object HostName,Site,IPv4Address,IsGlobalCatalog",
+    "verify": "Standortzuordnung und Global Catalog Status kontrollieren.",
+    "notes": "Bei Replikationsproblemen mit repadmin und dcdiag ergänzen."
+  },
+  {
+    "platform": "Active Directory Tools",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "repadmin /replsummary",
+    "purpose": "Fasst AD-Replikationsfehler und Replikationslatenzen zusammen.",
+    "syntax": "repadmin /replsummary [<DC>]",
+    "params": [
+      [
+        "<DC>",
+        "Optionaler Ziel-DC für die Auswertung."
+      ]
+    ],
+    "example": "repadmin /replsummary",
+    "verify": "Fails, largest delta und error codes prüfen.",
+    "notes": "Auf einem System mit RSAT/AD DS Tools oder Domain Controller ausführen."
+  },
+  {
+    "platform": "Active Directory Tools",
+    "category": "Active Directory",
+    "risk": "low",
+    "name": "dcdiag /v",
+    "purpose": "Führt diagnostische Tests für Domain Controller aus.",
+    "syntax": "dcdiag [/v] [/s:<DC>] [/test:<TEST>]",
+    "params": [
+      [
+        "/v",
+        "Ausführliche Ausgabe."
+      ],
+      [
+        "/s:<DC>",
+        "Ziel-DC."
+      ],
+      [
+        "/test:<TEST>",
+        "Nur einen bestimmten Test ausführen."
+      ]
+    ],
+    "example": "dcdiag /s:dc01 /test:DNS /v",
+    "verify": "Fehlerhafte Tests, DNS-Registrierung und SYSVOL/NETLOGON prüfen.",
+    "notes": "Die Interpretation hängt von Rolle und AD-Topologie ab."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "System",
+    "risk": "low",
+    "name": "hostnamectl",
+    "purpose": "Zeigt und verwaltet den statischen, transienten und pretty hostname.",
+    "syntax": "hostnamectl [status | set-hostname <NAME>]",
+    "params": [
+      [
+        "status",
+        "System- und Hostname-Informationen anzeigen."
+      ],
+      [
+        "set-hostname",
+        "Hostname ändern."
+      ]
+    ],
+    "example": "hostnamectl status",
+    "verify": "hostnamectl; hostname; ggf. /etc/hosts auf Konsistenz prüfen.",
+    "notes": "set-hostname ändert Systemkonfiguration; bei Servern DNS, Zertifikate und Monitoring berücksichtigen."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Services",
+    "risk": "low",
+    "name": "systemctl status",
+    "purpose": "Zeigt Zustand und letzte Meldungen eines systemd-Dienstes.",
+    "syntax": "systemctl status <UNIT>",
+    "params": [
+      [
+        "<UNIT>",
+        "Service oder andere systemd-Unit, z. B. ssh.service."
+      ],
+      [
+        "--no-pager",
+        "Ausgabe ohne Pager."
+      ],
+      [
+        "-l",
+        "Zeilen nicht kürzen."
+      ]
+    ],
+    "example": "systemctl status ssh --no-pager -l",
+    "verify": "Active, Loaded, Main PID und letzte Logmeldungen auswerten.",
+    "notes": "Für Fehlerdetails journalctl -u <UNIT> verwenden."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Services",
+    "risk": "low",
+    "name": "journalctl -u",
+    "purpose": "Zeigt systemd-Journalmeldungen einer Unit.",
+    "syntax": "journalctl -u <UNIT> [--since <TIME>] [-n <COUNT>]",
+    "params": [
+      [
+        "-u",
+        "Unit filtern."
+      ],
+      [
+        "--since",
+        "Zeitfenster eingrenzen."
+      ],
+      [
+        "-n",
+        "Letzte N Zeilen anzeigen."
+      ],
+      [
+        "-f",
+        "Neue Einträge live verfolgen."
+      ]
+    ],
+    "example": "journalctl -u ssh --since '1 hour ago' --no-pager",
+    "verify": "Zeitstempel, Severity, Ursache und Folgefehler prüfen.",
+    "notes": "Je nach System sind Journal-Persistenz und Benutzerrechte unterschiedlich konfiguriert."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Storage",
+    "risk": "low",
+    "name": "lsblk -f",
+    "purpose": "Zeigt Blockgeräte, Partitionen, Dateisysteme und UUIDs.",
+    "syntax": "lsblk [-f] [-o <COLUMNS>]",
+    "params": [
+      [
+        "-f",
+        "Dateisystem- und UUID-Informationen."
+      ],
+      [
+        "-o",
+        "Ausgabespalten auswählen."
+      ]
+    ],
+    "example": "lsblk -o NAME,SIZE,TYPE,FSTYPE,UUID,MOUNTPOINTS",
+    "verify": "Mit findmnt, blkid und /etc/fstab abgleichen.",
+    "notes": "Nur lesend; niemals Gerätenamen ohne Prüfung für Formatierungsbefehle übernehmen."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Storage",
+    "risk": "low",
+    "name": "df -hT",
+    "purpose": "Zeigt freien und belegten Speicherplatz pro eingehängtem Dateisystem.",
+    "syntax": "df [-h] [-T] [<PATH>]",
+    "params": [
+      [
+        "-h",
+        "Menschenlesbare Größen."
+      ],
+      [
+        "-T",
+        "Dateisystemtyp anzeigen."
+      ],
+      [
+        "<PATH>",
+        "Optional nur Dateisystem des Pfads."
+      ]
+    ],
+    "example": "df -hT",
+    "verify": "Use%, Mountpoint und Dateisystemtyp prüfen; bei Bedarf du -x für Verzeichnisanalyse verwenden.",
+    "notes": "df zeigt Dateisystembelegung, nicht zwingend die Belegung einzelner Unterverzeichnisse."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Network",
+    "risk": "low",
+    "name": "ip addr / ip route",
+    "purpose": "Zeigt Interface-Adressen und Kernel-Routingtabelle.",
+    "syntax": "ip addr show\\nip route show",
+    "params": [
+      [
+        "ip addr show",
+        "Interface-Adressen und Status."
+      ],
+      [
+        "ip route show",
+        "IPv4-Routen."
+      ],
+      [
+        "ip -6 route show",
+        "IPv6-Routen."
+      ]
+    ],
+    "example": "ip -br addr && ip route",
+    "verify": "IP, Prefix, Interface, Default Gateway und Link-State prüfen.",
+    "notes": "ip route add/del verändert aktive Routingkonfiguration."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Network",
+    "risk": "low",
+    "name": "ss -tulpn",
+    "purpose": "Zeigt TCP/UDP Listening Sockets und Prozesszuordnung.",
+    "syntax": "ss [-t] [-u] [-l] [-p] [-n]",
+    "params": [
+      [
+        "-t",
+        "TCP sockets."
+      ],
+      [
+        "-u",
+        "UDP sockets."
+      ],
+      [
+        "-l",
+        "Listening sockets."
+      ],
+      [
+        "-p",
+        "Prozessinformationen."
+      ],
+      [
+        "-n",
+        "Numerische Adressen und Ports."
+      ]
+    ],
+    "example": "sudo ss -tulpn",
+    "verify": "Local Address:Port, Prozessname und PID prüfen.",
+    "notes": "Prozessdetails benötigen häufig root-Rechte."
+  },
+  {
+    "platform": "Linux / Debian",
+    "category": "Packages",
+    "risk": "medium",
+    "name": "apt update / apt upgrade",
+    "purpose": "Aktualisiert Paketindex und installiert verfügbare Paketupdates.",
+    "syntax": "sudo apt update\\nsudo apt upgrade",
+    "params": [
+      [
+        "update",
+        "Paketlisten aktualisieren."
+      ],
+      [
+        "upgrade",
+        "Installierte Pakete aktualisieren, ohne Pakete regulär zu entfernen."
+      ]
+    ],
+    "example": "sudo apt update && apt list --upgradable",
+    "verify": "apt list --upgradable; nach Wartungsfenster sudo apt upgrade und ggf. Neustartbedarf prüfen.",
+    "notes": "Produktivsysteme mit Wartungsfenster, Backup und Release Notes aktualisieren."
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Switching",
+    "risk": "low",
+    "name": "show interfaces status",
+    "purpose": "Zeigt Portstatus, VLAN, Duplex, Geschwindigkeit und Medientyp.",
+    "syntax": "show interfaces status",
+    "params": [
+      [
+        "<INTERFACE>",
+        "Optional einzelne Schnittstelle gezielt prüfen, je nach Plattform-Syntax."
+      ]
+    ],
+    "example": "show interfaces status",
+    "verify": "Port, Status, VLAN, Duplex und Speed vergleichen.",
+    "notes": "Ausgabe und unterstützte Felder variieren zwischen Catalyst-Modellen und IOS/IOS-XE-Releases."
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Switching",
+    "risk": "low",
+    "name": "show vlan brief",
+    "purpose": "Zeigt VLANs und zugeordnete Access-Ports.",
+    "syntax": "show vlan brief",
+    "params": [],
+    "example": "show vlan brief",
+    "verify": "VLAN-ID, VLAN-Name und Portmitgliedschaften prüfen.",
+    "notes": "Trunk-Ports erscheinen nicht wie normale Access-Port-Zuordnungen."
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Switching",
+    "risk": "low",
+    "name": "show interfaces trunk",
+    "purpose": "Zeigt aktive Trunks, Native VLAN und erlaubte/aktive VLANs.",
+    "syntax": "show interfaces trunk",
+    "params": [],
+    "example": "show interfaces trunk",
+    "verify": "Native VLAN, allowed VLANs und forwarding VLANs vergleichen.",
+    "notes": "Beide Seiten eines Trunks müssen kompatibel konfiguriert sein."
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Switching",
+    "risk": "low",
+    "name": "show spanning-tree",
+    "purpose": "Zeigt STP-Root, Portrollen und Portzustände.",
+    "syntax": "show spanning-tree [vlan <VLAN_ID>]",
+    "params": [
+      [
+        "vlan <VLAN_ID>",
+        "STP für ein VLAN gezielt anzeigen."
+      ]
+    ],
+    "example": "show spanning-tree vlan 10",
+    "verify": "Root ID, Root Port, Designated Port und Blocking/Forwarding prüfen.",
+    "notes": "STP-Änderungen können Layer-2-Loops und Netzwerkausfälle verursachen."
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Routing",
+    "risk": "low",
+    "name": "show ip interface brief",
+    "purpose": "Kompakte Übersicht aller IPv4-Interfaces und Line/Protocol-Status.",
+    "syntax": "show ip interface brief",
+    "params": [],
+    "example": "show ip interface brief",
+    "verify": "IP-Adresse sowie Status und Protocol prüfen.",
+    "notes": "administratively down deutet meist auf shutdown hin; up/down kann Layer-2/Protokollprobleme bedeuten."
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Routing",
+    "risk": "low",
+    "name": "show ip route",
+    "purpose": "Zeigt die IPv4-Routingtabelle mit Route Source und Next Hop.",
+    "syntax": "show ip route [<PREFIX>]",
+    "params": [
+      [
+        "<PREFIX>",
+        "Optional eine Zielroute filtern, z. B. 10.10.10.0."
+      ]
+    ],
+    "example": "show ip route 10.10.10.0",
+    "verify": "Longest Prefix Match, Next Hop, Administrative Distance und Route Source prüfen.",
+    "notes": "Bei fehlender Route Routing-Protokoll, Redistribution, ACL und Interfacezustand untersuchen."
+  },
+  {
+    "platform": "Cisco IOS / IOS-XE",
+    "category": "Troubleshooting",
+    "risk": "low",
+    "name": "show logging",
+    "purpose": "Zeigt lokale Systemmeldungen und relevante Ereignisse.",
+    "syntax": "show logging",
+    "params": [],
+    "example": "show logging | include LINK|LINEPROTO|SPANTREE",
+    "verify": "Zeitstempel, Interface, Severity und wiederkehrende Events prüfen.",
+    "notes": "Logging Buffer und Syslog-Ziele sind je nach Konfiguration unterschiedlich."
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Virtualization",
+    "risk": "low",
+    "name": "qm list / qm status",
+    "purpose": "Listet virtuelle Maschinen oder prüft den Status einer VM.",
+    "syntax": "qm list\\nqm status <VMID>",
+    "params": [
+      [
+        "qm list",
+        "VMs mit VMID, Name und Status auflisten."
+      ],
+      [
+        "qm status <VMID>",
+        "Status einer bestimmten VM abfragen."
+      ]
+    ],
+    "example": "qm list && qm status 100",
+    "verify": "VMID und Status mit Proxmox Web UI und Task History vergleichen.",
+    "notes": "Nur lesende Statusabfrage; VMID durch die tatsächliche ID ersetzen."
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Containers",
+    "risk": "low",
+    "name": "pct list / pct status",
+    "purpose": "Listet LXC-Container oder zeigt Status eines Containers.",
+    "syntax": "pct list\\npct status <CTID>",
+    "params": [
+      [
+        "pct list",
+        "Container auflisten."
+      ],
+      [
+        "pct status <CTID>",
+        "Status des Containers abfragen."
+      ]
+    ],
+    "example": "pct list && pct status 101",
+    "verify": "CTID, Status und Node prüfen.",
+    "notes": "Container-ID ist nicht dasselbe wie VMID; Befehle nicht verwechseln."
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Storage",
+    "risk": "low",
+    "name": "pvesm status",
+    "purpose": "Zeigt Status, Typ und Kapazität konfigurierter Proxmox-Storage-Ziele.",
+    "syntax": "pvesm status",
+    "params": [],
+    "example": "pvesm status",
+    "verify": "Enabled, Active, Total, Used und Available prüfen.",
+    "notes": "Bei Storage-Problemen zusätzlich findmnt, journalctl und Backend-spezifische Tools verwenden."
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "Cluster",
+    "risk": "low",
+    "name": "pvecm status",
+    "purpose": "Zeigt Cluster-Mitgliedschaft, Quorum und Vote-Informationen.",
+    "syntax": "pvecm status",
+    "params": [],
+    "example": "pvecm status",
+    "verify": "Quorate, Nodes, Votes und Membership prüfen.",
+    "notes": "Kein quorum kann Clusteroperationen blockieren. Keine erzwungenen Quorum-Änderungen ohne Kenntnis der Cluster-Topologie."
+  },
+  {
+    "platform": "Proxmox VE",
+    "category": "API",
+    "risk": "low",
+    "name": "pvesh get",
+    "purpose": "Liest Proxmox API-Ressourcen direkt über die Shell.",
+    "syntax": "pvesh get <API_PATH> [OPTIONS]",
+    "params": [
+      [
+        "<API_PATH>",
+        "API-Pfad, z. B. /nodes."
+      ],
+      [
+        "--output-format",
+        "Ausgabeformat, je nach Endpunkt z. B. json oder yaml."
+      ]
+    ],
+    "example": "pvesh get /nodes",
+    "verify": "HTTP/API-Fehler, Node-Namen und JSON-Ausgabe prüfen.",
+    "notes": "Für Änderungen sind API-Endpunkt und Parameter genau zu prüfen; read-only GET ist hier das Beispiel."
+  },
+  {
+    "platform": "Docker Engine",
+    "category": "Containers",
+    "risk": "low",
+    "name": "docker ps -a",
+    "purpose": "Listet laufende und gestoppte Container.",
+    "syntax": "docker ps [OPTIONS]",
+    "params": [
+      [
+        "-a",
+        "Alle Container, nicht nur laufende."
+      ],
+      [
+        "--no-trunc",
+        "IDs und Befehle nicht kürzen."
+      ],
+      [
+        "--filter",
+        "Nach Status, Name, Label usw. filtern."
+      ]
+    ],
+    "example": "docker ps -a --no-trunc",
+    "verify": "Status, Ports, Names und Exit-Status kontrollieren.",
+    "notes": "Containerstatus allein erklärt keine Ursache; docker logs und inspect ergänzen."
+  },
+  {
+    "platform": "Docker Engine",
+    "category": "Containers",
+    "risk": "low",
+    "name": "docker logs",
+    "purpose": "Liest stdout/stderr eines Containers.",
+    "syntax": "docker logs [OPTIONS] <CONTAINER>",
+    "params": [
+      [
+        "-f",
+        "Logs live verfolgen."
+      ],
+      [
+        "--tail <N>",
+        "Nur die letzten N Zeilen."
+      ],
+      [
+        "--since <TIME>",
+        "Ab Zeitpunkt filtern."
+      ],
+      [
+        "-t",
+        "Zeitstempel anzeigen."
+      ]
+    ],
+    "example": "docker logs --tail 100 --timestamps <CONTAINER>",
+    "verify": "Fehlerzeitpunkt mit Restart- und Health-Status vergleichen.",
+    "notes": "Logrotation und Logging Driver können Umfang und Verfügbarkeit beeinflussen."
+  },
+  {
+    "platform": "Docker Engine",
+    "category": "Network",
+    "risk": "low",
+    "name": "docker network inspect",
+    "purpose": "Zeigt Konfiguration und verbundene Container eines Docker-Netzwerks.",
+    "syntax": "docker network inspect <NETWORK>",
+    "params": [
+      [
+        "<NETWORK>",
+        "Netzwerkname oder ID."
+      ]
+    ],
+    "example": "docker network inspect bridge",
+    "verify": "Subnetz, Gateway, Driver und Containers prüfen.",
+    "notes": "Änderungen am Netzwerk können Containerverbindungen unterbrechen."
+  },
+  {
+    "platform": "Docker Compose",
+    "category": "Containers",
+    "risk": "medium",
+    "name": "docker compose config",
+    "purpose": "Validiert und rendert die zusammengeführte Compose-Konfiguration.",
+    "syntax": "docker compose config [OPTIONS]",
+    "params": [
+      [
+        "--quiet",
+        "Nur Validierung, keine Ausgabe."
+      ],
+      [
+        "--services",
+        "Service-Namen auflisten."
+      ],
+      [
+        "--profiles",
+        "Profile auflisten."
+      ]
+    ],
+    "example": "docker compose config --quiet && docker compose config --services",
+    "verify": "Exit Code 0 und erwartete Services/Volumes/Networks prüfen.",
+    "notes": "Gerenderte Konfiguration kann interpolierte Secrets enthalten. Ausgabe nicht ungeschützt veröffentlichen."
+  },
+  {
+    "platform": "Docker Compose",
+    "category": "Containers",
+    "risk": "medium",
+    "name": "docker compose up -d",
+    "purpose": "Erstellt und startet Services im Hintergrund.",
+    "syntax": "docker compose up [OPTIONS] [SERVICE...]",
+    "params": [
+      [
+        "-d",
+        "Detached mode."
+      ],
+      [
+        "--build",
+        "Images vor Start bauen."
+      ],
+      [
+        "--remove-orphans",
+        "Nicht mehr definierte Container entfernen. Vorsicht."
+      ]
+    ],
+    "example": "docker compose up -d",
+    "verify": "docker compose ps; docker compose logs --tail 100",
+    "notes": "Vor Updates Compose-Datei prüfen und persistente Volumes sichern."
+  },
+  {
+    "platform": "Network Tools",
+    "category": "Network",
+    "risk": "low",
+    "name": "dig",
+    "purpose": "Fragt DNS-Records gezielt bei einem DNS-Resolver ab.",
+    "syntax": "dig [@SERVER] <NAME> [TYPE]",
+    "params": [
+      [
+        "@SERVER",
+        "DNS-Server vorgeben."
+      ],
+      [
+        "<NAME>",
+        "Hostname oder Domain."
+      ],
+      [
+        "TYPE",
+        "Recordtyp, z. B. A, AAAA, MX, TXT, SRV."
+      ]
+    ],
+    "example": "dig @192.0.2.53 example.com A +short",
+    "verify": "ANSWER, TTL, Status und abgefragten Server vergleichen.",
+    "notes": "Beispiel-IP 192.0.2.53 ist eine Dokumentationsadresse; durch echten Resolver ersetzen."
+  },
+  {
+    "platform": "Network Tools",
+    "category": "Network",
+    "risk": "low",
+    "name": "curl -I",
+    "purpose": "Sendet eine HTTP HEAD-Anfrage und zeigt Response-Header.",
+    "syntax": "curl -I [OPTIONS] <URL>",
+    "params": [
+      [
+        "-I",
+        "HEAD statt GET."
+      ],
+      [
+        "-L",
+        "Redirects verfolgen."
+      ],
+      [
+        "-k",
+        "TLS-Zertifikatsprüfung deaktivieren – nur für gezielte Diagnose, nicht als Lösung."
+      ]
+    ],
+    "example": "curl -I https://example.com",
+    "verify": "HTTP-Status, Location, Server und TLS-Fehler untersuchen.",
+    "notes": "-k umgeht Zertifikatsprüfung und sollte nicht als dauerhafte Konfiguration verwendet werden."
+  },
+  {
+    "platform": "Network Tools",
+    "category": "Network",
+    "risk": "low",
+    "name": "traceroute / tracert",
+    "purpose": "Untersucht den Netzwerkpfad zum Zielhost.",
+    "syntax": "traceroute <HOST>\\ntracert <HOST>",
+    "params": [
+      [
+        "<HOST>",
+        "Zielhostname oder IP."
+      ],
+      [
+        "-m <HOPS>",
+        "Linux: maximale Hop-Anzahl."
+      ],
+      [
+        "-d",
+        "Windows: keine DNS-Namensauflösung."
+      ]
+    ],
+    "example": "traceroute -m 20 example.com",
+    "verify": "Hop-Sequenz und erste Stelle mit dauerhaftem Timeout vergleichen.",
+    "notes": "ICMP/UDP/TCP-Filter und asymmetrisches Routing können Ergebnisse beeinflussen."
+  }
+]
