@@ -14,7 +14,9 @@
     ],
     "example": "ipconfig /all",
     "verify": "Prüfe IPv4-Adresse, Subnetzmaske, Default Gateway, DHCP Server und DNS Servers.",
-    "notes": "In einer normalen CMD oder PowerShell ausführbar."
+    "notes": "In einer normalen CMD oder PowerShell ausführbar.",
+    "comment": "Zeigt für jeden Netzwerkadapter die IP-Adresse, Subnetzmaske, das Standardgateway sowie DHCP- und DNS-Server. Damit lässt sich schnell erkennen, ob ein Client die erwartete Netzwerkkonfiguration erhalten hat.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows CMD",
@@ -31,7 +33,9 @@
     ],
     "example": "ipconfig /flushdns",
     "verify": "ipconfig /displaydns",
-    "notes": "Hilfreich nach DNS-Änderungen oder bei veralteten Cache-Einträgen."
+    "notes": "Hilfreich nach DNS-Änderungen oder bei veralteten Cache-Einträgen.",
+    "comment": "Löscht ausschließlich den lokalen DNS-Auflösungscache dieses Windows-Systems. Danach werden Hostnamen erneut beim konfigurierten DNS-Server aufgelöst.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows CMD",
@@ -52,7 +56,9 @@
     ],
     "example": "route print -4",
     "verify": "Default Route und Interface-Zuordnung kontrollieren.",
-    "notes": "Änderungen an persistenten Routen können Konnektivität unterbrechen."
+    "notes": "Änderungen an persistenten Routen können Konnektivität unterbrechen.",
+    "comment": "Zeigt die Routingtabelle des Rechners. Mit -4 wird die IPv4-Tabelle ausgegeben; besonders wichtig sind die Default Route und das zugehörige Gateway.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows CMD",
@@ -81,7 +87,9 @@
     ],
     "example": "netstat -ano | findstr :443",
     "verify": "tasklist /FI \"PID eq <PID>\"",
-    "notes": "Für Prozesszuordnung die PID aus der Ausgabe verwenden."
+    "notes": "Für Prozesszuordnung die PID aus der Ausgabe verwenden.",
+    "comment": "Listet Netzwerkverbindungen und Listening Ports numerisch auf und zeigt die zugehörige PID. Der Zusatz filtert die Ausgabe auf Zeilen mit Port 443.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows CMD",
@@ -102,7 +110,9 @@
     ],
     "example": "systeminfo /FO LIST",
     "verify": "OS Name, OS Version, System Type und Hotfixes kontrollieren.",
-    "notes": "Auf entfernten Systemen andere Abfragemethoden und Berechtigungen beachten."
+    "notes": "Auf entfernten Systemen andere Abfragemethoden und Berechtigungen beachten.",
+    "comment": "Gibt Betriebssystem, Version, Hardwareinformationen, Installationsdatum und installierte Hotfixes aus. Nützlich für eine erste Bestandsaufnahme eines Windows-Systems.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows CMD",
@@ -119,7 +129,9 @@
     ],
     "example": "sfc /scannow",
     "verify": "Ausgabe auswerten; Details stehen ggf. im CBS.log.",
-    "notes": "Als Administrator starten. Bei nicht reparierbaren Komponenten DISM prüfen."
+    "notes": "Als Administrator starten. Bei nicht reparierbaren Komponenten DISM prüfen.",
+    "comment": "Prüft geschützte Windows-Systemdateien und versucht beschädigte Dateien aus dem Windows-Komponentenspeicher zu reparieren. Die Prüfung kann einige Zeit dauern.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
@@ -136,7 +148,9 @@
     ],
     "example": "Get-ComputerInfo | Select-Object CsName, WindowsProductName, WindowsVersion, OsBuildNumber",
     "verify": "Hostname, Edition, Version und Build vergleichen.",
-    "notes": "PowerShell-Cmdlet; Ausgabe lässt sich mit Select-Object gezielt begrenzen."
+    "notes": "PowerShell-Cmdlet; Ausgabe lässt sich mit Select-Object gezielt begrenzen.",
+    "comment": "Liest Systeminformationen aus. Select-Object begrenzt die Ausgabe auf Hostname, Windows-Produkt, Version und Buildnummer.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
@@ -157,7 +171,9 @@
     ],
     "example": "Get-Service -Name 'Dnscache','LanmanServer'",
     "verify": "Status-Spalte prüfen; bei Bedarf Get-Service | Where-Object Status -eq 'Stopped'.",
-    "notes": "Dienstnamen sind nicht immer identisch mit Anzeigenamen."
+    "notes": "Dienstnamen sind nicht immer identisch mit Anzeigenamen.",
+    "comment": "Fragt gezielt zwei Windows-Dienste ab: den DNS Client und den Server-Dienst für Datei-/Druckfreigaben. Die Ausgabe zeigt unter anderem, ob die Dienste laufen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
@@ -178,7 +194,9 @@
     ],
     "example": "Get-Process -Name 'svchost' | Sort-Object CPU -Descending | Select-Object -First 10",
     "verify": "PID und Prozessname mit Task Manager oder Get-Process -Id <PID> vergleichen.",
-    "notes": "CPU-Werte sind kumulierte Prozesszeiten, keine Momentaufnahme der CPU-Auslastung."
+    "notes": "CPU-Werte sind kumulierte Prozesszeiten, keine Momentaufnahme der CPU-Auslastung.",
+    "comment": "Sucht Prozesse mit dem Namen svchost, sortiert sie nach CPU-Zeit absteigend und zeigt die zehn Einträge mit dem höchsten Wert. CPU ist dabei die aufsummierte Prozesszeit.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
@@ -199,7 +217,9 @@
     ],
     "example": "Get-NetIPConfiguration -Detailed",
     "verify": "Mit ipconfig /all vergleichen.",
-    "notes": "Für detaillierte Adapterinformationen zusätzlich Get-NetAdapter und Get-NetIPAddress verwenden."
+    "notes": "Für detaillierte Adapterinformationen zusätzlich Get-NetAdapter und Get-NetIPAddress verwenden.",
+    "comment": "Zeigt die Netzwerkkonfiguration der Adapter einschließlich IP-Adressen, Gateway und DNS-Informationen. Die Option -Detailed ergänzt weitere Details.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
@@ -228,7 +248,9 @@
     ],
     "example": "Test-NetConnection server01.example.local -Port 443 -InformationLevel Detailed",
     "verify": "TcpTestSucceeded, RemoteAddress und NameResolutionResults auswerten.",
-    "notes": "Ein fehlgeschlagener Ping bedeutet nicht zwingend, dass der TCP-Dienst nicht erreichbar ist."
+    "notes": "Ein fehlgeschlagener Ping bedeutet nicht zwingend, dass der TCP-Dienst nicht erreichbar ist.",
+    "comment": "Prüft die Namensauflösung und versucht eine TCP-Verbindung zum Zielserver auf Port 443. TcpTestSucceeded zeigt, ob der TCP-Verbindungsaufbau erfolgreich war.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
@@ -253,7 +275,9 @@
     ],
     "example": "Get-WinEvent -FilterHashtable @{LogName='System'; Level=2} -MaxEvents 30",
     "verify": "TimeCreated, Id, ProviderName und Message prüfen.",
-    "notes": "Für große Logs bevorzugt FilterHashtable statt alle Events zu laden."
+    "notes": "Für große Logs bevorzugt FilterHashtable statt alle Events zu laden.",
+    "comment": "Liest maximal 30 Fehlerereignisse (Level 2) aus dem Windows-Systemprotokoll. Der Filter wird direkt an die Ereignisquelle übergeben und vermeidet das Laden des gesamten Logs.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Active Directory PowerShell",
@@ -274,7 +298,9 @@
     ],
     "example": "Get-ADDomain -Identity corp.example.local",
     "verify": "DomainMode, PDCEmulator, RIDMaster und InfrastructureMaster prüfen.",
-    "notes": "Benötigt ActiveDirectory-Modul und geeignete Leseberechtigung."
+    "notes": "Benötigt ActiveDirectory-Modul und geeignete Leseberechtigung.",
+    "comment": "Liest Informationen zur angegebenen Active-Directory-Domäne aus. Unter anderem werden Domänenmodus und die Rolleninhaber der FSMO-Rollen angezeigt.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Active Directory PowerShell",
@@ -299,7 +325,9 @@
     ],
     "example": "Get-ADUser -Identity jdoe -Properties Enabled,LastLogonDate,PasswordLastSet | Select-Object Name,Enabled,LastLogonDate,PasswordLastSet",
     "verify": "Identität, Enabled, LastLogonDate und PasswordLastSet plausibilisieren.",
-    "notes": "Für Reports nur benötigte Attribute laden; LastLogonDate ist repliziert und nicht sekundengenau."
+    "notes": "Für Reports nur benötigte Attribute laden; LastLogonDate ist repliziert und nicht sekundengenau.",
+    "comment": "Liest das AD-Benutzerkonto jdoe und lädt zusätzlich Aktivierungsstatus, letzten Anmeldezeitpunkt und Zeitpunkt der letzten Passwortänderung. Select-Object zeigt nur die gewünschten Spalten.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Active Directory PowerShell",
@@ -320,7 +348,9 @@
     ],
     "example": "Get-ADGroupMember -Identity 'Domain Admins' -Recursive | Select-Object Name,ObjectClass,SamAccountName",
     "verify": "Mitgliedschaften mit Gruppenrichtlinie und delegierten Rollen abgleichen.",
-    "notes": "Privilegierte Gruppen regelmäßig prüfen und Änderungen auditieren."
+    "notes": "Privilegierte Gruppen regelmäßig prüfen und Änderungen auditieren.",
+    "comment": "Listet die Mitglieder der Gruppe Domain Admins auf. -Recursive löst zusätzlich verschachtelte Gruppen auf; das Ergebnis zeigt Name, Objekttyp und Anmeldenamen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Active Directory PowerShell",
@@ -345,7 +375,9 @@
     ],
     "example": "Get-ADDomainController -Filter * | Select-Object HostName,Site,IPv4Address,IsGlobalCatalog",
     "verify": "Standortzuordnung und Global Catalog Status kontrollieren.",
-    "notes": "Bei Replikationsproblemen mit repadmin und dcdiag ergänzen."
+    "notes": "Bei Replikationsproblemen mit repadmin und dcdiag ergänzen.",
+    "comment": "Ermittelt alle Domain Controller der Domäne und zeigt Hostname, AD-Standort, IPv4-Adresse und Global-Catalog-Status.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Active Directory Tools",
@@ -362,7 +394,9 @@
     ],
     "example": "repadmin /replsummary",
     "verify": "Fails, largest delta und error codes prüfen.",
-    "notes": "Auf einem System mit RSAT/AD DS Tools oder Domain Controller ausführen."
+    "notes": "Auf einem System mit RSAT/AD DS Tools oder Domain Controller ausführen.",
+    "comment": "Fasst den Replikationszustand der Domain Controller zusammen. Achte besonders auf fehlgeschlagene Replikationen, die größte Verzögerung und angezeigte Fehlercodes.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Active Directory Tools",
@@ -387,7 +421,9 @@
     ],
     "example": "dcdiag /s:dc01 /test:DNS /v",
     "verify": "Fehlerhafte Tests, DNS-Registrierung und SYSVOL/NETLOGON prüfen.",
-    "notes": "Die Interpretation hängt von Rolle und AD-Topologie ab."
+    "notes": "Die Interpretation hängt von Rolle und AD-Topologie ab.",
+    "comment": "Führt den DNS-Diagnosetest auf dem Domain Controller dc01 aus und gibt ausführliche Details aus. Der Test hilft, DNS-Registrierung und AD-DNS-Funktionen zu überprüfen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -408,7 +444,9 @@
     ],
     "example": "hostnamectl status",
     "verify": "hostnamectl; hostname; ggf. /etc/hosts auf Konsistenz prüfen.",
-    "notes": "set-hostname ändert Systemkonfiguration; bei Servern DNS, Zertifikate und Monitoring berücksichtigen."
+    "notes": "set-hostname ändert Systemkonfiguration; bei Servern DNS, Zertifikate und Monitoring berücksichtigen.",
+    "comment": "Zeigt den statischen, transienten und gegebenenfalls den Pretty Hostname sowie weitere Systeminformationen an. Der Befehl ändert in dieser Form nichts.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -433,7 +471,9 @@
     ],
     "example": "systemctl status ssh --no-pager -l",
     "verify": "Active, Loaded, Main PID und letzte Logmeldungen auswerten.",
-    "notes": "Für Fehlerdetails journalctl -u <UNIT> verwenden."
+    "notes": "Für Fehlerdetails journalctl -u <UNIT> verwenden.",
+    "comment": "Zeigt den Status des SSH-Dienstes inklusive Aktivierungszustand, Prozessinformationen und letzten Meldungen. --no-pager verhindert die Anzeige im interaktiven Pager.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -462,7 +502,9 @@
     ],
     "example": "journalctl -u ssh --since '1 hour ago' --no-pager",
     "verify": "Zeitstempel, Severity, Ursache und Folgefehler prüfen.",
-    "notes": "Je nach System sind Journal-Persistenz und Benutzerrechte unterschiedlich konfiguriert."
+    "notes": "Je nach System sind Journal-Persistenz und Benutzerrechte unterschiedlich konfiguriert.",
+    "comment": "Zeigt Journalmeldungen des SSH-Dienstes aus der letzten Stunde. So lassen sich Startfehler, Anmeldeprobleme und Dienstabbrüche zeitlich eingrenzen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -483,7 +525,9 @@
     ],
     "example": "lsblk -o NAME,SIZE,TYPE,FSTYPE,UUID,MOUNTPOINTS",
     "verify": "Mit findmnt, blkid und /etc/fstab abgleichen.",
-    "notes": "Nur lesend; niemals Gerätenamen ohne Prüfung für Formatierungsbefehle übernehmen."
+    "notes": "Nur lesend; niemals Gerätenamen ohne Prüfung für Formatierungsbefehle übernehmen.",
+    "comment": "Listet Blockgeräte, Partitionen, Dateisystemtypen, UUIDs und Mountpoints auf. Der Befehl ist hilfreich, um vor Storage-Änderungen die tatsächliche Gerätezuordnung zu prüfen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -508,7 +552,9 @@
     ],
     "example": "df -hT",
     "verify": "Use%, Mountpoint und Dateisystemtyp prüfen; bei Bedarf du -x für Verzeichnisanalyse verwenden.",
-    "notes": "df zeigt Dateisystembelegung, nicht zwingend die Belegung einzelner Unterverzeichnisse."
+    "notes": "df zeigt Dateisystembelegung, nicht zwingend die Belegung einzelner Unterverzeichnisse.",
+    "comment": "Zeigt die Belegung aller eingehängten Dateisysteme in gut lesbaren Einheiten sowie den Dateisystemtyp. Besonders relevant sind Use-Prozent und Mountpoint.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -533,7 +579,9 @@
     ],
     "example": "ip -br addr && ip route",
     "verify": "IP, Prefix, Interface, Default Gateway und Link-State prüfen.",
-    "notes": "ip route add/del verändert aktive Routingkonfiguration."
+    "notes": "ip route add/del verändert aktive Routingkonfiguration.",
+    "comment": "Zeigt zuerst die Interfaces mit ihren IP-Adressen in kompakter Form und danach die IPv4-Routingtabelle. Damit prüfst du Adressierung und Default Gateway.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -566,7 +614,9 @@
     ],
     "example": "sudo ss -tulpn",
     "verify": "Local Address:Port, Prozessname und PID prüfen.",
-    "notes": "Prozessdetails benötigen häufig root-Rechte."
+    "notes": "Prozessdetails benötigen häufig root-Rechte.",
+    "comment": "Listet TCP- und UDP-Sockets auf, die auf Verbindungen warten, und zeigt nach Möglichkeit Prozessname und PID. sudo wird für vollständige Prozessdetails verwendet.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Linux / Debian",
@@ -587,7 +637,9 @@
     ],
     "example": "sudo apt update && apt list --upgradable",
     "verify": "apt list --upgradable; nach Wartungsfenster sudo apt upgrade und ggf. Neustartbedarf prüfen.",
-    "notes": "Produktivsysteme mit Wartungsfenster, Backup und Release Notes aktualisieren."
+    "notes": "Produktivsysteme mit Wartungsfenster, Backup und Release Notes aktualisieren.",
+    "comment": "Aktualisiert zuerst die Paketlisten. Der zweite Teil listet verfügbare Updates auf, installiert sie aber noch nicht; so kannst du Änderungen vor dem Upgrade prüfen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Cisco IOS / IOS-XE",
@@ -604,7 +656,9 @@
     ],
     "example": "show interfaces status",
     "verify": "Port, Status, VLAN, Duplex und Speed vergleichen.",
-    "notes": "Ausgabe und unterstützte Felder variieren zwischen Catalyst-Modellen und IOS/IOS-XE-Releases."
+    "notes": "Ausgabe und unterstützte Felder variieren zwischen Catalyst-Modellen und IOS/IOS-XE-Releases.",
+    "comment": "Zeigt den Zustand der Switchports mit VLAN-Zuordnung, Duplex, Geschwindigkeit und Portstatus. Ideal für eine schnelle Prüfung, ob ein Port connected oder notconnect ist.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Cisco IOS / IOS-XE",
@@ -616,7 +670,9 @@
     "params": [],
     "example": "show vlan brief",
     "verify": "VLAN-ID, VLAN-Name und Portmitgliedschaften prüfen.",
-    "notes": "Trunk-Ports erscheinen nicht wie normale Access-Port-Zuordnungen."
+    "notes": "Trunk-Ports erscheinen nicht wie normale Access-Port-Zuordnungen.",
+    "comment": "Listet konfigurierte VLANs und die zugeordneten Access-Ports kompakt auf. Prüfe, ob VLAN-ID, Name und Portmitgliedschaft der geplanten Konfiguration entsprechen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Cisco IOS / IOS-XE",
@@ -628,7 +684,9 @@
     "params": [],
     "example": "show interfaces trunk",
     "verify": "Native VLAN, allowed VLANs und forwarding VLANs vergleichen.",
-    "notes": "Beide Seiten eines Trunks müssen kompatibel konfiguriert sein."
+    "notes": "Beide Seiten eines Trunks müssen kompatibel konfiguriert sein.",
+    "comment": "Zeigt aktive Trunk-Ports sowie Native VLAN und erlaubte bzw. aktive VLANs. Damit erkennst du häufig VLAN-Mismatches zwischen Switches.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Cisco IOS / IOS-XE",
@@ -645,7 +703,9 @@
     ],
     "example": "show spanning-tree vlan 10",
     "verify": "Root ID, Root Port, Designated Port und Blocking/Forwarding prüfen.",
-    "notes": "STP-Änderungen können Layer-2-Loops und Netzwerkausfälle verursachen."
+    "notes": "STP-Änderungen können Layer-2-Loops und Netzwerkausfälle verursachen.",
+    "comment": "Zeigt für VLAN 10 die STP-Root-Bridge, Portrollen und Portzustände. Damit lässt sich prüfen, welcher Switch Root ist und welche Ports weiterleiten oder blockieren.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Cisco IOS / IOS-XE",
@@ -657,7 +717,9 @@
     "params": [],
     "example": "show ip interface brief",
     "verify": "IP-Adresse sowie Status und Protocol prüfen.",
-    "notes": "administratively down deutet meist auf shutdown hin; up/down kann Layer-2/Protokollprobleme bedeuten."
+    "notes": "administratively down deutet meist auf shutdown hin; up/down kann Layer-2/Protokollprobleme bedeuten.",
+    "comment": "Zeigt alle Layer-3-Interfaces mit IP-Adresse sowie Status und Protocol-Status. Ein Interface mit administratively down ist typischerweise per shutdown deaktiviert.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Cisco IOS / IOS-XE",
@@ -674,7 +736,9 @@
     ],
     "example": "show ip route 10.10.10.0",
     "verify": "Longest Prefix Match, Next Hop, Administrative Distance und Route Source prüfen.",
-    "notes": "Bei fehlender Route Routing-Protokoll, Redistribution, ACL und Interfacezustand untersuchen."
+    "notes": "Bei fehlender Route Routing-Protokoll, Redistribution, ACL und Interfacezustand untersuchen.",
+    "comment": "Sucht die Route zum angegebenen Zielnetz in der Routingtabelle. Prüfe Route Source, Next Hop und Prefix-Länge, um den gewählten Pfad zu verstehen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Cisco IOS / IOS-XE",
@@ -686,7 +750,9 @@
     "params": [],
     "example": "show logging | include LINK|LINEPROTO|SPANTREE",
     "verify": "Zeitstempel, Interface, Severity und wiederkehrende Events prüfen.",
-    "notes": "Logging Buffer und Syslog-Ziele sind je nach Konfiguration unterschiedlich."
+    "notes": "Logging Buffer und Syslog-Ziele sind je nach Konfiguration unterschiedlich.",
+    "comment": "Zeigt lokale Systemmeldungen und filtert auf Link-, Line-Protocol- und Spanning-Tree-Ereignisse. So findest du Port-Flaps und STP-Meldungen schneller.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Proxmox VE",
@@ -707,7 +773,9 @@
     ],
     "example": "qm list && qm status 100",
     "verify": "VMID und Status mit Proxmox Web UI und Task History vergleichen.",
-    "notes": "Nur lesende Statusabfrage; VMID durch die tatsächliche ID ersetzen."
+    "notes": "Nur lesende Statusabfrage; VMID durch die tatsächliche ID ersetzen.",
+    "comment": "Listet zunächst die virtuellen Maschinen auf und fragt danach den Status der VM mit ID 100 ab. Ersetze 100 durch die tatsächliche VMID deiner Umgebung.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Proxmox VE",
@@ -728,7 +796,9 @@
     ],
     "example": "pct list && pct status 101",
     "verify": "CTID, Status und Node prüfen.",
-    "notes": "Container-ID ist nicht dasselbe wie VMID; Befehle nicht verwechseln."
+    "notes": "Container-ID ist nicht dasselbe wie VMID; Befehle nicht verwechseln.",
+    "comment": "Listet die LXC-Container auf und fragt anschließend den Status des Containers mit CTID 101 ab. VMIDs und CTIDs sind getrennte Kennungen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Proxmox VE",
@@ -740,7 +810,9 @@
     "params": [],
     "example": "pvesm status",
     "verify": "Enabled, Active, Total, Used und Available prüfen.",
-    "notes": "Bei Storage-Problemen zusätzlich findmnt, journalctl und Backend-spezifische Tools verwenden."
+    "notes": "Bei Storage-Problemen zusätzlich findmnt, journalctl und Backend-spezifische Tools verwenden.",
+    "comment": "Zeigt den Zustand der konfigurierten Proxmox-Storage-Ziele inklusive Typ, Kapazität, Belegung und Verfügbarkeit. Achte besonders auf inactive oder disabled.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Proxmox VE",
@@ -752,7 +824,9 @@
     "params": [],
     "example": "pvecm status",
     "verify": "Quorate, Nodes, Votes und Membership prüfen.",
-    "notes": "Kein quorum kann Clusteroperationen blockieren. Keine erzwungenen Quorum-Änderungen ohne Kenntnis der Cluster-Topologie."
+    "notes": "Kein quorum kann Clusteroperationen blockieren. Keine erzwungenen Quorum-Änderungen ohne Kenntnis der Cluster-Topologie.",
+    "comment": "Zeigt Cluster-Mitgliedschaft, Stimmen und Quorumstatus. Prüfe vor Clusteränderungen insbesondere, ob der Cluster quorate ist.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Proxmox VE",
@@ -773,7 +847,9 @@
     ],
     "example": "pvesh get /nodes",
     "verify": "HTTP/API-Fehler, Node-Namen und JSON-Ausgabe prüfen.",
-    "notes": "Für Änderungen sind API-Endpunkt und Parameter genau zu prüfen; read-only GET ist hier das Beispiel."
+    "notes": "Für Änderungen sind API-Endpunkt und Parameter genau zu prüfen; read-only GET ist hier das Beispiel.",
+    "comment": "Liest über die Proxmox-Shell den API-Endpunkt /nodes aus. Der Befehl ist eine reine GET-Abfrage und listet die Cluster-Nodes.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Docker Engine",
@@ -798,7 +874,9 @@
     ],
     "example": "docker ps -a --no-trunc",
     "verify": "Status, Ports, Names und Exit-Status kontrollieren.",
-    "notes": "Containerstatus allein erklärt keine Ursache; docker logs und inspect ergänzen."
+    "notes": "Containerstatus allein erklärt keine Ursache; docker logs und inspect ergänzen.",
+    "comment": "Listet alle Container einschließlich gestoppter Container auf. --no-trunc verhindert gekürzte IDs und Befehlszeilen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Docker Engine",
@@ -827,7 +905,9 @@
     ],
     "example": "docker logs --tail 100 --timestamps <CONTAINER>",
     "verify": "Fehlerzeitpunkt mit Restart- und Health-Status vergleichen.",
-    "notes": "Logrotation und Logging Driver können Umfang und Verfügbarkeit beeinflussen."
+    "notes": "Logrotation und Logging Driver können Umfang und Verfügbarkeit beeinflussen.",
+    "comment": "Zeigt die letzten 100 Container-Logzeilen mit Zeitstempeln. Ersetze den Platzhalter durch Containername oder ID; mit -f kannst du Logs live verfolgen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Docker Engine",
@@ -844,7 +924,9 @@
     ],
     "example": "docker network inspect bridge",
     "verify": "Subnetz, Gateway, Driver und Containers prüfen.",
-    "notes": "Änderungen am Netzwerk können Containerverbindungen unterbrechen."
+    "notes": "Änderungen am Netzwerk können Containerverbindungen unterbrechen.",
+    "comment": "Zeigt Details des Docker-Netzwerks bridge, darunter Subnetz, Gateway, Treiber und verbundene Container. Der Befehl verändert das Netzwerk nicht.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Docker Compose",
@@ -869,7 +951,9 @@
     ],
     "example": "docker compose config --quiet && docker compose config --services",
     "verify": "Exit Code 0 und erwartete Services/Volumes/Networks prüfen.",
-    "notes": "Gerenderte Konfiguration kann interpolierte Secrets enthalten. Ausgabe nicht ungeschützt veröffentlichen."
+    "notes": "Gerenderte Konfiguration kann interpolierte Secrets enthalten. Ausgabe nicht ungeschützt veröffentlichen.",
+    "comment": "Validiert zuerst die Compose-Datei ohne ausführliche Ausgabe und listet danach die definierten Services. Damit kannst du Syntax- und Konfigurationsfehler vor dem Start erkennen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Docker Compose",
@@ -894,7 +978,9 @@
     ],
     "example": "docker compose up -d",
     "verify": "docker compose ps; docker compose logs --tail 100",
-    "notes": "Vor Updates Compose-Datei prüfen und persistente Volumes sichern."
+    "notes": "Vor Updates Compose-Datei prüfen und persistente Volumes sichern.",
+    "comment": "Erstellt bei Bedarf Container und startet die in der Compose-Datei definierten Services im Hintergrund. Prüfe danach den Zustand mit docker compose ps und die Logs.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Network Tools",
@@ -919,7 +1005,9 @@
     ],
     "example": "dig @192.0.2.53 example.com A +short",
     "verify": "ANSWER, TTL, Status und abgefragten Server vergleichen.",
-    "notes": "Beispiel-IP 192.0.2.53 ist eine Dokumentationsadresse; durch echten Resolver ersetzen."
+    "notes": "Beispiel-IP 192.0.2.53 ist eine Dokumentationsadresse; durch echten Resolver ersetzen.",
+    "comment": "Fragt beim angegebenen DNS-Server den A-Record für example.com ab und gibt mit +short nur die Antwortdaten aus. 192.0.2.53 ist eine Dokumentationsadresse und muss durch deinen DNS-Server ersetzt werden.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Network Tools",
@@ -944,7 +1032,9 @@
     ],
     "example": "curl -I https://example.com",
     "verify": "HTTP-Status, Location, Server und TLS-Fehler untersuchen.",
-    "notes": "-k umgeht Zertifikatsprüfung und sollte nicht als dauerhafte Konfiguration verwendet werden."
+    "notes": "-k umgeht Zertifikatsprüfung und sollte nicht als dauerhafte Konfiguration verwendet werden.",
+    "comment": "Sendet eine HTTP-HEAD-Anfrage und zeigt nur die Response-Header. Damit prüfst du Statuscode, Redirects und Serverantwort, ohne den Seiteninhalt herunterzuladen.",
+    "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Network Tools",
@@ -969,6 +1059,8 @@
     ],
     "example": "traceroute -m 20 example.com",
     "verify": "Hop-Sequenz und erste Stelle mit dauerhaftem Timeout vergleichen.",
-    "notes": "ICMP/UDP/TCP-Filter und asymmetrisches Routing können Ergebnisse beeinflussen."
+    "notes": "ICMP/UDP/TCP-Filter und asymmetrisches Routing können Ergebnisse beeinflussen.",
+    "comment": "Verfolgt den Netzwerkpfad zum Ziel über die Router-Hops. Die Linux-Variante begrenzt die Ausgabe hier auf maximal 20 Hops; Firewalls können einzelne Antworten unterdrücken.",
+    "commentLabel": "Was macht dieser Befehl?"
   }
 ]
