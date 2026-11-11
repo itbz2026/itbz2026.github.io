@@ -55,5 +55,20 @@ ss -tulpn</code></pre><p><b>Parameter und Hinweise:</b> Load Average ist keine d
 <article class="article searchable"><span class="tag">10 · Referenz</span><h3>Cron und Timer</h3><p>Wiederkehrende Jobs mit Cron oder systemd-Timern planen. Ausführungsumgebung und Fehlerprotokollierung berücksichtigen.</p><pre><code>crontab -l
 sudo crontab -e
 systemctl list-timers --all
-systemctl status apt-daily.timer</code></pre><p><b>Parameter und Hinweise:</b> Cron hat eine reduzierte Umgebung; absolute Pfade verwenden. Kritische Jobs mit Logging, Exit-Code-Prüfung und Monitoring versehen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Linux · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
+systemctl status apt-daily.timer</code></pre><p><b>Parameter und Hinweise:</b> Cron hat eine reduzierte Umgebung; absolute Pfade verwenden. Kritische Jobs mit Logging, Exit-Code-Prüfung und Monitoring versehen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><article class="article searchable"><span class="tag">Troubleshooting</span><h3>Systemzustand und Ressourcen prüfen</h3><p>CPU, RAM, Load, Dateisysteme und fehlgeschlagene Units als erste Diagnose erfassen.</p><pre><code>uptime
+free -h
+top
+ps aux --sort=-%mem | head
+df -hT
+df -ih
+systemctl --failed
+journalctl -p err -b --no-pager</code></pre><div class="note">Hohe Load Average immer zusammen mit CPU-Auslastung, I/O-Wait und Prozesszuständen interpretieren.</div></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Netzwerk und offene Ports prüfen</h3><p>Adresse, Route, DNS und Listener getrennt testen, um Fehler einzugrenzen.</p><pre><code>ip -br address
+ip route
+ip neigh
+getent hosts example.com
+ss -tulpn
+ping -c 3 &lt;GATEWAY-IP&gt;
+curl -I https://example.com</code></pre><div class="note">Ping kann durch Firewalls blockiert sein. Ein fehlender Ping allein beweist keinen Dienstausfall.</div></article>
+<footer>IT Knowledge Base · Linux · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
