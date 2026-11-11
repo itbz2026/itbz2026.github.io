@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Docker: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Docker – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Docker / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="docker.html">← Zur Hauptseite Docker</a><div class="sectionhead"><h1>Docker – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>Images und Registry</h3><p>Images sind unveränderliche Vorlagen; Container sind laufende Instanzen. Tags können veränderlich sein, daher produktiv kontrollierte Versionen/Digests einsetzen.</p><pre><code>docker image ls
+docker pull nginx:1.27
+docker image inspect nginx:1.27
+docker image history nginx:1.27
+docker login</code></pre><p><b>Parameter und Hinweise:</b> Keine Zugangsdaten in Shell-History oder Image-Layern speichern. Registry-Zugriff über sichere Credentials verwalten.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>Container-Lifecycle</h3><p>Container starten aus Images und besitzen isolierte Prozesse, Netzwerk- und Dateisystemansichten.</p><pre><code>docker ps -a
+docker run -d --name web -p 8080:80 nginx:1.27
+docker logs --tail 100 web
+docker exec -it web sh
+docker stop web
+docker rm web</code></pre><p><b>Parameter und Hinweise:</b> -d detached; --name Name; -p HostPort:ContainerPort; -v Mount; --restart Neustartpolicy. Containerlöschung löscht nicht automatisch Named Volumes.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>Docker Compose</h3><p>Compose beschreibt Multi-Container-Anwendungen deklarativ in compose.yaml. Erst Konfiguration validieren, dann deployen.</p><pre><code>docker compose config
+docker compose pull
+docker compose up -d
+docker compose ps
+docker compose logs -f --tail 100
+docker compose down</code></pre><p><b>Parameter und Hinweise:</b> up -d erstellt/aktualisiert Ressourcen; down entfernt Container und Netzwerk, aber standardmäßig nicht Named Volumes. down -v löscht Volumes – Vorsicht.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>Netzwerke und DNS</h3><p>Bridge-Netzwerke erlauben Containerkommunikation über DNS-Namen. Ports nur veröffentlichen, wenn Zugriff vom Host/Netz benötigt wird.</p><pre><code>docker network ls
+docker network inspect bridge
+docker network create app-net
+docker run -d --network app-net --name db postgres:16
+docker inspect db</code></pre><p><b>Parameter und Hinweise:</b> Container im selben benutzerdefinierten Bridge-Netz können sich per Containernamen erreichen. Default bridge hat andere DNS-Eigenschaften.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>Volumes und Bind Mounts</h3><p>Named Volumes eignen sich für persistente App-Daten; Bind Mounts koppeln Hostpfade. Backup muss Anwendungskonsistenz berücksichtigen.</p><pre><code>docker volume ls
+docker volume inspect app-data
+docker run -d --name db -v app-data:/var/lib/postgresql/data postgres:16
+docker inspect db</code></pre><p><b>Parameter und Hinweise:</b> Datenbankdateien nicht unkoordiniert im laufenden Zustand kopieren. Native Dumps oder anwendungskonsistente Backupverfahren verwenden.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Logs und Ressourcen</h3><p>Logs, Health, CPU und RAM helfen bei Diagnose. Logrotation auf Hosts konfigurieren.</p><pre><code>docker logs --since 30m app
+docker stats
+docker inspect --format '{{.State.Health.Status}}' app
+docker top app
+docker events --since 1h</code></pre><p><b>Parameter und Hinweise:</b> Logs können Tokens oder personenbezogene Daten enthalten. Loggingtreiber und Aufbewahrung passend begrenzen.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>Updates und Rollback</h3><p>Vor Updates Imageversionen pinnen, Compose-Konfiguration sichern und Backup/Restore testen. Rollback erfordert kompatible Datenbankschemata.</p><pre><code>docker compose pull
+docker compose up -d
+docker compose ps
+docker image ls
+docker compose logs --tail 200</code></pre><p><b>Parameter und Hinweise:</b> Ein älteres Image kann mit bereits migrierten Daten inkompatibel sein. Datenbankmigrationen vorab dokumentieren und Restorepfad testen.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Sicherheit und Hardening</h3><p>Container möglichst unprivilegiert betreiben, Capabilities reduzieren, Secrets sicher zuführen und Images aktuell halten.</p><pre><code>docker inspect --format '{{.HostConfig.Privileged}}' app
+docker image ls --digests
+docker info
+# Beispieloptionen im Compose-Dienst:
+# read_only: true
+# cap_drop: [ALL]
+# security_opt: [no-new-privileges:true]</code></pre><p><b>Parameter und Hinweise:</b> Privileged-Container vermeiden. Docker-Socket-Zugriff entspricht praktisch Host-Root-Rechten. Nicht benötigte Ports und Mounts entfernen.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>Troubleshooting</h3><p>Exit-Code, Logs, Inspect, Mounts, DNS, Ports und Healthcheck in dieser Reihenfolge prüfen.</p><pre><code>docker compose ps -a
+docker compose logs --tail 200 SERVICE
+docker inspect CONTAINER
+docker network inspect NETWORK
+docker volume inspect VOLUME
+ss -tulpn</code></pre><p><b>Parameter und Hinweise:</b> Nicht sofort prune oder Volumes löschen. Erst Datenpersistenz und Backupstatus verifizieren.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Docker · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
