@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Catalyst 9800-L-C-K9 Wireless LAN Controller: WLAN, AP, Client und Troubleshooting CLI."><title>Cisco Catalyst 9800 Wireless | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Cisco / Cisco Catalyst 9800 Wireless</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a><div class="sectionhead"><h1>Cisco Catalyst 9800 Wireless</h1><p>Catalyst 9800-L-C-K9 · IOS XE · WLAN · AP · Clients</p></div>
+<article class="article searchable"><span class="tag">Controller Basics</span><h3>System, Version und Interfaces</h3><pre><code>show version
+show inventory
+show platform
+show clock
+show running-config
+show ip interface brief
+show ip route
+show logging</code></pre><p>Der Catalyst 9800-L-C-K9 ist ein Wireless LAN Controller (WLC), kein klassischer Ethernet-Access-Switch. Befehle und Features hängen vom IOS-XE-Release ab.</p></article>
+<article class="article searchable"><span class="tag">Access Points</span><h3>APs anzeigen und prüfen</h3><pre><code>show ap summary
+show ap name AP-NAME config general
+show ap name AP-NAME tag detail
+show wireless stats ap join summary
+show wireless stats ap join
+show logging | include CAPWAP
+show logging | include DTLS</code></pre><p>AP-NAME durch den registrierten AP-Namen ersetzen. Join-Probleme oft mit DNS, DHCP Option 43, Routing, CAPWAP-Erreichbarkeit, Zertifikaten und Uhrzeit eingrenzen.</p></article>
+<article class="article searchable"><span class="tag">WLAN & SSID</span><h3>WLAN-Status und Profile</h3><pre><code>show wlan summary
+show wlan id 10
+show wireless profile policy summary
+show wireless tag policy summary
+show wireless tag site summary
+show wireless tag rf summary
+show ap summary</code></pre><p>9800 verwendet WLANs, Policy Profiles und Tags. Site-, Policy- und RF-Tags werden einem AP zugeordnet, um dessen Betriebsverhalten festzulegen.</p></article>
+<article class="article searchable"><span class="tag">Clients</span><h3>Wireless Clients analysieren</h3><pre><code>show wireless client summary
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail
+show wireless stats client detail
+show logging | include AAA
+show aaa servers
+show radius statistics</code></pre><p>Bei Verbindungsproblemen Authentifizierung, Policy-Zuordnung, VLAN, DHCP, RF-Signal und Client-Roaming einzeln prüfen.</p></article>
+<article class="article searchable"><span class="tag">WLAN-Konfiguration</span><h3>Vereinfachtes Lab-Template</h3><pre><code>configure terminal
+wlan LAB-WIFI 10 LAB-WIFI
+ security wpa psk set-key ascii 0 CHANGE-THIS-KEY
+ no shutdown
+exit
+wireless profile policy LAB-POLICY
+ vlan 20
+ no shutdown
+exit
+wireless tag policy LAB-TAG
+ wlan LAB-WIFI policy LAB-POLICY
+exit
+end
+show wlan summary
+show wireless tag policy detailed LAB-TAG</code></pre><div class="warn">Dieses Template ist kein vollständiges produktives WLAN-Design. Sicherheitsmodus, AAA/RADIUS, VLAN, Tags, AP-Modelle und Syntax vor Einsatz anhand der Dokumentation des installierten IOS-XE-Releases prüfen. Keine echten Passwörter in GitHub speichern.</div></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>AP Join und Client Checkliste</h3><ol><li>Controller- und AP-Version sowie Kompatibilität prüfen.</li><li>AP erhält IP-Adresse und erreicht Controller über das Netz.</li><li>CAPWAP/DTLS, Zertifikate und Uhrzeit prüfen.</li><li>AP ist registriert und erhält korrekte Tags.</li><li>WLAN ist aktiviert und Policy Profile passt.</li><li>Client-Authentifizierung, VLAN und DHCP prüfen.</li></ol><pre><code>show ap summary
+show wireless stats ap join summary
+show wireless client summary
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail
+show logging
+show aaa servers</code></pre></article>
+<article class="article searchable"><span class="tag">Cisco Referenzen</span><h3>Offizielle Dokumentation</h3><ul><li><a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/command-reference/b_wireless_cr.html" target="_blank" rel="noopener">Catalyst 9800 Command Reference</a></li><li><a href="https://www.cisco.com/c/en/us/support/wireless/catalyst-9800-series-wireless-controllers/products-installation-and-configuration-guides-list.html" target="_blank" rel="noopener">Catalyst 9800 Configuration Guides</a></li></ul></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
