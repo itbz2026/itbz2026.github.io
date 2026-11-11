@@ -26,3 +26,16 @@ nav a.branch-active{color:#fff;background:#203653}
   .layout>aside{position:sticky}
   .nav-children{display:block}
 }
+
+/* Global knowledge-base search */
+.kb-search{position:relative;margin:14px 0 16px}
+.kb-search input{width:100%;padding:10px 11px;border:1px solid #40536f;border-radius:8px;background:#fff;color:#172033;font:13px system-ui,Arial,sans-serif}
+.kb-search input:focus{outline:2px solid #8bb4ff;outline-offset:1px}
+.kb-search-results{position:absolute;z-index:50;top:calc(100% + 5px);left:0;right:0;max-height:360px;overflow:auto;background:#fff;border:1px solid #dce4ef;border-radius:10px;box-shadow:0 12px 30px #07152a40;padding:5px}
+.kb-search-results[hidden]{display:none}
+.kb-search-result{display:block;padding:9px 10px;border-radius:7px;color:#172033;text-decoration:none}
+.kb-search-result:hover,.kb-search-result:focus{background:#edf3ff;outline:none}
+.kb-search-result strong{display:block;font-size:13px;font-weight:650}
+.kb-search-result small{display:block;color:#64748b;font-size:11px;margin-top:2px}
+.kb-search-empty{margin:0;padding:12px;color:#64748b;font-size:12px}
+@media(max-width:760px){.kb-search{margin:7px 0}.kb-search-results{position:relative;top:auto;max-height:45vh}}
