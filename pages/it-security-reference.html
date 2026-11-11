@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="IT Security: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>IT Security – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / IT Security / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="it-security.html">← Zur Hauptseite IT Security</a><div class="sectionhead"><h1>IT Security – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>Security-Grundprinzipien</h3><p>Schutzziele Vertraulichkeit, Integrität und Verfügbarkeit. Least Privilege, Defense in Depth, sichere Defaults und nachvollziehbare Änderungen bilden die Basis.</p><pre><code># Windows
+Get-NetFirewallProfile
+Get-BitLockerVolume
+Get-MpComputerStatus
+# Linux
+sudo ss -tulpn
+sudo systemctl --failed</code></pre><p><b>Parameter und Hinweise:</b> Inventar, Bedrohungsmodell, Patchmanagement und regelmäßige Überprüfung gehören zum Betrieb.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>Windows Hardening</h3><p>Nicht benötigte Rollen und Dienste entfernen, Defender, Firewall, BitLocker und Security Baselines einsetzen.</p><pre><code>Get-MpComputerStatus
+Get-NetFirewallProfile
+Get-BitLockerVolume
+Get-Service | Where-Object StartType -eq Disabled
+Get-WinEvent -LogName 'Microsoft-Windows-Windows Defender/Operational' -MaxEvents 30</code></pre><p><b>Parameter und Hinweise:</b> Vor GPO-/Baseline-Rollout Pilotgruppe verwenden. Nicht benötigte Dienste nur nach Abhängigkeitsprüfung deaktivieren.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>Linux Hardening</h3><p>Updates, SSH, sudo, Firewall, Dateirechte und Audit-Logs prüfen. Konfiguration vor Neustart validieren.</p><pre><code>sudo apt update && apt list --upgradable
+sudo sshd -t
+sudo ss -tulpn
+sudo ufw status verbose
+sudo find / -xdev -perm -4000 -type f 2>/dev/null</code></pre><p><b>Parameter und Hinweise:</b> SUID-Funde sind nicht automatisch Schwachstellen; mit Paket- und Baseline-Erwartungen vergleichen.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>SSH und Schlüssel</h3><p>Ed25519-Schlüssel und eingeschränkte Konten bevorzugen. Root-Login und Passwortauthentifizierung nur gemäß sicherem Betriebsmodell.</p><pre><code>ssh-keygen -t ed25519 -a 64
+sshd -T | grep -E 'permitrootlogin|passwordauthentication|pubkeyauthentication'
+sshd -t</code></pre><p><b>Parameter und Hinweise:</b> Vor Passwortauthentifizierung-Abschaltung Schlüsselzugang testen und Out-of-band-Konsole bereithalten.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>TLS und Zertifikate</h3><p>Zertifikatskette, Subject Alternative Name, Gültigkeit und Protokollversion prüfen.</p><pre><code>openssl s_client -connect example.com:443 -servername example.com
+openssl x509 -in cert.pem -noout -subject -issuer -dates -ext subjectAltName
+curl -Iv https://example.com</code></pre><p><b>Parameter und Hinweise:</b> Zertifikatsprüfung nicht mit -k/--insecure umgehen. Zertifikate rechtzeitig erneuern und private Schlüssel schützen.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Firewall und Netzwerkzugriff</h3><p>Zugriff nach Quelle, Ziel, Port und Protokoll minimieren. Managementdienste nicht direkt aus nicht vertrauenswürdigen Netzen exponieren.</p><pre><code>Get-NetFirewallProfile
+Get-NetFirewallRule -Enabled True
+sudo ufw status numbered
+sudo nft list ruleset
+Test-NetConnection HOST -Port 22</code></pre><p><b>Parameter und Hinweise:</b> Regeländerungen dokumentieren, mit begrenztem Scope testen und Rückweg vor Remote-Änderung sicherstellen.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>MFA und privilegierte Konten</h3><p>MFA für Admin-, VPN-, Cloud- und Fernzugänge priorisieren. Separate Administrationskonten und zeitlich begrenzte Rechte nutzen.</p><pre><code># Windows AD: privilegierte Gruppen prüfen
+Get-ADGroupMember 'Domain Admins'
+# Linux: sudo-Rechte prüfen
+sudo -l
+getent group sudo</code></pre><p><b>Parameter und Hinweise:</b> MFA-Ausnahmen dokumentieren und überwachen. Break-glass-Konten offline sichern und regelmäßig testen.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Patch- und Schwachstellenmanagement</h3><p>Assets inventarisieren, Updates priorisieren und Sicherheitslücken nach Exposition, Ausnutzbarkeit und Kritikalität bewerten.</p><pre><code>Get-HotFix | Sort-Object InstalledOn -Descending
+uname -a
+apt list --upgradable
+# Debian Paketdetails
+apt-cache policy PACKAGE</code></pre><p><b>Parameter und Hinweise:</b> Patch zuerst in Testumgebung prüfen, Wartungsfenster planen, Backup und Rollback berücksichtigen.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>Protokollierung und Incident Response</h3><p>Zeit synchronisieren, zentrale Logs sammeln, Vorfälle eindämmen und Beweisdaten unverändert dokumentieren.</p><pre><code>Get-WinEvent -LogName Security -MaxEvents 50
+journalctl -p warning..alert --since today
+last -a
+who
+ss -tulpn</code></pre><p><b>Parameter und Hinweise:</b> Bei Vorfällen Beweissicherung, Zuständigkeiten und Meldepflichten beachten. Nicht vorschnell Logs löschen oder Systeme neu installieren.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · IT Security · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
