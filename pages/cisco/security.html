@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Cisco Switch Security: ACL, Port Security, DHCP Snooping, DAI und IP Source Guard."><title>Cisco Network Security | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Cisco / Cisco Network Security</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a><div class="sectionhead"><h1>Cisco Network Security</h1><p>ACL · Port Security · DHCP Snooping · DAI · IP Source Guard</p></div>
+<article class="article searchable"><span class="tag">ACL</span><h3>Standard- und Extended ACL</h3><pre><code>! Standard ACL – Quellnetz erlauben
+access-list 10 permit 192.168.10.0 0.0.0.255
+access-list 10 deny any
+interface vlan 20
+ ip access-group 10 in
+
+! Named Extended ACL
+ip access-list extended USERS-TO-SERVER
+ permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq 443
+ deny ip any any
+interface vlan 20
+ ip access-group USERS-TO-SERVER out
+
+show access-lists
+show ip interface vlan 20</code></pre><div class="warn">ACLs besitzen am Ende eine implizite deny-Regel. Richtung und Platzierung sorgfältig planen, sonst kann legitimer Verkehr blockiert werden.</div></article>
+<article class="article searchable"><span class="tag">Port Security</span><h3>MAC-Adressen auf Access-Port begrenzen</h3><pre><code>interface gigabitEthernet 1/0/10
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+show port-security
+show port-security interface gi1/0/10</code></pre><p>Violation-Modi umfassen je nach Plattform protect, restrict und shutdown. Sticky MAC-Adressen werden in die laufende Konfiguration übernommen.</p></article>
+<article class="article searchable"><span class="tag">DHCP Snooping</span><h3>Unerlaubte DHCP-Server verhindern</h3><pre><code>ip dhcp snooping
+ip dhcp snooping vlan 10,20
+interface gigabitEthernet 1/0/48
+ description Trusted-Uplink
+ ip dhcp snooping trust
+interface range gigabitEthernet 1/0/1-24
+ ip dhcp snooping limit rate 15
+show ip dhcp snooping
+show ip dhcp snooping binding</code></pre><p>Client-Ports bleiben untrusted. Trust nur in Richtung legitimer DHCP-Server oder Relay setzen.</p></article>
+<article class="article searchable"><span class="tag">Dynamic ARP Inspection</span><h3>ARP-Spoofing erschweren</h3><pre><code>ip arp inspection vlan 10,20
+interface gigabitEthernet 1/0/48
+ ip arp inspection trust
+interface range gigabitEthernet 1/0/1-24
+ ip arp inspection limit rate 15
+show ip arp inspection
+show ip arp inspection interfaces
+show ip arp inspection statistics</code></pre><p>DAI nutzt DHCP-Snooping-Bindings. Für statisch adressierte Geräte können ARP-ACLs erforderlich sein.</p></article>
+<article class="article searchable"><span class="tag">IP Source Guard</span><h3>IP-Spoofing auf Access-Ports begrenzen</h3><pre><code>interface gigabitEthernet 1/0/10
+ switchport mode access
+ switchport access vlan 10
+ ip verify source
+show ip verify source
+show ip dhcp snooping binding</code></pre><p>Für statische Endgeräte passende statische Bindings planen. Funktionen sind plattformabhängig.</p></article>
+<article class="article searchable"><span class="tag">Hardening</span><h3>Management-Zugriff absichern</h3><pre><code>configure terminal
+ip domain-name lab.example
+username netadmin privilege 15 secret CHANGE-ME
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 15
+ login local
+ transport input ssh
+ exec-timeout 10 0
+end
+show ip ssh
+show users</code></pre><p>Zusätzlich Management-VLAN, AAA/TACACS+/RADIUS, restriktive Management-ACLs, sichere SNMP-Versionen und zentrale Logs verwenden. Zugangsdaten niemals in öffentliche Repositories schreiben.</p></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
