@@ -1,95 +1,413 @@
 <!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Cisco Switching: VLAN, VTP, Trunking, STP, EtherChannel und Layer-2-Sicherheit."><title>Cisco Switching | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
-<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Cisco / Cisco Switching</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a><div class="sectionhead"><h1>Cisco Switching</h1><p>VLAN · VTP · Trunk · STP · EtherChannel</p></div>
-<article class="article searchable"><span class="tag">VLAN</span><h3>VLAN erstellen und Access-Port zuweisen</h3><p>VLANs trennen ein Layer-2-Netz in eigene Broadcast-Domänen.</p><pre><code>show vlan brief
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main>
+<div class="top"><span>IT Knowledge Base / Cisco / Switching</span><input class="search" id="search" type="search" placeholder="Befehl oder Thema suchen …" aria-label="Diese Seite durchsuchen"></div>
+<a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a>
+<header class="hero"><small>Catalyst · IOS · IOS-XE · Layer 2</small><h1>Cisco Switching – Wissensdatenbank</h1><p>Logische Lernreihenfolge von CLI und Interfaces über VLAN, Trunking, VTP, STP, EtherChannel und Sicherheit bis zu Monitoring und Troubleshooting. Mit Syntax, Parametern, Konfigurationsbeispielen und Prüfkommandos.</p></header>
+<div class="note"><b>Plattform:</b> Beispiele primär für Catalyst IOS/IOS-XE. Interface-Namen, Features und Syntax sind modell- und releaseabhängig. Nexus verwendet NX-OS – siehe <a href="nxos-command-reference.html">separate NX-OS-Referenz</a>. Erst im Lab testen, Änderungen dokumentieren und vor Produktiveinsatz Cisco-Dokumentation prüfen.</div>
+<div class="sectionhead"><h2>Inhaltsverzeichnis – empfohlene Reihenfolge</h2></div>
+<div class="article"><ol><li><a href="#basics">Grundlagen und CLI</a></li><li><a href="#interfaces">Interfaces und Port-Grundlagen</a></li><li><a href="#vlan">VLANs und Access-Ports</a></li><li><a href="#voice">Voice VLAN</a></li><li><a href="#trunk">802.1Q Trunking und DTP</a></li><li><a href="#vtp">VTP v1/v2/v3</a></li><li><a href="#stp">STP, RSTP, MST und Guard-Funktionen</a></li><li><a href="#etherchannel">EtherChannel, LACP und PAgP</a></li><li><a href="#l2">MAC, CDP, LLDP, UDLD und ARP</a></li><li><a href="#security">Layer-2-Security</a></li><li><a href="#multicast">Multicast und IGMP Snooping</a></li><li><a href="#span">SPAN und RSPAN</a></li><li><a href="#management">Management und Betrieb</a></li><li><a href="#troubleshooting">Troubleshooting</a></li></ol></div>
+
+<div class="sectionhead" id="basics"><h2>1. Grundlagen und CLI</h2></div>
+<article class="article searchable"><span class="tag">Basis</span><h3>show version und show inventory</h3><p><b>Zweck:</b> Modell, IOS-/IOS-XE-Version, Laufzeit, Seriennummern und Hardware ermitteln.</p><p><b>Syntax:</b> <code>show version</code>, <code>show inventory</code>.</p><pre><code>show version
+show inventory
+show platform
+show switch</code></pre><p><b>Praxis:</b> Vor Änderungen Modell, Softwarestand, Stack-Mitglieder und Hardware dokumentieren. <code>show switch</code> ist für Stack-fähige Plattformen gedacht.</p></article>
+<article class="article searchable"><span class="tag">Basis</span><h3>CLI-Modi, Hilfe und Abkürzungen</h3><p><b>Zweck:</b> Navigation zwischen User EXEC, Privileged EXEC, Global Config und Interface Config.</p><p><b>Befehle:</b> <code>enable</code>, <code>configure terminal</code>, <code>interface</code>, <code>exit</code>, <code>end</code>, <code>do</code>, <code>?</code>.</p><pre><code>enable
 configure terminal
+interface gigabitEthernet 1/0/1
+description USER-PORT
+do show interfaces status
+end
+show ?
+configure terminal
+interface ?
+end</code></pre><p><b>Hinweis:</b> <code>do</code> führt EXEC-Befehle aus dem Konfigurationsmodus aus. <code>?</code> zeigt kontextabhängige Syntax.</p></article>
+<article class="article searchable"><span class="tag">Basis</span><h3>Running- und Startup-Configuration</h3><p><b>Zweck:</b> Vergleicht aktive Konfiguration im RAM mit der gespeicherten Startkonfiguration.</p><p><b>Syntax:</b> <code>show running-config</code>, <code>show startup-config</code>.</p><pre><code>show running-config
+show startup-config
+show running-config | section interface
+show running-config | include hostname
+copy running-config startup-config</code></pre><p><b>Achtung:</b> Den letzten Befehl erst nach erfolgreicher Prüfung ausführen. Er speichert die laufende Konfiguration als Startkonfiguration.</p></article>
+
+<div class="sectionhead" id="interfaces"><h2>2. Interfaces und Port-Grundlagen</h2></div>
+<article class="article searchable"><span class="tag">Interface</span><h3>show interfaces status und description</h3><p><b>Zweck:</b> Zeigt Linkstatus, VLAN, Duplex, Geschwindigkeit und Portbeschreibung.</p><p><b>Syntax:</b> <code>show interfaces status</code>.</p><pre><code>show interfaces status
+show interfaces description
+show ip interface brief
+show interfaces gigabitEthernet 1/0/10</code></pre><p><b>Auswertung:</b> <code>connected</code> zeigt einen aktiven Link; <code>notconnect</code> meist fehlenden Link; <code>err-disabled</code> eine Schutzabschaltung. Werte je Plattform interpretieren.</p></article>
+<article class="article searchable"><span class="tag">Interface</span><h3>interface und interface range</h3><p><b>Zweck:</b> Wählt einen einzelnen Port oder mehrere Ports aus.</p><p><b>Syntax:</b> <code>interface TYPE SLOT/PORT</code> oder <code>interface range TYPE FIRST-LAST</code>.</p><pre><code>configure terminal
+interface gigabitEthernet 1/0/10
+ description PC-FINANCE
+ no shutdown
+exit
+interface range gigabitEthernet 1/0/1-24
+ description USER-ACCESS-PORTS
+end
+show interfaces description</code></pre><p><b>Achtung:</b> Interface-Namen unterscheiden sich zwischen Modellen. Range nur nutzen, wenn alle Ports dieselbe Konfiguration erhalten sollen.</p></article>
+<article class="article searchable"><span class="tag">Interface</span><h3>shutdown, no shutdown, speed und duplex</h3><p><b>Zweck:</b> Administratives Aktivieren/Deaktivieren und Aushandlung von Geschwindigkeit/Duplex.</p><p><b>Syntax:</b> <code>shutdown</code>, <code>no shutdown</code>, <code>speed auto</code>, <code>duplex auto</code>; Optionen hardwareabhängig.</p><pre><code>interface gigabitEthernet 1/0/10
+shutdown
+no shutdown
+speed auto
+duplex auto
+end
+show interfaces gi1/0/10
+show interfaces status</code></pre><p><b>Best Practice:</b> Auto-Negotiation auf modernen Ports bevorzugen, sofern das Design nichts anderes verlangt. Vor shutdown prüfen, ob ein produktiver Link betroffen ist.</p></article>
+<article class="article searchable"><span class="tag">Interface</span><h3>Interface-Fehlerzähler und Transceiver</h3><p><b>Zweck:</b> Findet CRC/FCS, Input-/Output-Errors, Drops und physische Probleme.</p><pre><code>show interfaces gi1/0/10
+show interfaces counters errors
+show interfaces counters
+show interfaces transceiver detail
+show logging</code></pre><p><b>Auswertung:</b> CRC/FCS deutet oft auf Kabel, Stecker oder Optik; Drops können Überlastung/Queue-Probleme anzeigen. Transceiver-Befehle sind modellabhängig.</p></article>
+
+<div class="sectionhead" id="vlan"><h2>3. VLANs und Access-Ports</h2></div>
+<article class="article searchable"><span class="tag">VLAN</span><h3>VLAN erstellen und benennen</h3><p><b>Zweck:</b> Erstellt eine eigene Layer-2-Broadcast-Domäne.</p><p><b>Syntax:</b> <code>vlan VLAN-ID</code>, <code>name VLAN-NAME</code>.</p><p><b>Parameter:</b> VLAN-ID meist 1–4094; nutzbarer Bereich hängt von Plattform und VTP-Modus ab.</p><pre><code>configure terminal
 vlan 10
  name CLIENTS
 vlan 20
  name SERVERS
+vlan 30
+ name VOICE
+end
+show vlan brief
+show vlan id 10</code></pre><p><b>Praxis:</b> Nummern und Namen nach einem einheitlichen Schema dokumentieren.</p></article>
+<article class="article searchable"><span class="tag">VLAN</span><h3>Access-Port zuweisen</h3><p><b>Zweck:</b> Ordnet einen Endgeräte-Port einem untagged VLAN zu.</p><p><b>Syntax:</b> <code>switchport mode access</code>, <code>switchport access vlan VLAN-ID</code>.</p><pre><code>configure terminal
 interface gigabitEthernet 1/0/10
+ description CLIENT-PC
  switchport mode access
  switchport access vlan 10
  spanning-tree portfast
+ no shutdown
 end
-show vlan brief</code></pre><p>Prüfen: <code>show interfaces gi1/0/10 switchport</code>. Ein VLAN muss vorhanden und der Port dem richtigen VLAN zugeordnet sein.</p></article>
-<article class="article searchable"><span class="tag">VTP</span><h3>VTP Version 1, 2 und 3</h3><div class="tablewrap"><table><tr><th>Version</th><th>Merkmale</th></tr><tr><td>VTP v1</td><td>Grundlegende VLAN-Verteilung zwischen Switches derselben Domain.</td></tr><tr><td>VTP v2</td><td>Erweiterte Behandlung bestimmter VLAN-Informationen und Konsistenzprüfungen.</td></tr><tr><td>VTP v3</td><td>Unterstützt u. a. Extended VLANs und Private VLANs; Primary-Server-Konzept.</td></tr></table></div><p>Modi: Server, Client, Transparent; VTP Off ist plattformabhängig. Domain, Version, Passwort und Trunk-Verbindungen müssen zusammenpassen.</p><pre><code>show vtp status
-show vtp counters
+show interfaces gi1/0/10 switchport
+show vlan brief</code></pre><p><b>Prüfen:</b> Operational Mode muss Access und Access Mode VLAN muss 10 anzeigen. PortFast nur auf Endgeräte-Ports.</p></article>
+<article class="article searchable"><span class="tag">VLAN</span><h3>VLAN ändern, löschen und Interface zurücksetzen</h3><p><b>Zweck:</b> Ändert die Port-Zuordnung oder entfernt ein nicht mehr benötigtes VLAN.</p><pre><code>interface gigabitEthernet 1/0/10
+ switchport access vlan 20
+exit
+no vlan 30
+default interface gigabitEthernet 1/0/10
 show vlan brief
+show interfaces status</code></pre><p><b>Achtung:</b> <code>no vlan</code> nur ausführen, wenn VLAN nicht mehr verwendet wird. <code>default interface</code> entfernt die gesamte Portkonfiguration und kann Dienste unterbrechen.</p></article>
+<article class="article searchable"><span class="tag">VLAN</span><h3>VLAN- und Port-Zuordnung prüfen</h3><p><b>Zweck:</b> Prüft VLAN-Status, Mitgliedschaft und Betriebsmodus eines Ports.</p><pre><code>show vlan brief
+show vlan id 10
+show interfaces gi1/0/10 switchport
+show interfaces status
+show mac address-table vlan 10</code></pre><p><b>Fehlerbild:</b> VLAN fehlt, Port gehört falschem VLAN oder MAC wird im erwarteten VLAN nicht gelernt.</p></article>
 
-! Lab-Beispiel VTP v3
-configure terminal
-vtp domain LABNET
-vtp version 3
-vtp mode server
-vtp password CHANGE-ME
+<div class="sectionhead" id="voice"><h2>4. Voice VLAN</h2></div>
+<article class="article searchable"><span class="tag">Voice VLAN</span><h3>IP-Telefon und PC am selben Switchport</h3><p><b>Zweck:</b> Trennt Sprachverkehr des IP-Telefons vom Datenverkehr des angeschlossenen PCs.</p><p><b>Syntax:</b> <code>switchport voice vlan VLAN-ID</code>.</p><pre><code>vlan 10
+ name DATA
+vlan 30
+ name VOICE
+interface gigabitEthernet 1/0/15
+ description PHONE-AND-PC
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 30
+ spanning-tree portfast
 end
-vtp primary vlan
-show vtp status</code></pre><div class="warn">VTP kann VLAN-Datenbanken unerwartet verändern. Gebrauchte Switches vor dem Anschluss isolieren und Domain sowie Configuration Revision prüfen. VTP v3 Primary nur bewusst vergeben. Syntax und Interoperabilität sind releaseabhängig.</div></article>
-<article class="article searchable"><span class="tag">Trunking</span><h3>802.1Q Trunk konfigurieren</h3><pre><code>configure terminal
-interface gigabitEthernet 1/0/48
- description Uplink-to-SW2
+show interfaces gi1/0/15 switchport
+show mac address-table interface gi1/0/15</code></pre><p><b>Hinweis:</b> Telefon, LLDP/CDP, DHCP-Optionen, QoS und Call-Control müssen zusätzlich passend eingerichtet sein.</p></article>
+
+<div class="sectionhead" id="trunk"><h2>5. 802.1Q Trunking und DTP</h2></div>
+<article class="article searchable"><span class="tag">Trunk</span><h3>802.1Q Trunk konfigurieren</h3><p><b>Zweck:</b> Transportiert mehrere VLANs getaggt zwischen Switches oder zu Router/Server.</p><p><b>Syntax:</b> <code>switchport mode trunk</code>.</p><pre><code>interface gigabitEthernet 1/0/48
+ description UPLINK-TO-SW2
  switchport mode trunk
  switchport trunk allowed vlan 10,20,30
  switchport trunk native vlan 999
  no shutdown
 end
 show interfaces trunk
-show interfaces gi1/0/48 switchport</code></pre><p>Native VLAN und erlaubte VLANs auf beiden Enden abstimmen. VLAN 999 ist hier nur ein Beispiel für ein ungenutztes Native VLAN.</p></article>
-<article class="article searchable"><span class="tag">STP / RSTP</span><h3>Spanning Tree konfigurieren</h3><pre><code>show spanning-tree
+show interfaces gi1/0/48 switchport</code></pre><p><b>Parameter:</b> Allowed VLAN begrenzt die transportierten VLANs; Native VLAN transportiert untagged Frames. VLAN 999 ist ein Beispiel und muss auf beiden Seiten übereinstimmen.</p><p><b>Hinweis:</b> Viele moderne Catalyst-Plattformen verwenden 802.1Q fest; ein Encapsulation-Befehl ist dort nicht nötig/verfügbar.</p></article>
+<article class="article searchable"><span class="tag">Trunk</span><h3>Allowed VLANs setzen, ergänzen und entfernen</h3><p><b>Syntax:</b> <code>switchport trunk allowed vlan VLAN-LIST</code>, <code>add</code>, <code>remove</code>, <code>all</code>, <code>none</code>.</p><pre><code>interface gi1/0/48
+ switchport trunk allowed vlan 10,20
+ switchport trunk allowed vlan add 30
+ switchport trunk allowed vlan remove 20
+show interfaces trunk</code></pre><p><b>Achtung:</b> Ohne <code>add</code> ersetzt die Liste die bisherige Konfiguration. Remote-Uplinks können dadurch Management oder VLANs verlieren.</p></article>
+<article class="article searchable"><span class="tag">Trunk</span><h3>Native VLAN konfigurieren und prüfen</h3><p><b>Zweck:</b> Legt fest, welchem VLAN untagged Frames auf einem Trunk zugeordnet werden.</p><pre><code>interface gi1/0/48
+ switchport trunk native vlan 999
+end
+show interfaces trunk
+show interfaces gi1/0/48 switchport</code></pre><p><b>Best Practice:</b> Native VLAN auf beiden Seiten identisch und möglichst ungenutzt halten. Native VLAN nicht mit Management VLAN verwechseln.</p></article>
+<article class="article searchable"><span class="tag">DTP</span><h3>DTP und switchport nonegotiate</h3><p><b>Zweck:</b> DTP handelt Trunking dynamisch aus; auf fest definierten Trunks kann es deaktiviert werden.</p><pre><code>interface gi1/0/48
+ switchport mode trunk
+ switchport nonegotiate
+end
+show interfaces gi1/0/48 switchport</code></pre><p><b>Hinweis:</b> Gegenstelle muss manuell als Trunk konfiguriert sein. Dynamic Auto/Desirable sind plattformabhängig; Access-Ports nicht dynamisch verhandeln lassen.</p></article>
+
+<div class="sectionhead" id="vtp"><h2>6. VTP v1, v2 und v3</h2></div>
+<article class="article searchable"><span class="tag">VTP</span><h3>VTP-Versionen und Modi verstehen</h3><p><b>Zweck:</b> Verteilt VLAN-Datenbankinformationen innerhalb einer VTP-Domain über Trunk-Links.</p><div class="tablewrap"><table><tr><th>Version</th><th>Merkmale</th></tr><tr><td>VTP v1</td><td>Grundlegende VLAN-Verteilung.</td></tr><tr><td>VTP v2</td><td>Zusätzliche Funktionen, u. a. Token-Ring-Unterstützung und Konsistenzprüfungen.</td></tr><tr><td>VTP v3</td><td>Primary-Server-Konzept, erweiterte VLAN-Funktionen und Verbesserungen; Plattformunterstützung prüfen.</td></tr></table></div><p><b>Modi:</b> Server verwaltet/verteilt VLAN-Datenbank; Client übernimmt; Transparent verwaltet VLANs lokal und leitet Advertisements weiter; Off ist releaseabhängig.</p></article>
+<article class="article searchable"><span class="tag">VTP</span><h3>VTP-Status und Revision prüfen</h3><pre><code>show vtp status
+show vtp counters
+show vlan brief</code></pre><p><b>Prüfen:</b> Domain, Version, Modus, Configuration Revision und Primary-Server-Informationen. Gebrauchte Switches vor Anschluss isolieren und Revision prüfen.</p></article>
+<article class="article searchable"><span class="tag">VTP</span><h3>VTP v3 Server – Laborbeispiel</h3><pre><code>configure terminal
+vtp domain CAMPUS-LAB
+vtp version 3
+vtp mode server
+vtp password CHANGE-THIS
+end
+vtp primary vlan
+show vtp status</code></pre><p><b>Parameter:</b> Domain und Passwort müssen im geplanten Design übereinstimmen. Primary-Rolle nur bewusst auf dem vorgesehenen Switch vergeben.</p><p><b>Warnung:</b> VTP kann VLAN-Datenbanken verändern. In vielen Netzen wird transparent/off und lokale VLAN-Verwaltung bevorzugt.</p></article>
+<article class="article searchable"><span class="tag">VTP</span><h3>VTP Client und Transparent</h3><pre><code>configure terminal
+vtp domain CAMPUS-LAB
+vtp version 3
+vtp mode client
+end
+show vtp status
+
+configure terminal
+vtp mode transparent
+end
+show vtp status</code></pre><p><b>Hinweis:</b> VTP v3-Verhalten und Syntax unterscheiden sich von v1/v2. Vor Einsatz Plattform- und Release-Dokumentation prüfen.</p></article>
+
+<div class="sectionhead" id="stp"><h2>7. Spanning Tree – STP, RSTP, MST und Schutz</h2></div>
+<article class="article searchable"><span class="tag">STP</span><h3>STP-Modi und Status prüfen</h3><p><b>Protokolle:</b> IEEE STP 802.1D, RSTP 802.1w, MST 802.1s, Cisco PVST+ und Rapid-PVST+.</p><pre><code>show spanning-tree
 show spanning-tree summary
 show spanning-tree vlan 10
 show spanning-tree root
-
-configure terminal
+show spanning-tree blockedports</code></pre><p><b>Auswertung:</b> Root Bridge, Root Port, Designated/Alternate Ports, Forwarding/Blocking und Topology Changes kontrollieren.</p></article>
+<article class="article searchable"><span class="tag">STP</span><h3>Rapid-PVST+ konfigurieren</h3><pre><code>configure terminal
 spanning-tree mode rapid-pvst
+end
+show spanning-tree summary</code></pre><p><b>Hinweis:</b> Moduswechsel kann eine Neuberechnung auslösen. Alle Switches und Interoperabilität im Layer-2-Netz berücksichtigen.</p></article>
+<article class="article searchable"><span class="tag">STP</span><h3>Root Bridge Primary und Secondary</h3><p><b>Zweck:</b> Bestimmt den bevorzugten Root-Switch je VLAN.</p><pre><code>! Core 1
 spanning-tree vlan 10 root primary
-interface range gigabitEthernet 1/0/1-24
+spanning-tree vlan 20 root primary
+
+! Core 2 – Backup
+spanning-tree vlan 10 root secondary
+spanning-tree vlan 20 root secondary
+
+show spanning-tree root
+show spanning-tree vlan 10</code></pre><p><b>Hinweis:</b> Makrobefehle passen die Bridge-Priority an. Anschließend tatsächliche Root-ID prüfen.</p></article>
+<article class="article searchable"><span class="tag">STP</span><h3>PortFast und BPDU Guard</h3><p><b>Zweck:</b> PortFast beschleunigt Edge-Ports; BPDU Guard schützt vor unerwarteten BPDUs.</p><pre><code>interface gi1/0/10
+ switchport mode access
  spanning-tree portfast
  spanning-tree bpduguard enable
-end</code></pre><div class="warn">PortFast und BPDU Guard nur an geeigneten Endgeräte-Ports einsetzen, nicht auf Switch-Uplinks. Root-Bridge und Topologie vor Änderungen prüfen.</div></article>
-<article class="article searchable"><span class="tag">EtherChannel / LACP</span><h3>Ports mit LACP bündeln</h3><pre><code>configure terminal
-interface range gigabitEthernet 1/0/47-48
+end
+show spanning-tree interface gi1/0/10 detail</code></pre><p><b>Global:</b> <code>spanning-tree portfast default</code> und <code>spanning-tree portfast bpduguard default</code> nur bei sauber definierten Edge-Ports einsetzen. Niemals pauschal auf Switch-Uplinks.</p></article>
+<article class="article searchable"><span class="tag">STP</span><h3>Root Guard, Loop Guard und BPDU Filter</h3><p><b>Zweck:</b> Zusätzliche Schutzmechanismen gegen unerwartete Root-Wechsel, unidirektionale Fehler und unerwünschte BPDU-Verarbeitung.</p><pre><code>interface gi1/0/48
+ spanning-tree guard root
+interface gi1/0/47
+ spanning-tree guard loop
+show spanning-tree inconsistentports
+show spanning-tree summary</code></pre><p><b>Warnung:</b> BPDU Filter kann STP-Schutz aushebeln und Layer-2-Schleifen verursachen. Nur nach Designvorgabe einsetzen.</p></article>
+<article class="article searchable"><span class="tag">STP</span><h3>STP Kosten und Port-Priorität</h3><pre><code>interface gi1/0/48
+ spanning-tree vlan 10 cost 20000
+ spanning-tree vlan 10 port-priority 64
+end
+show spanning-tree vlan 10</code></pre><p><b>Zweck:</b> Beeinflusst Pfadauswahl. Wertebereiche und Kostenmodell hängen von Plattform und STP-Modus ab.</p></article>
+<article class="article searchable"><span class="tag">MST</span><h3>MST Region und VLAN-Mapping</h3><p><b>Zweck:</b> Gruppiert VLANs in MST-Instanzen und reduziert die Zahl der STP-Instanzen.</p><pre><code>spanning-tree mode mst
+spanning-tree mst configuration
+ name CAMPUS
+ revision 1
+ instance 1 vlan 10,20
+ instance 2 vlan 30,40
+ exit
+show spanning-tree mst configuration
+show spanning-tree mst</code></pre><p><b>Achtung:</b> Region Name, Revision und VLAN-Mapping müssen innerhalb einer MST-Region übereinstimmen.</p></article>
+
+<div class="sectionhead" id="etherchannel"><h2>8. EtherChannel, LACP und PAgP</h2></div>
+<article class="article searchable"><span class="tag">LACP</span><h3>LACP Port-Channel konfigurieren</h3><p><b>Zweck:</b> Bündelt mehrere physische Links nach IEEE 802.1AX.</p><p><b>Syntax:</b> <code>channel-group GROUP mode {active|passive}</code>.</p><p><b>Parameter:</b> Active initiiert, Passive antwortet. Passive/Passive bildet keinen Channel.</p><pre><code>interface range gi1/0/47-48
+ description LACP-MEMBERS
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
  channel-group 1 mode active
  no shutdown
 interface port-channel 1
+ description UPLINK-TO-SW2
  switchport mode trunk
  switchport trunk allowed vlan 10,20,30
+ no shutdown
 end
 show etherchannel summary
-show interfaces port-channel 1</code></pre><p>Alle Member-Ports müssen kompatible Geschwindigkeit, Duplex-, VLAN- und Trunk-Einstellungen haben. LACP-Modi: active/passive.</p></article>
-<article class="article searchable"><span class="tag">Layer 2 Security</span><h3>Port Security, DHCP Snooping und DAI</h3><pre><code>! Port Security auf einem Endgeräte-Port
-interface gigabitEthernet 1/0/10
+show lacp neighbor
+show interfaces port-channel 1</code></pre><p><b>Wichtig:</b> Member müssen kompatible VLAN-, Trunk-, Speed-, Duplex- und Layer-Modi haben. Syntax/Verhalten modellabhängig.</p></article>
+<article class="article searchable"><span class="tag">PAgP</span><h3>PAgP Port-Channel konfigurieren</h3><p><b>Zweck:</b> Cisco-proprietäre EtherChannel-Aushandlung.</p><p><b>Syntax:</b> <code>channel-group GROUP mode {desirable|auto}</code>. Desirable initiiert; Auto wartet. Auto/Auto bildet keinen Channel.</p><pre><code>interface range gi1/0/45-46
+ channel-group 2 mode desirable
+interface port-channel 2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+show etherchannel summary
+show pagp neighbor</code></pre><p><b>Hinweis:</b> LACP ist für neue herstellerübergreifende Designs meist vorzuziehen.</p></article>
+<article class="article searchable"><span class="tag">EtherChannel</span><h3>EtherChannel prüfen und Fehler finden</h3><pre><code>show etherchannel summary
+show etherchannel port-channel
+show etherchannel detail
+show lacp neighbor
+show pagp neighbor
+show interfaces port-channel 1</code></pre><p><b>Typische Fehler:</b> Unterschiedliche Allowed-/Native-VLANs, Access-/Trunk-Modus, Geschwindigkeit, Duplex, LACP-Modus oder Layer-2-/Layer-3-Konfiguration.</p></article>
+
+<div class="sectionhead" id="l2"><h2>9. MAC, CDP, LLDP, UDLD und ARP</h2></div>
+<article class="article searchable"><span class="tag">MAC</span><h3>MAC Address Table</h3><p><b>Zweck:</b> Ordnet gelernte MAC-Adressen VLANs und Ports zu.</p><pre><code>show mac address-table
+show mac address-table dynamic
+show mac address-table vlan 10
+show mac address-table interface gi1/0/10
+show mac address-table address aaaa.bbbb.cccc</code></pre><p><b>Praxis:</b> MAC eines Clients suchen und den zugehörigen Switchport finden. Syntax einzelner Filter kann plattformabhängig sein.</p></article>
+<article class="article searchable"><span class="tag">CDP</span><h3>CDP Nachbarn anzeigen und verwalten</h3><p><b>Zweck:</b> Erkennt direkt verbundene Cisco-Geräte.</p><pre><code>show cdp
+show cdp neighbors
+show cdp neighbors detail
+show cdp interface
+show cdp traffic
+no cdp run
+interface gi1/0/10
+ no cdp enable</code></pre><p><b>Sicherheit:</b> CDP global oder auf untrusted Access-Ports deaktivieren, wenn nicht benötigt. CDP kann Geräteinformationen offenlegen.</p></article>
+<article class="article searchable"><span class="tag">LLDP</span><h3>LLDP aktivieren und Nachbarn prüfen</h3><p><b>Zweck:</b> Herstellerneutrales Neighbor Discovery nach IEEE 802.1AB.</p><pre><code>configure terminal
+lldp run
+interface gi1/0/10
+ lldp transmit
+ lldp receive
+end
+show lldp
+show lldp neighbors
+show lldp neighbors detail</code></pre><p><b>Praxis:</b> Hilfreich für IP-Telefone, Access Points und Multi-Vendor-Umgebungen. Port-Unterstützung prüfen.</p></article>
+<article class="article searchable"><span class="tag">UDLD</span><h3>UDLD gegen unidirektionale Links</h3><p><b>Zweck:</b> Erkennt einseitige Verbindungen, die STP-/EtherChannel-Probleme verursachen können.</p><pre><code>udld enable
+interface gi1/0/48
+ udld port aggressive
+end
+show udld
+show udld neighbors</code></pre><p><b>Achtung:</b> Aggressive Mode kann Ports deaktivieren. Auf unterstützten Links nach Netzwerkstandard einsetzen; Syntax je Plattform prüfen.</p></article>
+<article class="article searchable"><span class="tag">ARP</span><h3>ARP- und SVI-Informationen</h3><p><b>Zweck:</b> Prüft IPv4-Nachbarschaft und VLAN-Interface auf Layer-3-Switches.</p><pre><code>show ip arp
+show ip arp 192.168.10.25
+show ip interface brief
+show interfaces vlan 10
+show ip route</code></pre><p><b>Hinweis:</b> Reine Layer-2-Switches führen nicht zwingend eine ARP-Tabelle für Transitverkehr.</p></article>
+
+<div class="sectionhead" id="security"><h2>10. Layer-2-Security</h2></div>
+<article class="article searchable"><span class="tag">Port Security</span><h3>Port Security – MAC-Adressen begrenzen</h3><p><b>Zweck:</b> Begrenzt gelernte MAC-Adressen auf einem unterstützten Access-Port.</p><pre><code>interface gi1/0/10
  switchport mode access
  switchport port-security
  switchport port-security maximum 2
  switchport port-security mac-address sticky
  switchport port-security violation restrict
-
-! DHCP Snooping
-ip dhcp snooping
+end
+show port-security
+show port-security interface gi1/0/10
+show port-security address</code></pre><p><b>Violation:</b> Protect verwirft still; Restrict verwirft und zählt/loggt; Shutdown setzt den Port typischerweise err-disabled. Verhalten modellabhängig.</p></article>
+<article class="article searchable"><span class="tag">DHCP Snooping</span><h3>DHCP Snooping konfigurieren</h3><p><b>Zweck:</b> Blockiert DHCP-Serverantworten von untrusted Ports und erstellt Binding-Informationen.</p><pre><code>ip dhcp snooping
 ip dhcp snooping vlan 10,20
-interface gigabitEthernet 1/0/48
+interface gi1/0/48
+ description UPLINK-TO-DHCP
  ip dhcp snooping trust
+interface range gi1/0/1-24
+ ip dhcp snooping limit rate 15
+end
+show ip dhcp snooping
+show ip dhcp snooping binding</code></pre><p><b>Wichtig:</b> Nur legitime DHCP-Uplinks trusten. Rate-Limit passend dimensionieren. EtherChannel-Trust nach Plattformvorgabe konfigurieren.</p></article>
+<article class="article searchable"><span class="tag">DAI</span><h3>Dynamic ARP Inspection</h3><p><b>Zweck:</b> Validiert ARP anhand von DHCP-Snooping-Bindings oder ARP-ACLs.</p><pre><code>ip arp inspection vlan 10,20
+interface gi1/0/48
+ ip arp inspection trust
+end
+show ip arp inspection
+show ip arp inspection interfaces
+show ip arp inspection statistics</code></pre><p><b>Voraussetzung:</b> DHCP-Bindings oder ARP-ACLs für statische Geräte. Erst im Lab prüfen – falsche Einstellungen können legitime ARP-Pakete blockieren.</p></article>
+<article class="article searchable"><span class="tag">IP Source Guard</span><h3>IP Source Guard</h3><p><b>Zweck:</b> Filtert IP-Verkehr auf Access-Ports anhand von DHCP-Snooping-Bindings oder statischen Bindings.</p><pre><code>interface gi1/0/10
+ switchport mode access
+ ip verify source
+end
+show ip verify source
+show ip dhcp snooping binding</code></pre><p><b>Achtung:</b> Statische IP-Geräte wie Drucker und Server vor Aktivierung berücksichtigen. Syntax und Unterstützung prüfen.</p></article>
+<article class="article searchable"><span class="tag">802.1X</span><h3>802.1X und Authentifizierungsstatus</h3><p><b>Zweck:</b> Authentifiziert kabelgebundene Clients über AAA/RADIUS.</p><pre><code>show authentication sessions
+show dot1x all
+show aaa servers
+show radius statistics</code></pre><p><b>Praxis:</b> Vor Rollout RADIUS/ISE, Zertifikate, MAB-Fallback, Host-Modus, Guest-/Critical-VLAN und Recovery-Zugriff planen. Vollständige Konfiguration ist releaseabhängig.</p></article>
+<article class="article searchable"><span class="tag">Storm Control</span><h3>Storm Control konfigurieren</h3><p><b>Zweck:</b> Begrenzt Broadcast-, Multicast- und Unknown-Unicast-Verkehr.</p><pre><code>interface gi1/0/10
+ storm-control broadcast level 5.00
+ storm-control multicast level 5.00
+ storm-control action trap
+end
+show storm-control
+show running-config interface gi1/0/10</code></pre><p><b>Hinweis:</b> Schwellenwerte anhand normaler Last dimensionieren; zu niedrige Werte können legitimen Verkehr beeinträchtigen.</p></article>
 
-! Dynamic ARP Inspection
-ip arp inspection vlan 10,20
-interface gigabitEthernet 1/0/48
- ip arp inspection trust</code></pre><p>Nur vertrauenswürdige Uplinks als trusted markieren. DAI benötigt passende DHCP-Snooping-Bindings oder ARP-ACLs für statische Hosts.</p></article>
-<article class="article searchable"><span class="tag">Weitere Switching-Befehle</span><h3>MAC-Tabelle, SPAN und Storm Control</h3><pre><code>show mac address-table
-show mac address-table dynamic
-show mac address-table vlan 10
-show interfaces status
-show interfaces counters
-show cdp neighbors detail
-show lldp neighbors detail
+<div class="sectionhead" id="multicast"><h2>11. Multicast und IGMP Snooping</h2></div>
+<article class="article searchable"><span class="tag">IGMP</span><h3>IGMP Snooping und Multicast-Gruppen</h3><p><b>Zweck:</b> Lernt Multicast-Mitgliedschaften und verhindert unnötiges Flooding an alle Ports.</p><pre><code>show ip igmp snooping
+show ip igmp snooping vlan 20
+show ip igmp snooping groups
+show ip igmp snooping mrouter
+show ip igmp snooping querier</code></pre><p><b>Hinweis:</b> Querier, Multicast-Router-Port und IGMP-Version müssen zum Netzdesign passen.</p></article>
+<article class="article searchable"><span class="tag">IGMP</span><h3>IGMP Snooping Querier</h3><p><b>Zweck:</b> Stellt in einem VLAN ohne externen Querier einen Querier bereit, wenn Plattform und Design dies unterstützen.</p><pre><code>ip igmp snooping querier
+ip igmp snooping querier address 192.0.2.1
+show ip igmp snooping querier</code></pre><p><b>Achtung:</b> Syntax/Verfügbarkeit prüfen und keine unkoordinierten konkurrierenden Querier einrichten.</p></article>
 
-! SPAN-Beispiel
+<div class="sectionhead" id="span"><h2>12. SPAN und RSPAN</h2></div>
+<article class="article searchable"><span class="tag">SPAN</span><h3>Local SPAN – Port spiegeln</h3><p><b>Zweck:</b> Kopiert Verkehr eines Quellports auf einen Analyseport.</p><pre><code>configure terminal
 monitor session 1 source interface gi1/0/10 both
 monitor session 1 destination interface gi1/0/20
+end
 show monitor session 1
+show monitor session all</code></pre><p><b>Wichtig:</b> Zielport ist für SPAN reserviert. Bei hoher Last können Pakete verloren gehen.</p></article>
+<article class="article searchable"><span class="tag">SPAN</span><h3>SPAN entfernen und RSPAN</h3><pre><code>show monitor session all
+configure terminal
+no monitor session 1
+end
+show monitor session all</code></pre><p><b>RSPAN:</b> Transportiert gespiegelten Verkehr über ein dediziertes Remote-SPAN-VLAN. Konfiguration und Einschränkungen sind modellabhängig; RSPAN-VLAN nicht als Client-VLAN verwenden.</p></article>
 
-! Storm Control – Schwellenwert als Beispiel
-interface gi1/0/10
- storm-control broadcast level 5.00
- storm-control action trap</code></pre><p>SPAN-Zielports sind für die Analyse reserviert. Storm-Control-Schwellenwerte anhand des realen Verkehrs planen.</p></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
+<div class="sectionhead" id="management"><h2>13. Management und Betrieb</h2></div>
+<article class="article searchable"><span class="tag">Management</span><h3>Management-SVI und Default Gateway</h3><p><b>Zweck:</b> Weist einem Management-VLAN eine IP-Adresse zu.</p><pre><code>vlan 99
+ name MANAGEMENT
+interface vlan 99
+ description SWITCH-MANAGEMENT
+ ip address 192.168.99.10 255.255.255.0
+ no shutdown
+ip default-gateway 192.168.99.1
+show ip interface brief
+show interfaces vlan 99</code></pre><p><b>Hinweis:</b> VLAN muss aktiv und erreichbar sein. Bei Layer-3-Switches mit Routing wird die Default-Route statt <code>ip default-gateway</code> verwendet.</p></article>
+<article class="article searchable"><span class="tag">NTP / Syslog</span><h3>NTP und Syslog konfigurieren</h3><p><b>Zweck:</b> Sorgt für korrekte Zeit und zentrale Protokollierung.</p><pre><code>service timestamps log datetime msec localtime
+ntp server 192.0.2.123
+logging host 192.0.2.50
+logging trap informational
+show clock detail
+show ntp status
+show ntp associations
+show logging</code></pre><p><b>Hinweis:</b> Beispieladressen ersetzen. NTP-Erreichbarkeit, VRF, Authentifizierung und Syslog-Severity nach Unternehmensstandard konfigurieren.</p></article>
+<article class="article searchable"><span class="tag">Backup</span><h3>Konfiguration sichern und archivieren</h3><p><b>Zweck:</b> Speichert die Konfiguration und ermöglicht – wenn unterstützt – lokale Konfigurationsarchive.</p><pre><code>copy running-config startup-config
+show running-config
+show startup-config
+show archive</code></pre><p><b>Praxis:</b> Vorher externes Backup exportieren, Änderung testen, anschließend speichern. Archive-Funktionen und Speicherpfad sind plattformabhängig.</p></article>
+
+<div class="sectionhead" id="troubleshooting"><h2>14. Troubleshooting – systematische Reihenfolge</h2><p>Physisch → Interface → VLAN → Trunk → STP → MAC → Security → Gateway/Anwendung.</p></div>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Port down, Fehler oder err-disabled</h3><pre><code>show interfaces status
+show interfaces gi1/0/10
+show interfaces counters errors
+show errdisable detect
+show errdisable recovery
+show logging</code></pre><p><b>Prüfen:</b> Kabel/Optik, Gegenstelle, Admin-Status, Speed/Duplex, CRC, Err-disabled-Ursache. Erst Ursache beheben, dann gezielt shutdown/no shutdown.</p></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Client erreicht Gateway nicht</h3><pre><code>show vlan brief
+show interfaces gi1/0/10 switchport
+show interfaces trunk
+show mac address-table dynamic
+show spanning-tree vlan 10
+show ip interface brief
+show ip arp</code></pre><p><b>Reihenfolge:</b> Client-IP/Maske/Gateway; Access-VLAN; Trunk-Allowlist; STP Forwarding; MAC-Learning; SVI/Gateway; ACL und Host-Firewall prüfen.</p></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Trunk transportiert VLAN nicht</h3><pre><code>show interfaces trunk
+show interfaces gi1/0/48 switchport
+show vlan brief
+show spanning-tree vlan 10
+show vtp status</code></pre><p><b>Ursachen:</b> VLAN fehlt/inaktiv, Allowlist, Native-VLAN-Mismatch, Trunk nicht operational, STP blockiert oder VTP-Konflikt.</p></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>EtherChannel nicht gebündelt</h3><pre><code>show etherchannel summary
+show etherchannel detail
+show lacp neighbor
+show interfaces port-channel 1
+show interfaces status</code></pre><p><b>Ursachen:</b> LACP-Modus, falsche Member, VLAN-/Trunk-Mismatch, Speed/Duplex oder Layer-2-/Layer-3-Unterschied.</p></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>STP blockiert unerwartet</h3><pre><code>show spanning-tree
+show spanning-tree vlan 10
+show spanning-tree root
+show spanning-tree inconsistentports
+show spanning-tree detail</code></pre><p><b>Prüfen:</b> Root Bridge, Kosten, Port-Rolle, Guard-Funktionen und Topology Changes. STP niemals deaktivieren, um einen blockierten Port scheinbar zu reparieren.</p></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>DHCP Snooping oder DAI blockiert Clients</h3><pre><code>show ip dhcp snooping
+show ip dhcp snooping binding
+show ip arp inspection
+show ip arp inspection statistics
+show ip arp inspection interfaces
+show logging</code></pre><p><b>Prüfen:</b> DHCP-Uplink trusted, VLAN aktiviert, Binding vorhanden, statische Geräte berücksichtigt und Rate-Limits passend.</p></article>
+<article class="article searchable"><span class="tag">Checkliste</span><h3>Standard-Check vor und nach Änderungen</h3><pre><code>show version
+show inventory
+show running-config
+show interfaces status
+show vlan brief
+show interfaces trunk
+show spanning-tree summary
+show etherchannel summary
+show mac address-table dynamic
+show logging</code></pre><p><b>Praxis:</b> Vorher-Ausgaben sichern, eine Änderung nach der anderen durchführen, Funktion testen, Nachher-Ausgaben vergleichen und erst danach speichern.</p></article>
+
+<div class="sectionhead"><h2>Offizielle Cisco-Dokumentation</h2></div>
+<ul><li><a href="https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-26/products-installation-and-configuration-guides-list.html" target="_blank" rel="noopener">Cisco IOS XE Configuration Guides</a></li><li><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/vlan/vlan-configuration-guide/configure-vlan-trunks.html" target="_blank" rel="noopener">Cisco VLAN / 802.1Q Trunk Guide</a></li><li><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/stp/stp-configuration-guide/m-stp.html" target="_blank" rel="noopener">Cisco Spanning Tree Guide</a></li></ul>
+<div id="empty" class="note" hidden>Keine passenden Switching-Themen oder Befehle gefunden.</div>
+<footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
