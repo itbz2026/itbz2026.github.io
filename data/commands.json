@@ -135,148 +135,160 @@
   },
   {
     "platform": "Windows PowerShell",
-    "category": "System",
+    "category": "System Administration",
     "risk": "low",
     "name": "Get-ComputerInfo",
-    "purpose": "Liefert umfangreiche Betriebssystem- und Systeminformationen.",
+    "purpose": "Liest ausführliche Informationen über Windows, Hardware, BIOS, Betriebssystemversion und installierte Komponenten.",
     "syntax": "Get-ComputerInfo [-Property <STRING[]>]",
     "params": [
       [
         "-Property",
-        "Nur ausgewählte Eigenschaften zurückgeben."
+        "Gibt nur die angegebenen Eigenschaften zurück, z. B. CsName oder WindowsVersion."
       ]
     ],
     "example": "Get-ComputerInfo | Select-Object CsName, WindowsProductName, WindowsVersion, OsBuildNumber",
-    "verify": "Hostname, Edition, Version und Build vergleichen.",
-    "notes": "PowerShell-Cmdlet; Ausgabe lässt sich mit Select-Object gezielt begrenzen.",
-    "comment": "Liest Systeminformationen aus. Select-Object begrenzt die Ausgabe auf Hostname, Windows-Produkt, Version und Buildnummer.",
+    "verify": "Hostname, Windows-Edition, Version und Buildnummer mit winver oder den Systemeinstellungen vergleichen.",
+    "notes": "Read-only-Abfrage. Die vollständige Ausgabe kann sehr umfangreich sein.",
+    "comment": "Dieser Befehl erstellt eine Bestandsaufnahme des Windows-Systems. Er hilft Administratoren, Hostname, Windows-Version, Buildnummer und weitere Hardware- und Betriebssystemdaten schnell zu erfassen.",
     "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
-    "category": "Services",
+    "category": "System Administration",
     "risk": "low",
     "name": "Get-Service",
-    "purpose": "Listet Windows-Dienste und deren Status.",
-    "syntax": "Get-Service [[-Name] <STRING[]>]",
+    "purpose": "Zeigt installierte Windows-Dienste und ihren aktuellen Status.",
+    "syntax": "Get-Service [-Name <STRING[]>] [-DisplayName <STRING[]>]",
     "params": [
       [
         "-Name",
-        "Dienstnamen oder Wildcards angeben."
+        "Filtert nach internem Dienstnamen; Wildcards sind möglich."
       ],
       [
         "-DisplayName",
-        "Nach Anzeigenamen filtern."
+        "Filtert nach dem angezeigten Dienstnamen."
+      ],
+      [
+        "-ComputerName",
+        "Bei älteren Windows-PowerShell-Versionen für Remoteabfragen verfügbar; alternativ CIM oder PowerShell Remoting verwenden."
       ]
     ],
     "example": "Get-Service -Name 'Dnscache','LanmanServer'",
-    "verify": "Status-Spalte prüfen; bei Bedarf Get-Service | Where-Object Status -eq 'Stopped'.",
-    "notes": "Dienstnamen sind nicht immer identisch mit Anzeigenamen.",
-    "comment": "Fragt gezielt zwei Windows-Dienste ab: den DNS Client und den Server-Dienst für Datei-/Druckfreigaben. Die Ausgabe zeigt unter anderem, ob die Dienste laufen.",
+    "verify": "Status und Starttyp prüfen. Für Details: Get-CimInstance Win32_Service -Filter \"Name='Dnscache'\".",
+    "notes": "Get-Service zeigt den Status, aber nicht alle Konfigurationsdetails eines Dienstes.",
+    "comment": "Zeigt, ob ausgewählte Windows-Dienste laufen oder gestoppt sind. Das Beispiel kontrolliert den DNS-Client-Dienst und den Server-Dienst, der unter anderem Datei- und Druckerfreigaben bereitstellt.",
     "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
-    "category": "Processes",
+    "category": "System Administration",
     "risk": "low",
     "name": "Get-Process",
-    "purpose": "Zeigt laufende Prozesse und Ressourceninformationen.",
-    "syntax": "Get-Process [-Name <STRING[]>]",
+    "purpose": "Listet laufende Prozesse mit Prozess-ID und Ressourceninformationen auf.",
+    "syntax": "Get-Process [-Name <STRING[]>] [-Id <INT[]>]",
     "params": [
       [
         "-Name",
-        "Prozessname filtern."
+        "Filtert nach Prozessnamen; Wildcards sind möglich."
       ],
       [
         "-Id",
-        "Nach Prozess-ID filtern."
+        "Sucht Prozesse anhand ihrer Prozess-ID."
+      ],
+      [
+        "-ComputerName",
+        "Remoteabfragen sind in Windows PowerShell verfügbar; in PowerShell 7 ggf. CIM oder Remoting nutzen."
       ]
     ],
-    "example": "Get-Process -Name 'svchost' | Sort-Object CPU -Descending | Select-Object -First 10",
-    "verify": "PID und Prozessname mit Task Manager oder Get-Process -Id <PID> vergleichen.",
-    "notes": "CPU-Werte sind kumulierte Prozesszeiten, keine Momentaufnahme der CPU-Auslastung.",
-    "comment": "Sucht Prozesse mit dem Namen svchost, sortiert sie nach CPU-Zeit absteigend und zeigt die zehn Einträge mit dem höchsten Wert. CPU ist dabei die aufsummierte Prozesszeit.",
+    "example": "Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name,Id,CPU,WorkingSet",
+    "verify": "Prozessname und PID im Task-Manager oder mit Get-Process -Id <PID> vergleichen.",
+    "notes": "CPU ist die aufsummierte CPU-Zeit des Prozesses. WorkingSet ist der aktuell belegte physische Arbeitsspeicher.",
+    "comment": "Zeigt laufende Anwendungen und Hintergrundprozesse. Das Beispiel sortiert alle Prozesse nach bisher verbrauchter CPU-Zeit und zeigt die zehn höchsten Werte inklusive PID und Arbeitsspeicher.",
     "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
-    "category": "Network",
+    "category": "System Administration",
     "risk": "low",
     "name": "Get-NetIPConfiguration",
-    "purpose": "Zeigt IP-Konfiguration, Gateway und DNS je Netzwerkinterface.",
-    "syntax": "Get-NetIPConfiguration [-InterfaceAlias <STRING>]",
+    "purpose": "Zeigt IP-Adressen, Netzwerkadapter, Standardgateway und DNS-Konfiguration.",
+    "syntax": "Get-NetIPConfiguration [-InterfaceAlias <STRING>] [-Detailed]",
     "params": [
       [
         "-InterfaceAlias",
-        "Interface gezielt auswählen."
+        "Beschränkt die Abfrage auf einen bestimmten Adapter."
       ],
       [
         "-Detailed",
-        "Zusätzliche DNS- und WINS-Informationen."
+        "Zeigt zusätzliche Informationen, beispielsweise DNS- und WINS-Konfiguration."
       ]
     ],
     "example": "Get-NetIPConfiguration -Detailed",
-    "verify": "Mit ipconfig /all vergleichen.",
-    "notes": "Für detaillierte Adapterinformationen zusätzlich Get-NetAdapter und Get-NetIPAddress verwenden.",
-    "comment": "Zeigt die Netzwerkkonfiguration der Adapter einschließlich IP-Adressen, Gateway und DNS-Informationen. Die Option -Detailed ergänzt weitere Details.",
+    "verify": "IPv4-/IPv6-Adresse, Gateway und DNS-Server mit ipconfig /all vergleichen.",
+    "notes": "Für Adapterstatus und Linkgeschwindigkeit zusätzlich Get-NetAdapter verwenden.",
+    "comment": "Zeigt, wie der Windows-Rechner im Netzwerk konfiguriert ist. Damit erkennst du schnell falsche IP-Adressen, fehlende Gateways oder nicht passende DNS-Server.",
     "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
-    "category": "Network",
+    "category": "System Administration",
     "risk": "low",
     "name": "Test-NetConnection",
-    "purpose": "Testet DNS-Auflösung, ICMP-Erreichbarkeit und TCP-Port-Konnektivität.",
-    "syntax": "Test-NetConnection <COMPUTERNAME> [-Port <INT>]",
+    "purpose": "Testet die Erreichbarkeit eines Hosts sowie optional eine TCP-Verbindung zu einem bestimmten Port.",
+    "syntax": "Test-NetConnection <HOST> [-Port <PORT>] [-TraceRoute]",
     "params": [
       [
         "-ComputerName",
-        "Zielhost oder IP-Adresse."
+        "Hostname oder IP-Adresse des Ziels."
       ],
       [
         "-Port",
-        "TCP-Zielport testen."
+        "Prüft, ob eine TCP-Verbindung zu diesem Port aufgebaut werden kann."
       ],
       [
         "-TraceRoute",
-        "Route zum Ziel verfolgen."
+        "Zeigt den Netzwerkpfad zum Ziel."
       ],
       [
         "-InformationLevel",
-        "Detailed oder Quiet."
+        "Steuert den Umfang der Ausgabe: Quiet oder Detailed."
       ]
     ],
-    "example": "Test-NetConnection server01.example.local -Port 443 -InformationLevel Detailed",
-    "verify": "TcpTestSucceeded, RemoteAddress und NameResolutionResults auswerten.",
-    "notes": "Ein fehlgeschlagener Ping bedeutet nicht zwingend, dass der TCP-Dienst nicht erreichbar ist.",
-    "comment": "Prüft die Namensauflösung und versucht eine TCP-Verbindung zum Zielserver auf Port 443. TcpTestSucceeded zeigt, ob der TCP-Verbindungsaufbau erfolgreich war.",
+    "example": "Test-NetConnection HOST -Port 443 -InformationLevel Detailed",
+    "verify": "TcpTestSucceeded muss True sein, wenn der TCP-Port erreichbar ist. RemoteAddress und NameResolutionResults kontrollieren.",
+    "notes": "Ein fehlgeschlagener Ping bedeutet nicht automatisch, dass der TCP-Port nicht erreichbar ist. HOST durch den tatsächlichen Servernamen ersetzen.",
+    "comment": "Prüft, ob ein Zielserver erreichbar ist und ob sich eine TCP-Verbindung zu Port 443 (HTTPS) aufbauen lässt. So kannst du Netzwerk- und Firewallprobleme von einem nicht erreichbaren Dienst unterscheiden.",
     "commentLabel": "Was macht dieser Befehl?"
   },
   {
     "platform": "Windows PowerShell",
-    "category": "Logs",
+    "category": "System Administration",
     "risk": "low",
     "name": "Get-WinEvent",
-    "purpose": "Liest Windows Event Logs und ermöglicht gezielte Filterung.",
+    "purpose": "Liest Einträge aus Windows-Ereignisprotokollen wie System, Application oder Security.",
     "syntax": "Get-WinEvent -LogName <LOGNAME> [-MaxEvents <COUNT>]",
     "params": [
       [
         "-LogName",
-        "Logname, z. B. System oder Application."
+        "Legt das Ereignisprotokoll fest, z. B. System oder Application."
       ],
       [
         "-MaxEvents",
-        "Maximale Anzahl Einträge."
+        "Begrenzt die Anzahl der zurückgegebenen Ereignisse."
       ],
       [
         "-FilterHashtable",
-        "Strukturierter Filter nach LogName, ID, Zeit etc."
+        "Filtert strukturiert nach LogName, ID, Level, ProviderName oder Zeit."
+      ],
+      [
+        "-ComputerName",
+        "Fragt ein entferntes System ab, sofern Berechtigungen und Firewall dies erlauben."
       ]
     ],
-    "example": "Get-WinEvent -FilterHashtable @{LogName='System'; Level=2} -MaxEvents 30",
-    "verify": "TimeCreated, Id, ProviderName und Message prüfen.",
-    "notes": "Für große Logs bevorzugt FilterHashtable statt alle Events zu laden.",
-    "comment": "Liest maximal 30 Fehlerereignisse (Level 2) aus dem Windows-Systemprotokoll. Der Filter wird direkt an die Ereignisquelle übergeben und vermeidet das Laden des gesamten Logs.",
+    "example": "Get-WinEvent -LogName System -MaxEvents 50 | Format-List TimeCreated,Id,LevelDisplayName,ProviderName,Message",
+    "verify": "Zeitpunkt, Ereignis-ID, Quelle und Meldung prüfen. Fehler und Warnungen gezielt mit -FilterHashtable eingrenzen.",
+    "notes": "Security- und geschützte Logs benötigen passende Berechtigungen. Große Logs möglichst mit FilterHashtable eingrenzen.",
+    "comment": "Liest die letzten 50 Einträge aus dem Windows-Systemprotokoll. Damit kannst du beispielsweise Systemstarts, Treiberprobleme, Dienstfehler und unerwartete Neustarts untersuchen.",
     "commentLabel": "Was macht dieser Befehl?"
   },
   {
@@ -1062,5 +1074,87 @@
     "notes": "ICMP/UDP/TCP-Filter und asymmetrisches Routing können Ergebnisse beeinflussen.",
     "comment": "Verfolgt den Netzwerkpfad zum Ziel über die Router-Hops. Die Linux-Variante begrenzt die Ausgabe hier auf maximal 20 Hops; Firewalls können einzelne Antworten unterdrücken.",
     "commentLabel": "Was macht dieser Befehl?"
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "System Administration",
+    "risk": "low",
+    "name": "Get-NetTCPConnection",
+    "purpose": "Zeigt aktive TCP-Verbindungen und TCP-Listener des lokalen Windows-Systems.",
+    "syntax": "Get-NetTCPConnection [-State <STATE>] [-LocalPort <PORT>] [-RemotePort <PORT>]",
+    "params": [
+      [
+        "-State",
+        "Filtert nach TCP-Status, z. B. Listen, Established, TimeWait oder CloseWait."
+      ],
+      [
+        "-LocalPort",
+        "Filtert nach lokalem Port."
+      ],
+      [
+        "-RemotePort",
+        "Filtert nach entferntem Zielport."
+      ],
+      [
+        "-OwningProcess",
+        "Filtert nach PID des zugehörigen Prozesses."
+      ]
+    ],
+    "example": "Get-NetTCPConnection -State Established | Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,OwningProcess",
+    "verify": "PID mit Get-Process -Id <PID> einem Prozess zuordnen. Für Listener: Get-NetTCPConnection -State Listen.",
+    "notes": "Zeigt TCP, nicht UDP. Für vollständige Prozessdetails können erhöhte Berechtigungen erforderlich sein.",
+    "comment": "Listet bestehende TCP-Verbindungen und deren lokalen sowie entfernten Port auf. Du erkennst damit, mit welchen Servern dein Rechner kommuniziert und welche TCP-Verbindungen gerade aufgebaut sind."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "System Administration",
+    "risk": "low",
+    "name": "Get-Volume",
+    "purpose": "Zeigt erkannte Volumes mit Laufwerksbuchstaben, Dateisystem, Größe und freiem Speicherplatz.",
+    "syntax": "Get-Volume [-DriveLetter <CHAR[]>] [-FileSystemLabel <STRING>]",
+    "params": [
+      [
+        "-DriveLetter",
+        "Filtert nach einem oder mehreren Laufwerksbuchstaben, ohne Doppelpunkt."
+      ],
+      [
+        "-FileSystemLabel",
+        "Filtert nach der Volume-Bezeichnung."
+      ],
+      [
+        "-FileSystem",
+        "Filtert nach Dateisystemtyp, z. B. NTFS oder ReFS."
+      ]
+    ],
+    "example": "Get-Volume | Select-Object DriveLetter,FileSystemLabel,FileSystem,Size,SizeRemaining,HealthStatus",
+    "verify": "Size und SizeRemaining vergleichen; HealthStatus und OperationalStatus auf Auffälligkeiten prüfen.",
+    "notes": "Nicht jedes Volume besitzt einen Laufwerksbuchstaben. Für physische Datenträger zusätzlich Get-Disk und Get-PhysicalDisk verwenden.",
+    "comment": "Zeigt die verfügbaren Windows-Volumes und wie viel Speicherplatz noch frei ist. Damit kannst du volle Laufwerke, Dateisystemtypen und den Zustand von Volumes kontrollieren."
+  },
+  {
+    "platform": "Windows PowerShell",
+    "category": "System Administration",
+    "risk": "low",
+    "name": "Get-HotFix",
+    "purpose": "Zeigt installierte Windows-Hotfixes und Updates, soweit sie über die HotFix-Schnittstelle erfasst werden.",
+    "syntax": "Get-HotFix [-Id <STRING[]>] [-Description <STRING>]",
+    "params": [
+      [
+        "-Id",
+        "Sucht nach einer bestimmten KB-Nummer, z. B. KB503xxxx."
+      ],
+      [
+        "-Description",
+        "Filtert nach Beschreibung des Hotfixes."
+      ],
+      [
+        "-ComputerName",
+        "Fragt ein entferntes Windows-System ab, sofern Remoteverwaltung und Berechtigungen verfügbar sind."
+      ]
+    ],
+    "example": "Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 20 HotFixID,Description,InstalledOn,InstalledBy",
+    "verify": "KB-Nummern und Installationsdaten mit Windows Update History oder dem Update-Katalog abgleichen.",
+    "notes": "Get-HotFix zeigt nicht zwingend jedes Update und ist kein vollständiger Ersatz für Windows Update-, DISM- oder Configuration-Manager-Berichte.",
+    "comment": "Listet installierte Windows-Hotfixes und KB-Updates mit Installationsdatum auf. Das ist hilfreich, um den Patchstand eines Servers zu prüfen und festzustellen, ob ein bestimmtes Update installiert wurde."
   }
 ]
