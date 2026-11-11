@@ -50,6 +50,9 @@ function renderCard(item) {
   head.append(left,riskBadge);
   card.appendChild(head);
   card.appendChild(el("p","command-purpose",item.purpose));
+  const explanation=el("div","command-explanation");
+  explanation.append(el("strong","","Was macht dieser Befehl?"),el("p","",item.comment || item.purpose));
+  card.appendChild(explanation);
   const syntax=el("div","command-block");
   syntax.append(el("h4","","Syntax"),makeCode(item.syntax));
   card.appendChild(syntax);
