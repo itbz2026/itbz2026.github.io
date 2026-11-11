@@ -12,5 +12,23 @@ ceph pg stat</code></pre><div class="note">Nicht unüberlegt Recovery-Parameter 
 ceph quorum_status --format json-pretty
 ceph health detail</code></pre><div class="note"><b>Hinweis:</b> Bei Warnungen zuerst Detailmeldungen und betroffene Daemons identifizieren.</div></article><article class="article searchable"><span class="tag">Erweiterte Praxisreferenz</span><h3>Nearfull und Kapazitätsplanung</h3><p>Ceph benötigt freien Platz für Replikation, Recovery und Rebalancing. Nearfull-/Full-Schwellen ernst nehmen.</p><pre><code>ceph df detail
 ceph osd df tree
-ceph osd pool ls detail</code></pre><div class="note"><b>Hinweis:</b> Nicht bis zur Vollauslastung warten. Kapazität und Failure Domains vor OSD-Ausbau planen.</div></article><div class="warn"><b>Betriebssicherheit:</b> Destruktive Änderungen an Storage, Netzwerk, Cluster oder Gastkonfiguration nur mit geprüftem Backup, Wartungsplan und Rückweg durchführen.</div><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Proxmox · Ceph – Distributed Storage</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
+ceph osd pool ls detail</code></pre><div class="note"><b>Hinweis:</b> Nicht bis zur Vollauslastung warten. Kapazität und Failure Domains vor OSD-Ausbau planen.</div></article><article class="article searchable"><span class="tag">Erweiterte Diagnose</span><h3>Placement Groups und Recovery eingrenzen</h3><p>Bei <code>HEALTH_WARN</code> zuerst betroffene PGs und OSDs identifizieren. Danach prüfen, ob die Ursache ein ausgefallener OSD, Netzwerk, voller Datenträger oder eine laufende Recovery ist.</p><pre><code>ceph -s
+ceph health detail
+ceph pg stat
+ceph pg dump_stuck inactive
+ceph pg dump_stuck unclean
+ceph osd tree
+ceph osd df tree</code></pre><div class="note">Nicht sofort PGs reparieren oder Recovery-Parameter verändern. Erst Warnmeldung, betroffene PG-ID und OSD-Zustand erfassen und die Ursache beheben.</div></article>
+<article class="article searchable"><span class="tag">Wartung</span><h3>OSD-Wartung sicher vorbereiten</h3><p>Vor einem OSD-Ausbau oder Gerätewechsel prüfen, ob der Cluster genügend freie Kapazität und Redundanz besitzt.</p><pre><code>ceph -s
+ceph osd tree
+ceph osd df tree
+ceph df detail
+ceph osd safe-to-destroy osd.&lt;ID&gt;</code></pre><div class="warn"><b>Achtung:</b> <code>safe-to-destroy</code> ist eine zusätzliche Sicherheitsprüfung, keine Freigabe ohne Kontext. OSD-ID und Datenträgerzuordnung eindeutig verifizieren. OSD entfernen oder Datenträger löschen nur nach offizieller Proxmox-/Ceph-Prozedur und geprüftem Backup.</div></article>
+<article class="article searchable"><span class="tag">Netzwerk & Performance</span><h3>Ceph-Netzwerk und Latenz prüfen</h3><p>Ceph reagiert empfindlich auf Paketverlust, Latenz und inkonsistente MTU. Public- und Cluster-Netz gemäß Design getrennt oder gemeinsam betreiben und auf allen Nodes konsistent konfigurieren.</p><pre><code>ip -br address
+ip route
+ip -s link
+ping -c 5 &lt;CEPH-PEER-IP&gt;
+ceph osd perf
+ceph -s</code></pre><div class="note">Interface-Zähler, Switchports, MTU und Ceph-Latenzen gemeinsam betrachten. MTU-Änderungen Ende-zu-Ende und zuerst im Wartungsfenster testen.</div></article>
+<div class="warn"><b>Betriebssicherheit:</b> Destruktive Änderungen an Storage, Netzwerk, Cluster oder Gastkonfiguration nur mit geprüftem Backup, Wartungsplan und Rückweg durchführen.</div><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Proxmox · Ceph – Distributed Storage</footer></main></div><script src="../../assets/search.js"></script>  <script src="/assets/js/navigation.js" defer></script>
 </body></html>
