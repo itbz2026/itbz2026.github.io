@@ -1,12 +1,53 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Container, Images, Compose und Betrieb."><title>Docker | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
-<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Docker</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Docker</h1><p>Container und Compose</p></div>
-<article class="article searchable"><span class="tag">Konzepte</span><h3>Docker-Grundbegriffe</h3><ul><li><b>Image:</b> Vorlage zum Erstellen eines Containers.</li><li><b>Container:</b> gestartete Instanz eines Images.</li><li><b>Volume:</b> persistenter Speicher für Containerdaten.</li><li><b>Network:</b> verbindet Container miteinander.</li><li><b>Compose:</b> beschreibt mehrere Services in einer YAML-Datei.</li></ul></article>
-<article class="article searchable"><span class="tag">Befehle</span><h3>Docker im Alltag</h3><pre><code>docker ps
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Docker Engine, Images, Container, Volumes, Netzwerke, Compose, Sicherheit und Troubleshooting."><title>Docker | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="cisco-networking.html">Cisco Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html" aria-current="page">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a><a href="command-reference.html">Command Reference</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Docker</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../index.html">← Zur Übersicht</a><div class="sectionhead"><h1>Docker</h1><p>Container, Images, Docker Compose und Betrieb</p></div>
+<article class="article searchable"><span class="tag">Architektur</span><h3>Image, Container und Registry</h3><ul><li><b>Image:</b> schreibgeschützte Vorlage aus Layern.</li><li><b>Container:</b> Instanz eines Images mit eigener beschreibbarer Ebene.</li><li><b>Registry:</b> speichert und verteilt Images.</li><li><b>Volume:</b> persistenter Speicher unabhängig vom Container-Lebenszyklus.</li><li><b>Compose:</b> beschreibt Services, Netzwerke und Volumes deklarativ in YAML.</li></ul><p>Container teilen den Kernel des Hosts. Sie sind keine vollständigen virtuellen Maschinen.</p></article>
+<article class="article searchable"><span class="tag">Befehle</span><h3>Container im Alltag</h3><pre><code>docker version
+docker info
+docker ps
 docker ps -a
 docker images
-docker logs -f CONTAINER
+docker pull IMAGE:TAG
+docker run -d --name web -p 8080:80 nginx
+docker logs -f web
+docker exec -it web sh
+docker stop web
+docker start web
+docker rm web</code></pre><p>Image-Tags bewusst wählen und Versionen dokumentieren. Vermeide unbeabsichtigte Updates durch unkontrollierte Tags.</p></article>
+<article class="article searchable"><span class="tag">Volumes</span><h3>Persistente Daten speichern</h3><pre><code>docker volume create appdata
+docker volume ls
+docker volume inspect appdata
+docker run -d --name app -v appdata:/var/lib/app IMAGE:TAG
+docker inspect app</code></pre><div class="warn">Container löschen entfernt nicht automatisch Named Volumes. Umgekehrt kann docker compose down -v Volumes löschen. Vor solchen Aktionen Daten sichern.</div></article>
+<article class="article searchable"><span class="tag">Netzwerke</span><h3>Container-Netzwerke</h3><pre><code>docker network ls
+docker network create app-net
+docker network inspect app-net
+docker run -d --network app-net --name web nginx
+docker network connect app-net web
+docker network disconnect app-net web</code></pre><ul><li><b>Bridge:</b> häufig für Kommunikation auf einem einzelnen Host.</li><li><b>Host:</b> Container nutzt den Netzwerk-Namespace des Hosts.</li><li><b>None:</b> kein normales externes Netzwerk.</li></ul><p>In benutzerdefinierten Bridge-Netzen können Container einander in der Regel über Servicenamen erreichen.</p></article>
+<article class="article searchable"><span class="tag">Docker Compose</span><h3>Beispiel einer Compose-Datei</h3><pre><code>services:
+  web:
+    image: nginx:stable
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    volumes:
+      - webdata:/usr/share/nginx/html:ro
+
+volumes:
+  webdata:</code></pre><pre><code>docker compose config
 docker compose up -d
-docker compose down
 docker compose ps
-docker stats</code></pre><div class="note">Persistente Daten in Volumes oder Host-Verzeichnissen speichern. Vor Updates Daten sichern und Release Notes prüfen.</div></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Docker · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
+docker compose logs -f
+docker compose pull
+docker compose down</code></pre><p>Compose-Befehle im Verzeichnis der Compose-Datei ausführen oder den Pfad mit -f angeben.</p></article>
+<article class="article searchable"><span class="tag">Logs & Diagnose</span><h3>Container untersuchen</h3><pre><code>docker logs --tail 100 CONTAINER
+docker inspect CONTAINER
+docker stats
+docker top CONTAINER
+docker events
+docker system df
+docker port CONTAINER</code></pre><p>Bei Startfehlern zuerst Exit-Code, Logs, Mounts, Umgebungsvariablen, Portkonflikte und Dateiberechtigungen prüfen.</p></article>
+<article class="article searchable"><span class="tag">Updates</span><h3>Images kontrolliert aktualisieren</h3><ol><li>Release Notes und Kompatibilität prüfen.</li><li>Persistente Daten und Konfiguration sichern.</li><li>Neues Image gezielt pullen.</li><li>Service mit dem neuen Image neu erstellen.</li><li>Healthchecks, Logs und Anwendung testen.</li><li>Rollback-Möglichkeit und Backup aufbewahren.</li></ol><div class="warn">Ein Image-Update ist kein Datenbank-Upgrade. Bei Anwendungen mit Datenbankschema Hersteller-Migrationsschritte beachten.</div></article>
+<article class="article searchable"><span class="tag">Sicherheit</span><h3>Docker Hardening</h3><ul><li>Images aus vertrauenswürdigen Quellen beziehen und aktualisieren.</li><li>Container möglichst als Nicht-root betreiben.</li><li>Keine unnötigen Ports veröffentlichen.</li><li>Secrets nicht in Images, Git-Repositories oder Klartext-Compose-Dateien speichern.</li><li>Capabilities reduzieren und privilegierte Container vermeiden.</li><li>Docker-Socket nicht unbedacht in Container mounten.</li><li>Ressourcenlimits, Read-only-Dateisysteme und Healthchecks nutzen, wo passend.</li><li>Zugriff auf Docker-Daemon und Gruppe docker streng kontrollieren: sie gewährt weitreichende Host-Rechte.</li></ul></article>
+<article class="article searchable"><span class="tag">Troubleshooting</span><h3>Häufige Fehler</h3><div class="tablewrap"><table><tr><th>Symptom</th><th>Prüfung</th></tr><tr><td>Container startet nicht</td><td>docker logs, docker inspect, Exit-Code</td></tr><tr><td>Port belegt</td><td>ss -tulpn, Port-Mapping ändern</td></tr><tr><td>Daten verschwinden</td><td>Volume-Mount und Container-Pfad prüfen</td></tr><tr><td>DNS/Kommunikation fehlt</td><td>Docker-Netzwerk, DNS-Namen und Firewall prüfen</td></tr><tr><td>Permission denied</td><td>UID/GID, Host-Verzeichnisrechte und Container-User prüfen</td></tr><tr><td>Disk voll</td><td>docker system df, Logs, Volumes und Images prüfen</td></tr></table></div><p>Vor docker system prune genau prüfen, welche ungenutzten Ressourcen entfernt werden. Keine Datenvolumes ohne bestätigten Backupstatus löschen.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Docker · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
