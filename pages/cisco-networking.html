@@ -291,4 +291,204 @@ dir bootflash:
 show logging</code></pre>
 <p>Offizielle Referenzen: <a href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/command-reference/b_wireless_cr.html" target="_blank" rel="noopener">Catalyst 9800 Command Reference</a> · <a href="https://www.cisco.com/c/en/us/support/wireless/catalyst-9800-series-wireless-controllers/products-installation-and-configuration-guides-list.html" target="_blank" rel="noopener">Catalyst 9800 Configuration Guides</a>.</p>
 </article>
+
+<article class="article searchable"><span class="tag">HSRP · Gateway Redundancy</span><h3>HSRP – redundantes Default Gateway</h3>
+<p>HSRP stellt Hosts eine virtuelle Gateway-IP bereit. Ein Router/Switch ist Active, der andere Standby. Beispiel: VLAN 10, virtuelle IP 192.168.10.1.</p>
+<h3>Switch A – bevorzugt Active</h3><pre><code>configure terminal
+interface vlan 10
+ ip address 192.168.10.2 255.255.255.0
+ standby version 2
+ standby 10 ip 192.168.10.1
+ standby 10 priority 110
+ standby 10 preempt
+ no shutdown
+end
+show standby brief
+show standby vlan 10</code></pre>
+<h3>Switch B – Standby</h3><pre><code>configure terminal
+interface vlan 10
+ ip address 192.168.10.3 255.255.255.0
+ standby version 2
+ standby 10 ip 192.168.10.1
+ standby 10 priority 100
+ standby 10 preempt
+ no shutdown
+end
+show standby brief</code></pre>
+<p>Hosts verwenden 192.168.10.1 als Default Gateway. HSRP Version und Befehle müssen auf beiden Geräten kompatibel sein.</p>
+</article>
+<article class="article searchable"><span class="tag">VRRP · Gateway Redundancy</span><h3>VRRP – offener Standard für Gateway-Redundanz</h3>
+<p>VRRP wählt einen Master und Backup-Router. Beispiel für VLAN 20: virtuelle IP 192.168.20.1.</p><pre><code>! Router/Switch A
+configure terminal
+interface vlan 20
+ ip address 192.168.20.2 255.255.255.0
+ vrrp 20 ip 192.168.20.1
+ vrrp 20 priority 120
+ vrrp 20 preempt
+ no shutdown
+end
+show vrrp brief
+show vrrp</code></pre>
+<pre><code>! Router/Switch B
+configure terminal
+interface vlan 20
+ ip address 192.168.20.3 255.255.255.0
+ vrrp 20 ip 192.168.20.1
+ vrrp 20 priority 100
+ vrrp 20 preempt
+ no shutdown
+end
+show vrrp brief</code></pre>
+<div class="note">VRRP-Unterstützung und Syntax hängen von Plattform und IOS/IOS XE ab. Nicht jede Catalyst-Plattform unterstützt alle VRRP-Optionen.</div>
+</article>
+<article class="article searchable"><span class="tag">OSPF · Dynamic Routing</span><h3>OSPF – dynamisches Routing konfigurieren</h3>
+<p>OSPF ist ein Link-State-Routing-Protokoll. Router tauschen Informationen aus und berechnen den besten Pfad. Beispiel: Area 0, Router-ID 1.1.1.1.</p><pre><code>configure terminal
+router ospf 10
+ router-id 1.1.1.1
+ network 192.168.10.0 0.0.0.255 area 0
+ network 10.0.0.0 0.0.0.3 area 0
+ passive-interface default
+ no passive-interface gigabitEthernet 1/0/24
+end
+show ip ospf neighbor
+show ip ospf interface brief
+show ip route ospf
+show ip protocols</code></pre>
+<p>Wildcard 0.0.0.255 entspricht dem Netz 192.168.10.0/24. OSPF-Nachbarn benötigen passende Area-, Timer-, Authentifizierungs- und Netzwerkeinstellungen.</p>
+<h3>OSPF Troubleshooting</h3><pre><code>show ip ospf
+show ip ospf neighbor
+show ip ospf interface
+show ip ospf database
+show ip route
+ping 10.0.0.2</code></pre>
+</article>
+<article class="article searchable"><span class="tag">EIGRP · Dynamic Routing</span><h3>EIGRP – Cisco Routing-Protokoll</h3>
+<p>Beispiel mit Autonomous System 100. Die klassische EIGRP-Syntax wird nicht auf jeder Plattform oder jedem IOS-XE-Release unterstützt.</p><pre><code>configure terminal
+router eigrp 100
+ network 192.168.10.0 0.0.0.255
+ network 10.0.0.0 0.0.0.3
+ no auto-summary
+ passive-interface default
+ no passive-interface gigabitEthernet 1/0/24
+end
+show ip eigrp neighbors
+show ip eigrp topology
+show ip protocols
+show ip route eigrp</code></pre>
+<div class="warn">EIGRP ist nicht auf allen Catalyst-Switches verfügbar. Prüfe Lizenz, Plattform und Softwareversion. Bei Named Mode unterscheidet sich die Konfiguration.</div>
+</article>
+<article class="article searchable"><span class="tag">QoS · Quality of Service</span><h3>QoS – Datenverkehr priorisieren</h3>
+<p>QoS klassifiziert und behandelt Datenverkehr nach Regeln. Beispiel: Sprachverkehr mit DSCP EF (46) erkennen und priorisieren. Das Beispiel nutzt MQC und muss an Bandbreite und Plattform angepasst werden.</p><pre><code>configure terminal
+class-map match-any VOICE
+ match dscp ef
+exit
+policy-map WAN-OUT
+ class VOICE
+  priority percent 20
+ class class-default
+  fair-queue
+exit
+interface gigabitEthernet 1/0/48
+ service-policy output WAN-OUT
+end
+show policy-map
+show policy-map interface gigabitEthernet 1/0/48
+show class-map
+show running-config | section policy-map</code></pre>
+<div class="warn">QoS-Funktionen und Syntax unterscheiden sich stark zwischen Catalyst-Serien. Eine Priority Queue kann bei Überlastung strikt priorisiert werden. Prozentwerte und Policy müssen zur tatsächlichen Link-Bandbreite passen.</div>
+</article>
+<article class="article searchable"><span class="tag">DHCP Snooping · Layer 2 Security</span><h3>DHCP Snooping aktivieren</h3>
+<p>DHCP Snooping schützt vor unerlaubten DHCP-Servern. Client-Ports bleiben standardmäßig untrusted; nur der Port in Richtung legitimer DHCP-Server bzw. DHCP-Uplink wird trusted gesetzt.</p><pre><code>configure terminal
+ip dhcp snooping
+ip dhcp snooping vlan 10,20
+no ip dhcp snooping information option
+interface gigabitEthernet 1/0/48
+ description Uplink-to-DHCP-Server
+ ip dhcp snooping trust
+exit
+interface range gigabitEthernet 1/0/1-24
+ ip dhcp snooping limit rate 15
+end
+show ip dhcp snooping
+show ip dhcp snooping binding
+show ip dhcp snooping statistics</code></pre>
+<div class="warn">Nur echte DHCP-Server-/Relay-Uplinks als trusted markieren. Ein falscher Trust-Port kann den Schutz aushebeln. Option 82 nur deaktivieren, wenn das Design es erfordert.</div>
+</article>
+<article class="article searchable"><span class="tag">DAI · Dynamic ARP Inspection</span><h3>Dynamic ARP Inspection konfigurieren</h3>
+<p>DAI prüft ARP-Pakete gegen DHCP-Snooping-Bindings und hilft, ARP-Spoofing zu verhindern. DHCP Snooping muss für dynamische Clients passend eingerichtet sein.</p><pre><code>configure terminal
+ip arp inspection vlan 10,20
+interface gigabitEthernet 1/0/48
+ description Trusted-Uplink
+ ip arp inspection trust
+exit
+interface range gigabitEthernet 1/0/1-24
+ ip arp inspection limit rate 15
+end
+show ip arp inspection
+show ip arp inspection interfaces
+show ip arp inspection statistics
+show ip dhcp snooping binding</code></pre>
+<div class="warn">DAI kann legitime ARP-Pakete blockieren, wenn Binding-Daten fehlen oder Hosts statische IP-Adressen nutzen. Vor dem Aktivieren statische ARP-ACLs und Trust-Grenzen planen. Trust nur auf vertrauenswürdigen Uplinks setzen.</div>
+</article>
+<article class="article searchable"><span class="tag">IP Source Guard</span><h3>IP Source Guard – IP/MAC-Spoofing begrenzen</h3>
+<p>IP Source Guard filtert IP-Verkehr an einem Access-Port anhand der DHCP-Snooping-Binding-Tabelle.</p><pre><code>configure terminal
+ip dhcp snooping
+ip dhcp snooping vlan 10
+interface gigabitEthernet 1/0/10
+ switchport mode access
+ switchport access vlan 10
+ ip verify source
+end
+show ip verify source
+show ip dhcp snooping binding
+show interfaces status</code></pre>
+<p>Bei statischen Hosts kann je nach Plattform eine statische IP Source Binding-Konfiguration nötig sein. Erst in einem Test-VLAN prüfen.</p>
+</article>
+<article class="article searchable"><span class="tag">SPAN · Port Mirroring</span><h3>SPAN – Traffic für Wireshark spiegeln</h3>
+<p>SPAN kopiert Verkehr eines Quellports oder VLANs auf einen Analyse-Port. Beispiel: Quellport Gi1/0/10, Zielport Gi1/0/20.</p><pre><code>configure terminal
+monitor session 1 source interface gigabitEthernet 1/0/10 both
+monitor session 1 destination interface gigabitEthernet 1/0/20
+end
+show monitor session 1
+show monitor session all</code></pre>
+<p>Am Zielport einen PC mit Wireshark anschließen. Der Zielport wird für die Spiegelung verwendet und ist in der Regel nicht gleichzeitig ein normaler Client-Port.</p>
+</article>
+<article class="article searchable"><span class="tag">Storm Control</span><h3>Broadcast-, Multicast- und Unknown-Unicast-Stürme begrenzen</h3><pre><code>configure terminal
+interface gigabitEthernet 1/0/10
+ storm-control broadcast level 5.00
+ storm-control multicast level 5.00
+ storm-control action trap
+end
+show storm-control
+show storm-control interface gigabitEthernet 1/0/10</code></pre>
+<p>Die Schwellenwerte sind Beispiele, keine allgemeingültigen Empfehlungen. Vor dem Einsatz normalen Broadcast-/Multicast-Verkehr messen und Plattformsyntax prüfen.</p>
+</article>
+<article class="article searchable"><span class="tag">IPv6 Switching · First Hop Security</span><h3>IPv6 – wichtige Prüf- und Sicherheitsbefehle</h3><pre><code>show ipv6 interface brief
+show ipv6 route
+show ipv6 neighbors
+show ipv6 protocols
+show ipv6 access-list
+show ipv6 dhcp snooping
+show ipv6 nd inspection
+show ipv6 snooping</code></pre>
+<p>IPv6 First Hop Security umfasst je nach Plattform Funktionen wie IPv6 DHCP Guard, RA Guard und ND Inspection. Die Konfiguration ist modell- und releaseabhängig; vor dem Aktivieren die passende Cisco Security Configuration Guide verwenden.</p>
+</article>
+<article class="article searchable"><span class="tag">Troubleshooting · Routing & Redundancy</span><h3>Checkliste für HSRP, VRRP und Routing</h3><pre><code>show ip interface brief
+show ip route
+show ip protocols
+show standby brief
+show vrrp brief
+show ip ospf neighbor
+show ip eigrp neighbors
+show logging
+ping 192.168.10.1
+traceroute 192.168.10.1</code></pre>
+<ul><li>Layer-1/2 prüfen: Link, VLAN, Trunk und Port-Channel.</li><li>Layer-3 prüfen: IP-Adresse, Maske, SVI-Status und Routing-Tabelle.</li><li>Redundanz prüfen: Active/Master, Standby/Backup, Priority und Preempt.</li><li>Routing prüfen: Nachbarschaft, Area/AS, passive Interfaces und Routen.</li><li>Änderungen einzeln durchführen und nach jeder Änderung verifizieren.</li></ul>
+</article>
+<article class="article searchable"><span class="tag">Offizielle Cisco-Dokumentation</span><h3>Vertiefung und Referenzen</h3><ul>
+<li><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr3-fwd/fhrp/fhrp-configuration-guide/hsrp.html" target="_blank" rel="noopener">Cisco Catalyst – HSRP Configuration Guide</a></li>
+<li><a href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/sec-crypto/fhs-sisf/fhs-and-sisf-configuration-guide/dynamic-arp-inspection.html" target="_blank" rel="noopener">Cisco – Dynamic ARP Inspection</a></li>
+<li><a href="https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-16/products-installation-and-configuration-guides-list.html" target="_blank" rel="noopener">Cisco IOS XE Configuration Guides</a></li>
+<li><a href="https://www.cisco.com/c/en/us/support/switches/index.html" target="_blank" rel="noopener">Cisco Switch Support</a></li>
+</ul></article>
 <footer>IT Knowledge Base · Cisco Networking · Neue Artikel kannst du direkt in dieser HTML-Datei ergänzen.</footer></main></div><script src="../assets/search.js"></script></body></html>
