@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Cisco Troubleshooting: systematische Diagnose von Switches, Routing und Wireless."><title>Cisco Troubleshooting | IT Knowledge Base</title><link rel="stylesheet" href="../../assets/style.css"></head>
+<body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Cisco Networking</div><nav><a href="../../index.html">Übersicht</a><a href="../cisco-networking.html">Cisco Übersicht</a><a href="switching.html">Switching</a><a href="routing.html">Routing</a><a href="redundancy.html">Redundancy</a><a href="security.html">Security</a><a href="wireless-9800.html">Wireless 9800</a><a href="troubleshooting.html">Troubleshooting</a><a href="../windows-server.html">Windows Server</a><a href="../networking.html">Networking</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Cisco / Cisco Troubleshooting</span><input class="search" id="search" type="search" placeholder="Diese Seite durchsuchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="../cisco-networking.html">← Zur Cisco-Übersicht</a><div class="sectionhead"><h1>Cisco Troubleshooting</h1><p>Show Commands · Diagnose · Fehlerbehebung</p></div>
+<article class="article searchable"><span class="tag">Erste Diagnose</span><h3>Die wichtigsten Show-Befehle</h3><pre><code>show version
+show running-config
+show interfaces status
+show ip interface brief
+show vlan brief
+show interfaces trunk
+show mac address-table
+show ip route
+show spanning-tree
+show etherchannel summary
+show cdp neighbors detail
+show lldp neighbors detail
+show logging</code></pre></article>
+<article class="article searchable"><span class="tag">Port Down</span><h3>Interface ist down oder err-disabled</h3><pre><code>show interfaces status
+show interfaces gi1/0/10
+show logging
+show errdisable recovery
+show port-security interface gi1/0/10
+show spanning-tree interface gi1/0/10 detail</code></pre><p>Prüfen: Kabel/SFP, Gegenstelle, Speed/Duplex, Shutdown, Port Security, BPDU Guard und Errdisable-Grund. Ursache beheben, erst danach Port gezielt reaktivieren.</p></article>
+<article class="article searchable"><span class="tag">VLAN / Trunk</span><h3>Client erreicht Gateway nicht</h3><pre><code>show vlan brief
+show interfaces trunk
+show interfaces gi1/0/10 switchport
+show mac address-table vlan 10
+show spanning-tree vlan 10
+show ip interface brief</code></pre><p>Prüfen: Access VLAN, erlaubte VLANs auf Trunks, Native VLAN, SVI-Status und Default Gateway. VLAN muss auf dem Pfad existieren und STP-forwarding sein.</p></article>
+<article class="article searchable"><span class="tag">Routing</span><h3>Keine Verbindung zu Remote-Netzen</h3><pre><code>show ip interface brief
+show ip route
+show ip protocols
+show ip arp
+ping 10.0.0.1
+traceroute 192.168.20.10
+show ip ospf neighbor
+show ip eigrp neighbors</code></pre><p>Prüfen: lokale IP/Mask, Route zum Ziel, Next Hop, Rückroute, ACL und Routing-Nachbarschaft.</p></article>
+<article class="article searchable"><span class="tag">EtherChannel</span><h3>Port-Channel kommt nicht hoch</h3><pre><code>show etherchannel summary
+show etherchannel detail
+show interfaces port-channel 1
+show lacp neighbor
+show running-config interface gi1/0/47
+show running-config interface gi1/0/48</code></pre><p>Prüfen: LACP-Modus, gleiche Member-Konfiguration, VLAN/Trunk, Speed/Duplex und Verkabelung.</p></article>
+<article class="article searchable"><span class="tag">STP</span><h3>STP blockiert unerwartet einen Port</h3><pre><code>show spanning-tree
+show spanning-tree vlan 10
+show spanning-tree root
+show spanning-tree detail
+show spanning-tree inconsistentports</code></pre><p>Root-Bridge, Port-Rollen, Pfadkosten, BPDU Guard und mögliche Layer-2-Schleifen prüfen. STP nicht einfach deaktivieren.</p></article>
+<article class="article searchable"><span class="tag">WLC 9800</span><h3>AP oder Client verbindet sich nicht</h3><pre><code>show ap summary
+show wireless stats ap join summary
+show wireless client summary
+show wireless client mac-address AA:BB:CC:DD:EE:FF detail
+show wlan summary
+show wireless tag policy summary
+show aaa servers
+show logging</code></pre><p>AP Join: IP, CAPWAP, Zertifikate, Uhrzeit und Kompatibilität. Client: WLAN, Policy, Authentifizierung, VLAN, DHCP und RF prüfen.</p></article>
+<article class="article searchable"><span class="tag">Dokumentation</span><h3>Sauberer Troubleshooting-Ablauf</h3><ol><li>Problem, Zeitpunkt, betroffene VLANs/Ports/Clients dokumentieren.</li><li>Scope feststellen: einzelner Client, VLAN, Switch oder gesamter Standort.</li><li>Letzte Änderungen und Logs prüfen.</li><li>Layer 1, Layer 2, Layer 3 und Services schrittweise testen.</li><li>Eine Änderung nach der anderen durchführen.</li><li>Ergebnis verifizieren und Lösung dokumentieren.</li></ol></article><footer>IT Knowledge Base · Cisco Networking · Befehle vor produktivem Einsatz anhand von Modell und Softwareversion prüfen.</footer></main></div><script src="../../assets/search.js"></script></body></html>
