@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Windows Server: vertiefte Befehlsreferenz, Parameter, Praxisbeispiele und Troubleshooting."><title>Windows Server – Erweiterte Referenz | IT Knowledge Base</title><link rel="stylesheet" href="../assets/style.css"></head><body><div class="layout"><aside><div class="brand">IT Knowledge Base<small>Practical IT documentation</small></div><div class="navtitle">Themenbereiche</div><nav><a href="../index.html">Übersicht</a><a href="windows-server.html">Windows Server</a><a href="active-directory.html">Active Directory</a><a href="networking.html">Networking</a><a href="linux.html">Linux</a><a href="virtualisierung.html">Virtualisierung</a><a href="docker.html">Docker</a><a href="it-security.html">IT Security</a><a href="backup-recovery.html">Backup & Recovery</a><a href="troubleshooting.html">Troubleshooting</a></nav></aside><main><div class="top"><span>IT Knowledge Base / Windows Server / Erweiterte Referenz</span><input class="search" id="search" type="search" placeholder="Befehle, Parameter oder Themen suchen …" aria-label="Diese Seite durchsuchen" autocomplete="off"></div><a class="back" href="windows-server.html">← Zur Hauptseite Windows Server</a><div class="sectionhead"><h1>Windows Server – Erweiterte Referenz</h1><p>Systematisch sortierte Befehle, Optionen, Praxisbeispiele und Diagnose. Platzhalter wie HOST, USER, SERVICE und IP an die eigene Umgebung anpassen.</p></div><div class="note"><b>Wichtiger Hinweis:</b> Befehle und Optionen hängen von Betriebssystem, Version, installierten Modulen und Berechtigungen ab. Vor produktiven Änderungen Herstellerdokumentation, Testumgebung, Backup und Rollback prüfen. Beispiele sind Vorlagen, keine universellen Produktionskonfigurationen.</div><article class="article searchable"><span class="tag">01 · Referenz</span><h3>PowerShell-Grundlagen</h3><p>PowerShell-Cmdlets folgen meist Verb-Nomen. Get-Command sucht Befehle, Get-Help zeigt Syntax und Beispiele. Parameter mit Bindestrich steuern den Aufruf.</p><pre><code>Get-Command *Service*
+Get-Help Get-Service -Full
+Get-Help Get-NetIPAddress -Examples
+Get-Command -Module NetTCPIP
+Get-Member</code></pre><p><b>Parameter und Hinweise:</b> Get-Command -Name Get-* sucht Cmdlets; -Module begrenzt auf ein Modul; Get-Help -Full zeigt Parameterdetails.</p></article>
+<article class="article searchable"><span class="tag">02 · Referenz</span><h3>Netzwerkadapter und IP</h3><p>Adapter, IP-Adressen, DNS und Routen mit NetTCPIP-Cmdlets prüfen. Änderungen an Remote-Servern können die Verbindung unterbrechen.</p><pre><code>Get-NetAdapter
+Get-NetIPConfiguration
+Get-NetIPAddress
+Get-DnsClientServerAddress
+Get-NetRoute
+Test-NetConnection server.example.local -Port 443</code></pre><p><b>Parameter und Hinweise:</b> -InterfaceAlias wählt den Adapter; -AddressFamily IPv4 oder IPv6 filtert Adressfamilien; Test-NetConnection -Port prüft TCP-Erreichbarkeit.</p></article>
+<article class="article searchable"><span class="tag">03 · Referenz</span><h3>DNS-Server verwalten</h3><p>DNS-Zonen und Records planen. AD-integrierte Zonen replizieren über Active Directory; Forwarder leiten nicht autoritative Anfragen weiter.</p><pre><code>Get-DnsServerZone
+Get-DnsServerResourceRecord -ZoneName 'example.local'
+Resolve-DnsName dc01.example.local
+Get-DnsServerForwarder
+Add-DnsServerResourceRecordA -ZoneName 'example.local' -Name 'app01' -IPv4Address '192.0.2.20'</code></pre><p><b>Parameter und Hinweise:</b> -ZoneName ist die DNS-Zone; -Name ist der Hostname; -IPv4Address setzt die A-Record-Adresse. Vor Änderungen bestehende Records prüfen.</p></article>
+<article class="article searchable"><span class="tag">04 · Referenz</span><h3>DHCP-Scopes</h3><p>Ein Scope definiert Adressbereich, Ausschlüsse, Lease-Zeit und Optionen. DHCP-Failover stellt Dienstverfügbarkeit zwischen zwei Servern bereit.</p><pre><code>Get-DhcpServerv4Scope
+Get-DhcpServerv4Lease -ScopeId 192.0.2.0
+Get-DhcpServerv4OptionValue -ScopeId 192.0.2.0
+Get-DhcpServerv4Failover
+Add-DhcpServerv4Reservation -ScopeId 192.0.2.0 -IPAddress 192.0.2.50 -ClientId '00-11-22-33-44-55' -Description 'Printer'</code></pre><p><b>Parameter und Hinweise:</b> -ScopeId identifiziert das Subnetz; -ClientId ist die DHCP-Client-ID/MAC im passenden Format. Optionen wie 003 Router und 006 DNS gezielt setzen.</p></article>
+<article class="article searchable"><span class="tag">05 · Referenz</span><h3>Windows Firewall</h3><p>Firewallprofile und Regeln kontrollieren. Eingehende Verbindungen nur für benötigte Quellen, Ports und Profile erlauben.</p><pre><code>Get-NetFirewallProfile
+Get-NetFirewallRule -Enabled True
+New-NetFirewallRule -DisplayName 'Allow HTTPS from LAN' -Direction Inbound -Protocol TCP -LocalPort 443 -RemoteAddress 192.0.2.0/24 -Action Allow
+Get-NetFirewallPortFilter -PolicyStore ActiveStore</code></pre><p><b>Parameter und Hinweise:</b> -Direction Inbound/Outbound; -Protocol TCP/UDP; -LocalPort Zielport; -RemoteAddress Quellnetz. Regel vor Einsatz auf Profil und Scope begrenzen.</p></article>
+<article class="article searchable"><span class="tag">06 · Referenz</span><h3>Storage und Datenträger</h3><p>Datenträger, Partitionen und Volumes zuerst inventarisieren. Destruktive Initialisierung oder Formatierung löscht Daten.</p><pre><code>Get-Disk
+Get-Partition
+Get-Volume
+Get-PhysicalDisk
+Get-StoragePool
+Get-FileSystem | Out-Null</code></pre><p><b>Parameter und Hinweise:</b> Initialize-Disk, New-Partition und Format-Volume sind Änderungen mit Datenverlustrisiko. Datenträgernummer und Sicherung vorab verifizieren.</p></article>
+<article class="article searchable"><span class="tag">07 · Referenz</span><h3>SMB-Freigaben</h3><p>SMB-Freigaben und Freigaberechte verwalten. Effektive Zugriffe hängen zusätzlich von NTFS-ACLs ab.</p><pre><code>Get-SmbShare
+Get-SmbShareAccess -Name 'Data'
+Get-SmbSession
+Get-SmbOpenFile
+New-SmbShare -Name 'Data' -Path 'D:\Data' -FullAccess 'CONTOSO\FileAdmins'</code></pre><p><b>Parameter und Hinweise:</b> -Name und -Path definieren Freigabe und Verzeichnis; -FullAccess/-Change/-Read vergeben Freigaberechte. NTFS-Berechtigungen separat mit Get-Acl prüfen.</p></article>
+<article class="article searchable"><span class="tag">08 · Referenz</span><h3>Windows Updates und Ereignisse</h3><p>Patchstand und Fehler anhand der Ereignisprotokolle kontrollieren. Updates in Wartungsfenstern installieren und Neustarts planen.</p><pre><code>Get-HotFix | Sort-Object InstalledOn -Descending
+Get-WinEvent -LogName System -MaxEvents 100
+Get-WinEvent -FilterHashtable @{LogName='System'; Level=2; StartTime=(Get-Date).AddDays(-1)}
+Get-Service wuauserv</code></pre><p><b>Parameter und Hinweise:</b> Get-WinEvent -FilterHashtable filtert effizient nach LogName, Level und Zeit. Event-ID und Provider helfen bei der Ursachenanalyse.</p></article>
+<article class="article searchable"><span class="tag">09 · Referenz</span><h3>Remoteverwaltung und WinRM</h3><p>PowerShell-Remoting verwendet WinRM. In Domänen bevorzugt Kerberos; außerhalb einer Domäne sichere Vertrauensstellung und HTTPS korrekt konfigurieren.</p><pre><code>Test-WSMan SRV01
+Enter-PSSession -ComputerName SRV01
+Invoke-Command -ComputerName SRV01 -ScriptBlock { Get-Service }
+Get-WSManInstance -ResourceURI winrm/config</code></pre><p><b>Parameter und Hinweise:</b> Enable-PSRemoting richtet Listener und Firewallregeln ein. Nicht unüberlegt TrustedHosts mit * setzen; Remoting-Zugriff einschränken.</p></article><div class="empty" id="empty">Keine passenden Artikel gefunden. Prüfe einen anderen Suchbegriff.</div><footer>IT Knowledge Base · Windows Server · Erweiterte Referenz</footer></main></div><script src="../assets/search.js"></script></body></html>
