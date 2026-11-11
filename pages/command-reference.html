@@ -14,9 +14,9 @@
     <div class="top"><span>IT Knowledge Base / Command Reference / Advanced Explorer</span></div>
     <a class="back" href="../index.html">← Zur Übersicht</a>
     <header class="command-hero">
-      <div class="command-kicker">ADMINISTRATION · CLI · TROUBLESHOOTING</div>
-      <h1>Advanced Command Explorer</h1>
-      <p>Eine zentrale, durchsuchbare Befehlsdatenbank für den IT-Alltag – mit Syntax, Parametern, Beispielen, Verifikation und Sicherheitshinweisen.</p>
+      <div class="command-kicker">IT ADMINISTRATION · CLI · PRACTICAL REFERENCE</div>
+      <h1>Command Reference</h1>
+      <p>Finde Befehle sofort – mit verständlicher Erklärung, Syntax, Parametern und Praxisbeispielen. Alle Einträge sind direkt sichtbar.</p>
       <div class="command-stats">
         <div><strong id="stat-total">—</strong><span>Commands</span></div>
         <div><strong id="stat-platforms">—</strong><span>Platforms</span></div>
@@ -24,27 +24,14 @@
       </div>
     </header>
 
-    <section class="command-toolbar" aria-label="Command filters">
-      <label class="command-search-label" for="command-search">Befehle durchsuchen</label>
-      <input id="command-search" type="search" placeholder="z. B. DNS, VLAN, Get-Service, qm list …" autocomplete="off">
-      <div class="command-filters">
-        <label>Plattform
-          <select id="platform-filter"><option value="">Alle Plattformen</option></select>
-        </label>
-        <label>Aufgabe
-          <select id="category-filter"><option value="">Alle Aufgaben</option></select>
-        </label>
-        <label>Risiko
-          <select id="risk-filter">
-            <option value="">Alle Risikostufen</option>
-            <option value="low">Standard</option>
-            <option value="medium">Ändernd</option>
-            <option value="high">Kritisch</option>
-          </select>
-        </label>
-        <button type="button" id="reset-filters" class="command-reset">Filter zurücksetzen</button>
+    <section class="command-toolbar" aria-label="Command search and filters">
+      <div class="command-search-head">
+        <div><span class="command-kicker">FIND · UNDERSTAND · APPLY</span><h2>Befehl direkt finden</h2><p>Alle Befehle sind sofort sichtbar. Suche oder nutze die Schnellfilter – du musst nichts auswählen, um loszulegen.</p></div>
+        <div class="command-search-box"><span aria-hidden="true">⌕</span><input id="command-search" type="search" placeholder="Befehl, Aufgabe oder Beschreibung suchen …" autocomplete="off"><kbd> / </kbd></div>
       </div>
-      <div class="command-results-line"><span id="result-count" aria-live="polite">Befehle werden geladen …</span><span>Codeblöcke lassen sich einzeln kopieren.</span></div>
+      <div class="command-filter-group"><span class="filter-caption">PLATTFORM</span><div id="platform-chips" class="command-chips" aria-label="Nach Plattform filtern"></div></div>
+      <div class="command-filter-group"><span class="filter-caption">AUFGABE</span><div id="category-chips" class="command-chips" aria-label="Nach Aufgabe filtern"></div></div>
+      <div class="command-results-line"><span id="result-count" aria-live="polite">Befehle werden geladen …</span><button type="button" id="reset-filters" class="command-reset">Alle Filter löschen</button></div>
     </section>
 
     <section class="command-syntax">
