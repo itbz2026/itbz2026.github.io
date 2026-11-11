@@ -13,7 +13,7 @@ qm clone &lt;VMID&gt; &lt;NEWID&gt; --name test-clone</code></pre><div class="no
 qm agent &lt;VMID&gt; ping
 qm agent &lt;VMID&gt; get-osinfo</code></pre><div class="note">Guest Agent muss im Gast installiert und aktiviert sein. Optionen mit qm help migrate auf der installierten Version prüfen.</div></article><article class="article searchable"><span class="tag">Praxisreferenz</span><h3>VM-Lifecycle: Start, Shutdown und Reboot</h3><p>Gäste möglichst sauber über das Betriebssystem oder den ACPI-Shutdown beenden. <code>qm stop</code> entspricht einem harten Ausschalten.</p><pre><code>qm start &lt;VMID&gt;
 qm status &lt;VMID&gt;
-qm shutdown &lt;VMID&gt; --timeout ைக்
+qm shutdown &lt;VMID&gt; --timeout 60
 qm reboot &lt;VMID&gt;
 qm stop &lt;VMID&gt;</code></pre><div class="warn"><b>Achtung:</b> <code>qm stop</code> nur verwenden, wenn ein sauberer Shutdown nicht möglich oder ausdrücklich erforderlich ist. Ein harter Stopp kann Dateisysteme und Anwendungen im Gast beeinträchtigen. Timeout-Optionen mit <code>qm help shutdown</code> der installierten Version prüfen.</div></article>
 <article class="article searchable"><span class="tag">Praxisreferenz</span><h3>Autostart und Startreihenfolge</h3><p>Abhängigkeiten wie Firewall, DNS oder Datenbankdienste bei automatischem VM-Start berücksichtigen.</p><pre><code>qm set &lt;VMID&gt; --onboot 1
