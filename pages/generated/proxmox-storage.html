@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Directory, LVM-thin, ZFS, NFS, SMB, iSCSI und Storage-Diagnose in Proxmox VE.">
+<title>Storage & Datenspeicher | IT Knowledge Base</title>
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+<div class="layout">
+<aside></aside>
+<main>
+<div class="top"><span>IT Knowledge Base / Proxmox / Storage & Datenspeicher</span></div>
+<a class="back" href="../proxmox.html">← Zur Proxmox-Übersicht</a>
+<header class="hero"><small>IT Knowledge Base · Practical Documentation</small><h1>Storage & Datenspeicher</h1><p>Directory, LVM-thin, ZFS, NFS, SMB, iSCSI und Storage-Diagnose in Proxmox VE.</p></header>
+<article class="article markdown-article"><h1 id="storage-datenspeicher">Storage &amp; Datenspeicher</h1>
+<p><strong>Geltungsbereich:</strong> Proxmox VE. Befehle auf dem Proxmox-Host ausführen, sofern nicht anders angegeben. Syntax und Funktionen können versionsabhängig sein; lokale Hilfe und offizielle Dokumentation prüfen.</p>
+<h2 id="storage-status-und-ids">Storage-Status und IDs</h2>
+<pre><code class="language-bash">pvesm status
+pvesm scan nfs &lt;SERVER&gt;
+pvesm help
+</code></pre>
+<p><code>pvesm status</code> zeigt konfigurierte Storage-Ziele und deren Belegung. Scan-Befehle dienen der Erkennung verfügbarer Backends; konkrete Syntax mit <code>pvesm help</code> prüfen.</p>
+<blockquote>
+<p>Storage-IDs sind Proxmox-Konfigurationsnamen, keine Linux-Gerätenamen.</p>
+</blockquote>
+<h2 id="lvm-und-lvm-thin-prufen">LVM und LVM-thin prüfen</h2>
+<pre><code class="language-bash">pvs
+vgs
+lvs -a -o +devices,seg_monitor
+</code></pre>
+<p>Zeigt Physical Volumes, Volume Groups und Logical Volumes. Thin-Pools auf Auslastung überwachen.</p>
+<blockquote>
+<p>Ein voller Thin-Pool kann laufende Gäste beeinträchtigen. Vor Änderungen freien Platz, Metadaten und Backup prüfen.</p>
+</blockquote>
+<h2 id="zfs-zustand-prufen">ZFS-Zustand prüfen</h2>
+<pre><code class="language-bash">zpool status -v
+zpool list
+zfs list -o name,used,avail,refer,mountpoint
+</code></pre>
+<p>Zeigt Pool-Health, Kapazität und Dataset-Belegung. <code>DEGRADED</code> und <code>FAULTED</code> zeitnah untersuchen.</p>
+<blockquote>
+<p>Keine Pool-Reparatur oder Disk-Ersetzung ohne Geräteidentifikation, Backup und passende ZFS-Prozedur.</p>
+</blockquote>
+<h2 id="nfs-und-smbcifs">NFS und SMB/CIFS</h2>
+<p>NFS/SMB Storage wird über <strong>Datacenter → Storage</strong> eingebunden. Server, Export/Freigabe, Berechtigungen, Netzwerk und Content-Typen korrekt konfigurieren.</p>
+<pre><code class="language-bash">pvesm status
+findmnt
+mount | grep -E 'nfs|cifs'
+</code></pre>
+<blockquote>
+<p>Zugangsdaten nicht in Skripten oder öffentlich lesbaren Dateien speichern. Shared Storage muss für alle vorgesehenen Nodes konsistent erreichbar sein.</p>
+</blockquote>
+<h2 id="storage-troubleshooting">Storage-Troubleshooting</h2>
+<p>Prüfe Erreichbarkeit, Mounts, Kernelmeldungen, Belegung und Proxmox-Tasks.</p>
+<pre><code class="language-bash">pvesm status
+df -hT
+lsblk -f
+journalctl -k -b --no-pager | tail -100
+</code></pre>
+<blockquote>
+<p>Nicht einfach Storage-Verzeichnisse löschen oder Datenträger neu formatieren. Zuerst VM-Disks, Backups und Storage-Content identifizieren.</p>
+</blockquote>
+<h2 id="storage-inhalt-auflisten">Storage-Inhalt auflisten</h2>
+<p>Storage-Inhalte anzeigen und mit VM-/Container-Konfigurationen abgleichen.</p>
+<pre><code class="language-bash">pvesm status
+pvesm list &lt;STORAGE_ID&gt;
+qm list
+pct list
+</code></pre>
+<p>Vor Entfernen eines Storage prüfen, ob VM-Disks, Rootfs, ISOs oder Backups darauf liegen.</p>
+<h2 id="smart-und-datentragergesundheit">SMART und Datenträgergesundheit</h2>
+<p>SMART-Werte regelmäßig kontrollieren; <code>smartmontools</code> muss gegebenenfalls installiert sein.</p>
+<pre><code class="language-bash">lsblk -o NAME,SIZE,MODEL,SERIAL
+smartctl -a /dev/sdX
+smartctl -x /dev/nvme0
+</code></pre>
+<p>Gerätenamen sorgfältig verifizieren. SMART ist ein Frühwarnsystem, keine Garantie gegen Ausfälle.</p>
+<blockquote>
+<p><strong>Betriebssicherheit:</strong> Destruktive Änderungen an Storage, Netzwerk, Cluster oder Gastkonfiguration nur mit geprüftem Backup, Wartungsplan und Rückweg durchführen.</p>
+</blockquote>
+<h2 id="weiterfuhrende-dokumentation">Weiterführende Dokumentation</h2>
+<ul>
+<li><a href="https://pve.proxmox.com/pve-docs/">Proxmox VE Administration Guide</a></li>
+<li><a href="https://pve.proxmox.com/pve-docs/chapter-pvesm.html">Proxmox VE Storage Documentation</a></li>
+</ul></article>
+<footer>IT Knowledge Base · Generated from Markdown source: content/proxmox/storage.md</footer>
+</main>
+</div>
+<script src="/assets/js/navigation.js" defer></script>
+</body>
+</html>
